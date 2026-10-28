@@ -13,8 +13,6 @@ Tableros de MXD en un solo sitio, desplegado en Vercel.
 
 | Variable | Para qué |
 |---|---|
-| `DASH_PASSWORD` | Clave para entrar al sitio (obligatoria; sin ella el sitio no abre) |
-| `DASH_USER` | Usuario para entrar (opcional, por defecto `mxd`) |
 | `SHOPIFY_STORE_DOMAIN` | `mxd-6202.myshopify.com` |
 | `SHOPIFY_CLIENT_ID`, `SHOPIFY_CLIENT_SECRET` | App de Shopify (client credentials) |
 | `GA4_PROPERTY_ID` | Propiedad GA4 MXD Web |

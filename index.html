@@ -1,7 +1,19 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MXD Dashboards</title><link rel="stylesheet" href="/assets/mxd.css"></head>
+<title>MXD Dashboards</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><style>
+.mxd-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.mxd-nav .nav-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.mxd-nav .nav-tabs a{color:#cfcac0;text-decoration:none;padding:5px 11px;border-radius:7px;white-space:nowrap;transition:background .15s,color .15s}
+.mxd-nav .nav-tabs a:hover{background:rgba(255,255,255,.1);color:#fff}
+.mxd-nav .nav-tabs a[aria-current]{background:#fff;color:#1d1b17;font-weight:600}
+.mxd-nav .nav-st{margin-left:auto;opacity:.7;font-size:12px}
+.mxd-nav .nav-btn{font:inherit;font-weight:600;background:#eb6834;color:#fff;border:0;border-radius:7px;padding:5px 12px;cursor:pointer;transition:filter .15s}
+.mxd-nav .nav-btn:hover{filter:brightness(1.1)}
+@keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wrap>*{animation:mxdIn .35s ease both}
+</style></head>
 <body>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/" aria-current=page>Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta">Meta</a></div><span class="nav-st"></span></nav>
 <div class="wrap">
   <header>
     <div class="eyebrow">MXD · Tukuy</div>
@@ -9,10 +21,27 @@
     <p class="lede">Ventas y canales digitales de MXD en un solo lugar.</p>
   </header>
   <div class="grid">
-    <a class="card" href="/saga-cw"><span class="tag">Saga Falabella</span><h3>Classic World</h3><p>Ventas, costos y qué hacer con cada ficha.</p></a>
-    <a class="card" href="/saga-angeltex"><span class="tag">Saga Falabella</span><h3>Angeltex</h3><p>Samsara y Cocoon: ventas, campaña y reposición.</p></a>
-    <a class="card" href="/web"><span class="tag">Google · Web MXD</span><h3>Web y Google</h3><p>Ventas Shopify y tráfico de Google Analytics, en vivo.</p></a>
-    <a class="card soon" href="/meta"><span class="tag">Meta Ads</span><h3>Meta <span class="pill">Próximamente</span></h3><p>Gasto, alcance y retorno de las campañas.</p></a>
+    <a class="card" href="/saga-cw" style="--c:#eb6834"><span class="tag">Saga Falabella</span><h3>Classic World</h3>
+      <div class="big" id="n-cw" data-tip="Este mes|Ventas netas de comisión de Classic World en Falabella en lo que va del mes.">…</div><div class="sub" id="s-cw">netos este mes</div>
+      <p>Ventas, costos y qué hacer con cada ficha.</p><span class="go">Abrir →</span></a>
+    <a class="card" href="/saga-angeltex" style="--c:#2a78d6"><span class="tag">Saga Falabella</span><h3>Angeltex</h3>
+      <div class="big" id="n-ang" data-tip="Este mes|Ventas netas de comisión de Samsara y Cocoon en Falabella en lo que va del mes.">…</div><div class="sub" id="s-ang">netos este mes</div>
+      <p>Samsara y Cocoon: ventas, campaña y reposición.</p><span class="go">Abrir →</span></a>
+    <a class="card" href="/web" style="--c:#0f6b55"><span class="tag">Google · Web MXD</span><h3>Web y Google</h3>
+      <div class="big" id="n-web" data-tip="Esta semana|Visitas a la web desde el lunes, según Google Analytics.">…</div><div class="sub" id="s-web">sesiones esta semana</div>
+      <p>Ventas Shopify y tráfico de Google Analytics.</p><span class="go">Abrir →</span></a>
+    <a class="card soon" href="/meta" style="--c:#8a5cd6"><span class="tag">Meta Ads</span><h3>Meta</h3>
+      <div class="big"><span class="pill">Próximamente</span></div><div class="sub">&nbsp;</div>
+      <p>Gasto, alcance y retorno de las campañas.</p><span class="go">Ver →</span></a>
   </div>
 </div>
+<script>
+const S = (n) => 'S/ ' + Math.round(n).toLocaleString('es-PE');
+const mes = new Date(Date.now() - 5 * 3600e3).toISOString().slice(0, 7);
+const neto = (j, com) => j.data.ventas.filter((r) => r.f.startsWith(mes) && ['Entregado', 'Enviado'].includes(r.e)).reduce((t, r) => t + r.p, 0) * (1 - com);
+const pon = (id, v, sub) => { document.getElementById('n-' + id).textContent = v; if (sub) document.getElementById('s-' + id).textContent = sub; };
+fetch('/api/saga?m=cw').then((r) => r.json()).then((j) => pon('cw', S(neto(j, 0.15)))).catch(() => pon('cw', '—', 'no cargó'));
+fetch('/api/saga?m=angeltex').then((r) => r.json()).then((j) => pon('ang', S(neto(j, 0.25)))).catch(() => pon('ang', '—', 'no cargó'));
+fetch('/api/web').then((r) => r.json()).then((j) => pon('web', j.semanas.at(-1).sesiones.toLocaleString('es-PE'))).catch(() => pon('web', '—', 'no cargó'));
+</script>
 </body></html>

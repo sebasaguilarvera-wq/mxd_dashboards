@@ -1,8 +1,19 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Web y Google · MXD</title><link rel="stylesheet" href="/assets/mxd.css"></head>
+<title>Web y Google · MXD</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><style>
+.mxd-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.mxd-nav .nav-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.mxd-nav .nav-tabs a{color:#cfcac0;text-decoration:none;padding:5px 11px;border-radius:7px;white-space:nowrap;transition:background .15s,color .15s}
+.mxd-nav .nav-tabs a:hover{background:rgba(255,255,255,.1);color:#fff}
+.mxd-nav .nav-tabs a[aria-current]{background:#fff;color:#1d1b17;font-weight:600}
+.mxd-nav .nav-st{margin-left:auto;opacity:.7;font-size:12px}
+.mxd-nav .nav-btn{font:inherit;font-weight:600;background:#eb6834;color:#fff;border:0;border-radius:7px;padding:5px 12px;cursor:pointer;transition:filter .15s}
+.mxd-nav .nav-btn:hover{filter:brightness(1.1)}
+@keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wrap>*{animation:mxdIn .35s ease both}
+</style></head>
 <body>
-<div class="top"><a href="/">← MXD Dashboards</a><button type="button" class="btn" onclick="location.search='?t='+Date.now()">Actualizar</button></div>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web" aria-current=page>Web y Google</a><a href="/meta">Meta</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
 <div class="wrap">
   <header>
     <div class="eyebrow">Google · Web MXD</div>
@@ -14,11 +25,11 @@
   <section>
     <h2>Última semana cerrada</h2>
     <div class="kpis">
-      <div class="kpi"><div class="l">Venta (sin envío)</div><div class="v" id="k-venta">—</div><div class="d" id="d-venta"></div></div>
-      <div class="kpi"><div class="l">Pedidos</div><div class="v" id="k-pedidos">—</div><div class="d" id="d-pedidos"></div></div>
-      <div class="kpi"><div class="l">Ticket promedio</div><div class="v" id="k-ticket">—</div><div class="d" id="d-ticket"></div></div>
-      <div class="kpi"><div class="l">Sesiones</div><div class="v" id="k-sesiones">—</div><div class="d" id="d-sesiones"></div></div>
-      <div class="kpi"><div class="l">Conversión</div><div class="v" id="k-conv">—</div><div class="d">pedidos ÷ sesiones</div></div>
+      <div class="kpi"><div class="l" data-tip="Venta|Pedidos de la tienda Shopify en la semana, sin envío ni cancelados.">Venta (sin envío)</div><div class="v" id="k-venta">—</div><div class="d" id="d-venta"></div></div>
+      <div class="kpi"><div class="l" data-tip="Pedidos|Compras completadas en la web en la semana.">Pedidos</div><div class="v" id="k-pedidos">—</div><div class="d" id="d-pedidos"></div></div>
+      <div class="kpi"><div class="l" data-tip="Ticket promedio|Venta dividida entre pedidos.">Ticket promedio</div><div class="v" id="k-ticket">—</div><div class="d" id="d-ticket"></div></div>
+      <div class="kpi"><div class="l" data-tip="Sesiones|Visitas a la web según Google Analytics. Una persona puede hacer varias.">Sesiones</div><div class="v" id="k-sesiones">—</div><div class="d" id="d-sesiones"></div></div>
+      <div class="kpi"><div class="l" data-tip="Conversión|De cada 100 visitas, cuántas terminan en pedido.">Conversión</div><div class="v" id="k-conv">—</div><div class="d">pedidos ÷ sesiones</div></div>
     </div>
   </section>
 
@@ -67,11 +78,15 @@ function grafico(sem) {
   svg += `<text x="4" y="${P.t + 8}">${S(maxV)}</text><text x="${W - 4}" y="${P.t + 8}" text-anchor="end">${N(maxS)} ses.</text>`;
   sem.forEach((s, i) => {
     const x = P.l + i * bw;
-    svg += `<rect x="${x + bw * .18}" y="${y(s.venta)}" width="${bw * .64}" height="${H - P.b - y(s.venta)}" fill="var(--acc)" opacity="${s.enCurso ? .45 : 1}" rx="2"><title>${fecha(s.semana)}: ${S(s.venta)} · ${s.pedidos} pedidos · ${N(s.sesiones)} sesiones</title></rect>`;
+    svg += `<rect x="${x + bw * .18}" y="${y(s.venta)}" width="${bw * .64}" height="${H - P.b - y(s.venta)}" fill="var(--acc)" opacity="${s.enCurso ? .45 : 1}" rx="2"/>`;
     svg += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle">${fecha(s.semana)}</text>`;
   });
   svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2" points="${sem.map((s, i) => `${P.l + i * bw + bw / 2},${ys(s.sesiones)}`).join(' ')}"/>`;
   sem.forEach((s, i) => { svg += `<circle cx="${P.l + i * bw + bw / 2}" cy="${ys(s.sesiones)}" r="3" fill="var(--now)"/>`; });
+  sem.forEach((s, i) => {
+    const t = 'Semana del ' + fecha(s.semana) + (s.enCurso ? ' (en curso)' : '') + '|Venta: ' + S(s.venta) + '\nPedidos: ' + s.pedidos + '\nSesiones: ' + N(s.sesiones) + '\nUsuarios: ' + N(s.usuarios);
+    svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${H - P.t - P.b}" data-tip="${t.replace(/"/g, '&quot;')}"/>`;
+  });
   el.innerHTML = svg + '</svg>';
 }
 

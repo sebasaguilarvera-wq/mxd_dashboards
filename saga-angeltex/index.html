@@ -1,0 +1,593 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0"><div style="position:sticky;top:0;z-index:50;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,sans-serif;padding:8px 16px;display:flex;gap:16px;align-items:center"><a href="/" style="color:#fff;text-decoration:none;font-weight:600">← MXD Dashboards</a></div>
+<title>Dashboard_ECOM_SAGA_Angeltex</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Panel de una columna: controles arriba, indicadores, ritmo mensual y detalle por producto */
+:root{
+  --bg:#f7f6f3; --panel:#ffffff; --line:#e2ded6; --fg:#1d1b17; --muted:#6c675e;
+  --acc:#0f6b55; --acc-soft:#e6efec; --now:#eb6834; --prev:#2a78d6; --warn:#a15c00; --bad:#b3261e; --igv:#c9c3b8; --fob:#6c675e; --imp:#c98a2e; --com:#b3261e; --mxd:#0f6b55;
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14171a; --panel:#1b1f23; --line:#2d3338; --fg:#eceae5; --muted:#9aa0a6;
+  --acc:#4cc5a2; --acc-soft:#1e2d29; --now:#e2743f; --prev:#5b9bea; --warn:#e0a24a; --bad:#f2918a; --igv:#454b51; --fob:#9aa0a6; --imp:#e0a24a; --com:#f2918a; --mxd:#4cc5a2;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#14171a; --panel:#1b1f23; --line:#2d3338; --fg:#eceae5; --muted:#9aa0a6;
+  --acc:#4cc5a2; --acc-soft:#1e2d29; --now:#e2743f; --prev:#5b9bea; --warn:#e0a24a; --bad:#f2918a; --igv:#454b51; --fob:#9aa0a6; --imp:#e0a24a; --com:#f2918a; --mxd:#4cc5a2;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-block:28px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid;gap:26px}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:600}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,5vw,40px);line-height:1.08;margin:6px 0 0;text-wrap:balance}
+h2{font-family:var(--serif);font-weight:400;font-size:21px;margin:0}
+.lede{color:var(--muted);max-width:66ch;margin:10px 0 0;font-size:15px}
+section{display:grid;gap:12px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.note{color:var(--muted);font-size:13px;max-width:72ch;margin:0}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+
+.filtros{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.campo{display:grid;gap:4px}
+.campo label{font-size:12px;color:var(--muted);font-weight:500}
+input[type=date]{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);min-width:150px}
+input[type=date]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:8px 13px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--acc-soft);color:var(--acc);font-weight:600}
+.seg button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13.5rem),1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:14px 16px;display:grid;gap:3px;align-content:start;min-width:0}
+.kpi.q{border-left-color:var(--line)}
+.kpi b{font-family:var(--sans);font-size:26px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi .d{font-size:13px;font-weight:500}
+.up{color:var(--acc)}.down{color:var(--warn)}
+
+.leyenda{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);align-items:center}
+.leyenda i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+.chart{overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:480px;height:auto}
+.gx{font-size:11px;fill:var(--muted)}
+.gv{font-size:10.5px;fill:var(--fg);font-variant-numeric:tabular-nums}
+.gl{stroke:var(--line);stroke-width:1}
+
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{background:var(--panel);font-weight:500;color:var(--muted);font-size:12px;position:sticky;top:0;cursor:pointer}
+th.l,td.l{text-align:left;white-space:normal}
+tbody tr:hover td{background:var(--acc-soft)}
+.bar{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end}
+.bar i{height:6px;border-radius:99px;background:var(--now);display:inline-block}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12.5px;font-weight:500}
+.pill.cero{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.pill.bajo{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.pill.ok{background:var(--acc-soft);color:var(--acc)}
+a.plink{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+a.plink:hover{color:var(--acc);border-bottom-color:var(--acc)}
+.buscador{display:grid;gap:4px;min-width:min(100%,320px)}
+.buscador label{font-size:12px;color:var(--muted);font-weight:500}
+input[type=text]{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);width:100%}
+input[type=text]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.ficha{display:flex;flex-wrap:wrap;gap:18px;font-size:13px;color:var(--muted);margin-top:2px}
+.ficha b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
+.vacio{color:var(--muted);font-size:14px;padding:18px 0;text-align:center}
+.foot{font-size:12.5px;color:var(--muted);max-width:74ch;margin:0}
+
+.alertas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:12px}
+.alerta{font:inherit;text-align:left;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--sev,var(--acc));border-radius:10px;padding:14px 16px;display:grid;gap:4px;align-content:start;min-width:0;cursor:pointer}
+.alerta:hover{border-color:var(--sev,var(--acc))}
+.alerta:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.alerta .tag{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--sev,var(--acc))}
+.alerta b{font-family:var(--sans);font-size:26px;font-weight:600;letter-spacing:-.01em;line-height:1.15;font-variant-numeric:tabular-nums}
+.alerta span{font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:99px;padding:5px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted))}
+.chip[aria-pressed=true]{background:var(--acc-soft);border-color:var(--acc);font-weight:600}
+.chip:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.acc{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12.5px;font-weight:500;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent)}
+.ritmo{display:inline-grid;grid-template-columns:repeat(12,9px);column-gap:2px;row-gap:1px;vertical-align:middle}
+.ritmo em{font-style:normal;font-size:8.5px;line-height:1;text-align:center;color:var(--muted)}
+.ritmo i{width:9px;height:12px;border-radius:2px;background:var(--line)}
+.ritmo i.on{background:var(--now)}
+
+.inact{font-size:11px;color:var(--bad);margin-left:6px}
+.sc.bajo{color:var(--warn);font-weight:600}
+.cas{display:flex;height:44px;border-radius:8px;overflow:hidden;background:var(--line)}
+.cas div{height:100%;min-width:2px}
+.casleg{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5rem),1fr));gap:10px 16px;margin-top:14px}
+.casleg div{display:grid;grid-template-columns:12px 1fr;column-gap:8px;align-items:baseline;font-size:13px}
+.casleg i{width:12px;height:12px;border-radius:3px;align-self:center}
+.casleg b{font-weight:500;font-variant-numeric:tabular-nums;grid-column:2}
+.casleg small{grid-column:2;color:var(--muted);font-size:12px}
+.casleg .mx b{font-family:var(--sans);font-size:22px;font-weight:600;letter-spacing:-.01em}
+.sinc{color:var(--muted);font-size:12px}
+.resta{color:var(--muted)}
+.col-co,th[data-s=co]{background:color-mix(in srgb,#8a5cd6 11%,var(--panel))}
+.col-com,th[data-s=cm]{background:color-mix(in srgb,var(--acc) 10%,var(--panel))}
+.queda{color:var(--acc);font-weight:600}
+th[data-s=co],th[data-s=cm],th[data-s=iv],th[data-s=mx],th[data-s=mxp]{white-space:normal;line-height:1.25}
+.ritmo{grid-template-columns:repeat(var(--n,10),11px)}
+.ritmo i{width:11px}
+.ritmo i.camp{box-shadow:inset 0 -2px 0 var(--prev)}
+.agot{font-size:12px;color:var(--muted)}
+.agot b{color:var(--bad);font-weight:600}
+.camp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,11rem),1fr));gap:12px}
+.camp-grid div{display:grid;gap:2px}
+.camp-grid b{font-family:var(--sans);font-size:24px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.camp-grid span{font-size:12.5px;color:var(--muted)}
+#tcamp td:first-child{min-width:200px}
+#tcamp th{white-space:normal;line-height:1.25}
+details.desp{display:grid;gap:12px}
+details.desp>summary{cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:10px;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+details.desp>summary::-webkit-details-marker{display:none}
+details.desp>summary::before{content:"\25B8";color:var(--acc);font-size:14px}
+details.desp[open]>summary::before{content:"\25BE"}
+details.desp>summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+details.desp>*+*{margin-top:12px}
+@media (max-width:620px){.hide-sm{display:none}}
+.c-bul{margin:10px 0 0;padding-left:1.2em;max-width:72ch}
+.c-bul li{margin:4px 0}
+#wcas{display:grid}
+#wleg{display:grid;gap:0;margin-top:12px}
+#wleg div{display:flex;flex-direction:column;gap:3px;font-size:13px;padding:8px 10px 0 0;border-top:3px solid var(--c);min-width:0;hyphens:auto}
+#wleg i{display:none}
+#wleg .mx b{font-family:var(--serif);font-size:22px;font-weight:400}
+@media (max-width:640px){#wleg div{font-size:11px;padding-right:5px;overflow-wrap:anywhere}#wleg small{font-size:11px}#wleg .mx b{font-size:17px!important}}
+</style>
+
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Saga Falabella · Angeltex (Samsara y Cocoon)</div>
+    <h1>Dashboard_ECOM_SAGA_Angeltex</h1>
+    <p class="lede" id="lede">—</p>
+  </header>
+
+  <section>
+    <div class="panel">
+      <div class="filtros">
+        <div class="campo"><label>Marca</label>
+          <div class="seg" id="marca">
+            <button data-b="" aria-pressed="true">Angeltex</button>
+            <button data-b="Samsara" aria-pressed="false">Samsara</button>
+            <button data-b="Cocoon" aria-pressed="false">Cocoon</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="kpis">
+      <div class="kpi q"><b id="k-bruto">—</b><span>Venta bruta 2026</span></div>
+      <div class="kpi q"><b id="k-com">—</b><span>Comisión Falabella (25% textil)</span></div>
+      <div class="kpi"><b id="k-neto">—</b><span>Neto después de comisión</span></div>
+      <div class="kpi"><b id="k-unid">—</b><span>Unidades vendidas</span><span class="d" id="k-tk">—</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head"><h2>De la venta a lo que te queda</h2></div>
+    <ul class="note c-bul" id="w-note"></ul>
+    <div class="panel">
+      <div class="cas" id="wcas" role="img" aria-label="Reparto de la venta"></div>
+      <div class="casleg" id="wleg"></div>
+    </div>
+    <div class="panel">
+      <div class="tablewrap">
+        <table id="tcos">
+          <thead><tr>
+            <th class="l" data-s="n">Modelo</th>
+            <th data-s="u">Unid.</th>
+            <th data-s="pr">Precio hoy<br>(con IGV)</th>
+            <th data-s="b">Facturado</th>
+            <th data-s="co">− Costo<br>(mayorista)</th>
+            <th data-s="cm">− Comisión<br>Saga 25%</th>
+            <th data-s="mx">= Queda<br>MXD</th>
+            <th data-s="mxp">% del<br>facturado</th>
+            <th data-s="st">Stock hoy</th>
+            <th class="hide-sm" data-s="ult">Última venta</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="campana">
+    <details class="desp">
+      <summary><h2>Análisis de campaña</h2><span class="sinc">16 set al 16 oct · toca para abrir</span></summary>
+      <ul class="note c-bul" id="c-lede"></ul>
+      <div class="panel"><div class="camp-grid" id="c-sem"></div></div>
+      <div class="panel">
+        <div class="tablewrap">
+          <table id="tcamp">
+            <thead><tr>
+              <th class="l">Modelo</th>
+              <th class="l">Lectura</th>
+              <th>Gasto</th>
+              <th>Clics</th>
+              <th>Venta por anuncio</th>
+              <th>Unid. por anuncio</th>
+              <th>ROAS neto</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <p class="foot">Se paga: lo vendido por el anuncio, menos la comisión, cubre lo gastado. No se paga: vendió pero no cubre. Clics sin venta: 30 clics o más y ninguna compra. Poco tráfico: menos de 30 clics y sin compras. Aún sin costo del producto.</p>
+    </details>
+  </section>
+
+  <section>
+    <div class="head"><h2>Lo que pide atención hoy</h2></div>
+    <p class="note">Toca una tarjeta para ver esos modelos en la tabla de abajo.</p>
+    <div class="alertas" id="alertas"></div>
+  </section>
+
+  <section id="decidir">
+    <div class="head"><h2>Qué hacer con cada modelo</h2></div>
+    <p class="note" id="d-note">—</p>
+    <div class="buscador"><label for="dbus">Buscar modelo</label><input type="text" id="dbus" placeholder="Escribe parte del nombre o el SKU" autocomplete="off"></div>
+    <div class="chips" id="chips"></div>
+    <div class="panel">
+      <div class="tablewrap">
+        <table id="tdec">
+          <thead><tr>
+            <th class="l">Modelo</th>
+            <th class="l">Acción</th>
+            <th>Vendidas</th>
+            <th class="l">Semanas con venta</th>
+            <th>Días sin vender</th>
+            <th>Stock<br><span style="font-weight:400">u · en S/</span></th>
+            <th class="l">Tallas y colores en 0</th>
+            <th class="hide-sm">Content Score</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <p class="foot">Reponer: vendió 2 o más unidades y una talla o color que vendió está en 0, o le quedan 3 u o menos. Impulsar: vendió 2 o más y tiene stock. Vigilar: vendió una vez. Arreglar ficha: no vendió y su Content Score está bajo 85 o tiene 1 sola foto. Sin venta aún: no vendió aunque la ficha está completa. Sin stock: no vendió y está en 0. En "Tallas y colores en 0", en rojo las que ya vendieron. En la tira de semanas, la línea azul marca las semanas de la campaña.</p>
+  </section>
+
+  <section>
+    <div class="head"><h2 id="g-tit">Neto por semana</h2></div>
+    <p class="note" id="g-note">—</p>
+    <div class="panel">
+      <div class="leyenda" id="leg"></div>
+      <div class="chart" id="chart"></div>
+    </div>
+  </section>
+
+  <ul class="foot" style="padding-left:18px;line-height:1.6">
+    <li><b>Fuente:</b> Angeltex en Saga Falabella, traído de la API de Seller Center el 16 de octubre de 2026 (vende desde el 12 de agosto, así que no hay comparación con 2025).</li>
+    <li><b>Venta:</b> cuenta el pedido entregado o enviado; lo cancelado y lo devuelto se excluye.</li>
+    <li><b>Neto:</b> descuenta la comisión de textil de Falabella, 25% con IGV sobre el precio del producto, sin el envío.</li>
+    <li><b>Costo:</b> precio mayorista de la lista de precios de Angeltex (cerca del 60% del PVP). Los packs x4 cuentan 4 unidades de costo.</li>
+  </ul>
+</div>
+
+<script>
+const DATA = {"ventas":[{"f":"2026-08-12","k":"3572-NEG-M","m":"3572-NEG-S","b":"Cocoon","e":"Entregado","p":84.9},{"f":"2026-08-18","k":"SAM.03CAB.BRW.M","m":"SAM.03CAB.BRW.M","b":"Samsara","e":"Entregado","p":39.9},{"f":"2026-08-22","k":"SAM.05NYL","m":"SAM.05NYL.ZAR.U","b":"Samsara","e":"Entregado","p":12.0},{"f":"2026-08-25","k":"SAM.17....DUR.L","m":"SAM.17....BLA.M","b":"Samsara","e":"Entregado","p":39.9},{"f":"2026-08-28","k":"SAM.05VAR.DUR.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Entregado","p":16.0},{"f":"2026-08-29","k":"SAM.92BEV.NGR.M","m":"SAM.92BEV.CHO.S","b":"Samsara","e":"Entregado","p":84.9},{"f":"2026-08-31","k":"2944-NEG-L","m":"2944-NEG-S","b":"Cocoon","e":"Entregado","p":49.9},{"f":"2026-08-31","k":"2501-NAT-M","m":"2501-NEG-S","b":"Cocoon","e":"Entregado","p":69.9},{"f":"2026-08-31","k":"5203-NEG-S/M","m":"5203-NEG-S/M","b":"Cocoon","e":"Entregado","p":62.9},{"f":"2026-09-02","k":"2944-NEG-S","m":"2944-NEG-S","b":"Cocoon","e":"Entregado","p":49.9},{"f":"2026-09-02","k":"3572-NEG-S","m":"3572-NEG-S","b":"Cocoon","e":"Entregado","p":84.9},{"f":"2026-09-03","k":"2944-NAT-M","m":"2944-NEG-S","b":"Cocoon","e":"Cancelado","p":49.9},{"f":"2026-09-13","k":"3585-NEG-M","m":"3585-NEG-S","b":"Cocoon","e":"Entregado","p":54.9},{"f":"2026-09-13","k":"3585-NEG-M","m":"3585-NEG-S","b":"Cocoon","e":"Entregado","p":54.9},{"f":"2026-09-13","k":"3585-NEG-M","m":"3585-NEG-S","b":"Cocoon","e":"Entregado","p":54.9},{"f":"2026-09-13","k":"3585-NEG-M","m":"3585-NEG-S","b":"Cocoon","e":"Entregado","p":54.9},{"f":"2026-09-15","k":"3572-NEG-M","m":"3572-NEG-S","b":"Cocoon","e":"Entregado","p":84.9},{"f":"2026-09-16","k":"SAM.04....BRW.M","m":"SAM.04....BLA.M","b":"Samsara","e":"Entregado","p":29.0},{"f":"2026-09-17","k":"SAM.92ALB.NGR.L","m":"SAM.92ALB.MAR.S","b":"Samsara","e":"Devuelto","p":78.9},{"f":"2026-09-19","k":"SAM.05VAR.DUR.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Entregado","p":16.0},{"f":"2026-09-19","k":"SAM.05VAR.CAN.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Cancelado","p":16.0},{"f":"2026-09-19","k":"SAM.05VAR.NGR.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Cancelado","p":16.0},{"f":"2026-09-19","k":"SAM.92ALB.NGR.M","m":"SAM.92ALB.MAR.S","b":"Samsara","e":"Entregado","p":78.9},{"f":"2026-09-20","k":"3585-NAT-L","m":"3585-NEG-S","b":"Cocoon","e":"Entregado","p":54.9},{"f":"2026-09-20","k":"5600-NEG-L/XL","m":"5600-NEG-S/M","b":"Cocoon","e":"Entregado","p":58.9},{"f":"2026-09-20","k":"SAM.05NYL.PIE.U","m":"SAM.05NYL.ZAR.U","b":"Samsara","e":"Entregado","p":12.0},{"f":"2026-09-20","k":"SAM.05NYL.PIE.U","m":"SAM.05NYL.ZAR.U","b":"Samsara","e":"Entregado","p":12.0},{"f":"2026-09-20","k":"SAM.05NYL.PIE.U","m":"SAM.05NYL.ZAR.U","b":"Samsara","e":"Entregado","p":12.0},{"f":"2026-09-20","k":"SAM.05NYL.PIE.U","m":"SAM.05NYL.ZAR.U","b":"Samsara","e":"Entregado","p":12.0},{"f":"2026-09-21","k":"SAM.05VAR.NGR.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Entregado","p":16.0},{"f":"2026-09-21","k":"SAM.05VAR.CAN.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Entregado","p":16.0},{"f":"2026-09-21","k":"SAM.05VAR.DUR.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Entregado","p":16.0},{"f":"2026-09-22","k":"3572-NEG-S","m":"3572-NEG-S","b":"Cocoon","e":"Devuelto","p":84.9},{"f":"2026-09-22","k":"3572-NEG-S","m":"3572-NEG-S","b":"Cocoon","e":"Devuelto","p":84.9},{"f":"2026-09-22","k":"SAM.05VAR.NGR.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Entregado","p":48.0},{"f":"2026-09-22","k":"SAM.05VAR.DUR.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Entregado","p":48.0},{"f":"2026-09-25","k":"2536-NAT-M","m":"2536-NEG-S","b":"Cocoon","e":"Entregado","p":58.9},{"f":"2026-09-27","k":"SAM.05ZAP.NAT.U","m":"SAM.05ZAP.NGR.U","b":"Samsara","e":"Entregado","p":30.0},{"f":"2026-09-27","k":"SAM.05OPA.PIE.U","m":"SAM.05OPA.NGR.U","b":"Samsara","e":"Entregado","p":42.0},{"f":"2026-09-30","k":"3572-COC-M","m":"3572-NEG-S","b":"Cocoon","e":"Entregado","p":84.9},{"f":"2026-10-02","k":"SAM.92RUB.CFC.S","m":"SAM.92RUB.BLA.S","b":"Samsara","e":"Entregado","p":84.9},{"f":"2026-10-03","k":"SAM.17....NGR.L","m":"SAM.17....BLA.M","b":"Samsara","e":"Entregado","p":39.9},{"f":"2026-10-03","k":"3572-NEG-M","m":"3572-NEG-S","b":"Cocoon","e":"Entregado","p":84.9},{"f":"2026-10-04","k":"SAM.73FIO.VRE.L","m":"SAM.73FIO.BLA.S","b":"Samsara","e":"Entregado","p":74.9},{"f":"2026-10-04","k":"SAM.73LED.APR.L","m":"SAM.73LED.APR.S","b":"Samsara","e":"Entregado","p":74.9},{"f":"2026-10-05","k":"SAM.05VAR.NGR.U","m":"SAM.05VAR.NGR.U","b":"Samsara","e":"Entregado","p":48.0},{"f":"2026-10-06","k":"SAM.73LED.APR.S","m":"SAM.73LED.APR.S","b":"Samsara","e":"Entregado","p":74.9},{"f":"2026-10-07","k":"3572-COC-S","m":"3572-NEG-S","b":"Cocoon","e":"Entregado","p":84.9},{"f":"2026-10-08","k":"SAM.73MAI.BLA.L","m":"SAM.73MAI.NGR.S","b":"Samsara","e":"Entregado","p":49.9},{"f":"2026-10-10","k":"SAM.92BEV.NGR.M","m":"SAM.92BEV.CHO.S","b":"Samsara","e":"Enviado","p":84.9},{"f":"2026-10-10","k":"SAM.92BEV.CHO.M","m":"SAM.92BEV.CHO.S","b":"Samsara","e":"Enviado","p":84.9},{"f":"2026-10-10","k":"SAM.05NYL.BLA.U","m":"SAM.05NYL.ZAR.U","b":"Samsara","e":"Entregado","p":48.0},{"f":"2026-10-10","k":"SAM.05....NAT.U","m":"SAM.05....NAT.U","b":"Samsara","e":"Entregado","p":56.0},{"f":"2026-10-10","k":"SAM.05....NAT.U","m":"SAM.05....NAT.U","b":"Samsara","e":"Entregado","p":56.0},{"f":"2026-10-10","k":"SAM.05....NAT.U","m":"SAM.05....NAT.U","b":"Samsara","e":"Entregado","p":56.0},{"f":"2026-10-10","k":"SAM.05....NAT.U","m":"SAM.05....NAT.U","b":"Samsara","e":"Entregado","p":56.0},{"f":"2026-10-12","k":"SAM.73FIO.BLA.M","m":"SAM.73FIO.BLA.S","b":"Samsara","e":"Entregado","p":74.9},{"f":"2026-10-13","k":"2501-NEG-S","m":"2501-NEG-S","b":"Cocoon","e":"Enviado","p":69.9},{"f":"2026-10-14","k":"SAM.04....BRW.M","m":"SAM.04....BLA.M","b":"Samsara","e":"Entregado","p":29.0}],"modelos":[{"m":"1378-NAT-S","b":"Cocoon","n":"Body senos libres termico tanga naturals","u":"https://www.falabella.com.pe/falabella-pe/product/156387254/BODY-SENOS-LIBRES-TERMICO-TANGA-NATURALS/156387262","v":[{"k":"1378-NAT-S","t":"NAT S","s":5,"pr":78.9,"cs":100.0,"img":2,"act":true},{"k":"1378-NAT-M","t":"NAT M","s":10,"pr":78.9,"cs":100.0,"img":2,"act":true},{"k":"1378-NAT-L","t":"NAT L","s":6,"pr":78.9,"cs":100.0,"img":2,"act":true},{"k":"1378-NAT-XL","t":"NAT XL","s":5,"pr":78.9,"cs":100.0,"img":2,"act":true},{"k":"1378-NEG-S","t":"NEG S","s":10,"pr":78.9,"cs":100.0,"img":2,"act":true},{"k":"1378-NEG-M","t":"NEG M","s":10,"pr":78.9,"cs":100.0,"img":2,"act":true},{"k":"1378-NEG-L","t":"NEG L","s":10,"pr":78.9,"cs":100.0,"img":2,"act":true},{"k":"1378-NEG-XL","t":"NEG XL","s":10,"pr":78.9,"cs":100.0,"img":2,"act":true}]},{"m":"1420-NAT-S","b":"Cocoon","n":"Pescador termico levanta gluteos naturals","u":"https://www.falabella.com.pe/falabella-pe/product/156387843/PESCADOR-TERMICO-LEVANTA-GLUTEOS-NATURALS/156387851","v":[{"k":"1420-NAT-S","t":"NAT S","s":2,"pr":54.9,"cs":100.0,"img":2,"act":true},{"k":"1420-NAT-M","t":"NAT M","s":5,"pr":54.9,"cs":100.0,"img":2,"act":true},{"k":"1420-NAT-L","t":"NAT L","s":5,"pr":54.9,"cs":100.0,"img":2,"act":true},{"k":"1420-NAT-XL","t":"NAT XL","s":2,"pr":54.9,"cs":100.0,"img":2,"act":true},{"k":"1420-NEG-S","t":"NEG S","s":6,"pr":54.9,"cs":100.0,"img":2,"act":true},{"k":"1420-NEG-M","t":"NEG M","s":10,"pr":54.9,"cs":100.0,"img":2,"act":true},{"k":"1420-NEG-L","t":"NEG L","s":10,"pr":54.9,"cs":100.0,"img":2,"act":true},{"k":"1420-NEG-XL","t":"NEG XL","s":6,"pr":54.9,"cs":100.0,"img":2,"act":true}]},{"m":"1490-NEG-S","b":"Cocoon","n":"Cachetero termico naturals","u":"https://www.falabella.com.pe/falabella-pe/product/156388861/CACHETERO-TERMICO-NATURALS/156388869","v":[{"k":"1490-NEG-S","t":"NEG S","s":9,"pr":119.0,"cs":100.0,"img":4,"act":true},{"k":"1490-NEG-M","t":"NEG M","s":13,"pr":119.0,"cs":100.0,"img":4,"act":true},{"k":"1490-NEG-L","t":"NEG L","s":13,"pr":119.0,"cs":100.0,"img":4,"act":true},{"k":"1490-NEG-XL","t":"NEG XL","s":9,"pr":119.0,"cs":100.0,"img":4,"act":true},{"k":"1490-NAT-S","t":"NAT S","s":3,"pr":119.0,"cs":100.0,"img":4,"act":true},{"k":"1490-NAT-M","t":"NAT M","s":8,"pr":119.0,"cs":100.0,"img":4,"act":true},{"k":"1490-NAT-L","t":"NAT L","s":8,"pr":119.0,"cs":100.0,"img":4,"act":true},{"k":"1490-NAT-XL","t":"NAT XL","s":3,"pr":119.0,"cs":100.0,"img":4,"act":true}]},{"m":"2406-COC-S","b":"Cocoon","n":"Short multishape cocoal","u":"https://www.falabella.com.pe/falabella-pe/product/156390269/SHORT-MULTISHAPE-COCOAL/156390270","v":[{"k":"2406-COC-S","t":"COC S","s":12,"pr":69.0,"cs":100.0,"img":2,"act":true},{"k":"2406-COC-M","t":"COC M","s":12,"pr":69.0,"cs":100.0,"img":2,"act":true},{"k":"2406-COC-L","t":"COC L","s":4,"pr":69.0,"cs":100.0,"img":2,"act":true},{"k":"2406-COC-XL","t":"COC XL","s":4,"pr":69.0,"cs":100.0,"img":2,"act":true},{"k":"2406-NEG-S","t":"NEG S","s":4,"pr":69.0,"cs":100.0,"img":1,"act":true},{"k":"2406-NEG-M","t":"NEG M","s":9,"pr":69.0,"cs":100.0,"img":1,"act":true},{"k":"2406-NEG-L","t":"NEG L","s":9,"pr":69.0,"cs":100.0,"img":1,"act":true},{"k":"2406-NEG-XL","t":"NEG XL","s":4,"pr":69.0,"cs":100.0,"img":1,"act":true}]},{"m":"5203-NEG-S/M","b":"Cocoon","n":"Camiseta gracia","u":"https://www.falabella.com.pe/falabella-pe/product/156440337/CAMISETA-GRACIA-NEGRO-S-M/156440341","v":[{"k":"5203-NEG-S/M","t":"NEG S/M","s":3,"pr":62.9,"cs":80.0,"img":2,"act":true},{"k":"5203-NEG-L/XL","t":"NEG L/XL","s":4,"pr":62.9,"cs":80.0,"img":2,"act":true},{"k":"5203-BLA-S/M","t":"BLA S/M","s":4,"pr":62.9,"cs":80.0,"img":2,"act":true},{"k":"5203-BLA-L/XL","t":"BLA L/XL","s":4,"pr":62.9,"cs":80.0,"img":2,"act":true}]},{"m":"5202-NEG-S/M","b":"Cocoon","n":"Camiseta ventura","u":"https://www.falabella.com.pe/falabella-pe/product/156441461/CAMISETA-VENTURA-NEGRO-S-M/156441465","v":[{"k":"5202-NEG-S/M","t":"NEG S/M","s":1,"pr":64.9,"cs":80.0,"img":3,"act":true},{"k":"5202-NEG-L/XL","t":"NEG L/XL","s":1,"pr":64.9,"cs":80.0,"img":3,"act":true},{"k":"5202-BLA-S/M","t":"BLA S/M","s":2,"pr":64.9,"cs":80.0,"img":3,"act":true},{"k":"5202-BLA-L/XL","t":"BLA L/XL","s":2,"pr":64.9,"cs":80.0,"img":3,"act":true}]},{"m":"5201-NEG-S/M","b":"Cocoon","n":"Body vibra","u":"https://www.falabella.com.pe/falabella-pe/product/156442141/BODY-VIBRA-NEGRO-S-M/156442145","v":[{"k":"5201-NEG-S/M","t":"NEG S/M","s":0,"pr":72.9,"cs":88.0,"img":3,"act":false},{"k":"5201-NEG-L/XL","t":"NEG L/XL","s":1,"pr":72.9,"cs":88.0,"img":3,"act":true},{"k":"5201-BLA-S/M","t":"BLA S/M","s":0,"pr":72.9,"cs":88.0,"img":2,"act":false},{"k":"5201-BLA-L/XL","t":"BLA L/XL","s":0,"pr":72.9,"cs":88.0,"img":2,"act":true}]},{"m":"5200-NEG-S/M","b":"Cocoon","n":"Body luna","u":"https://www.falabella.com.pe/falabella-pe/product/156442948/BODY-LUNA-NEGRO-S-M/156442952","v":[{"k":"5200-NEG-S/M","t":"NEG S/M","s":1,"pr":74.9,"cs":94.0,"img":4,"act":true},{"k":"5200-NEG-L/XL","t":"NEG L/XL","s":1,"pr":74.9,"cs":94.0,"img":4,"act":true},{"k":"5200-BLA-S/M","t":"BLA S/M","s":1,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"5200-BLA-L/XL","t":"BLA L/XL","s":1,"pr":74.9,"cs":94.0,"img":2,"act":true}]},{"m":"3601-NEG-S","b":"Cocoon","n":"Brasilera control abdomen bajo","u":"https://www.falabella.com.pe/falabella-pe/product/156445498/BRASILERA-CONTROL-ABDOMEN-BAJO-NEGRO-S/156445506","v":[{"k":"3601-NEG-S","t":"NEG S","s":5,"pr":43.9,"cs":80.0,"img":4,"act":true},{"k":"3601-NEG-M","t":"NEG M","s":7,"pr":43.9,"cs":80.0,"img":4,"act":true},{"k":"3601-NEG-L","t":"NEG L","s":3,"pr":43.9,"cs":80.0,"img":4,"act":false},{"k":"3601-NEG-XL","t":"NEG XL","s":2,"pr":43.9,"cs":80.0,"img":4,"act":true},{"k":"3601-NAT-S","t":"NAT S","s":4,"pr":43.9,"cs":80.0,"img":4,"act":true},{"k":"3601-NAT-M","t":"NAT M","s":3,"pr":43.9,"cs":80.0,"img":4,"act":true},{"k":"3601-NAT-L","t":"NAT L","s":1,"pr":43.9,"cs":80.0,"img":4,"act":true},{"k":"3601-NAT-XL","t":"NAT XL","s":3,"pr":43.9,"cs":80.0,"img":4,"act":true}]},{"m":"3600-NEG-S","b":"Cocoon","n":"Pescador moldeador levantacola uso diario","u":"https://www.falabella.com.pe/falabella-pe/product/156447029/PESCADOR-MOLDEADOR-LEVANTACOLA-USO-DIARIO-NEGRO-S/156447037","v":[{"k":"3600-NEG-S","t":"NEG S","s":3,"pr":58.9,"cs":100.0,"img":6,"act":true},{"k":"3600-NEG-M","t":"NEG M","s":4,"pr":58.9,"cs":100.0,"img":6,"act":true},{"k":"3600-NEG-L","t":"NEG L","s":4,"pr":58.9,"cs":100.0,"img":6,"act":true},{"k":"3600-NEG-XL","t":"NEG XL","s":8,"pr":58.9,"cs":100.0,"img":6,"act":true},{"k":"3600-NAT-S","t":"NAT S","s":3,"pr":58.9,"cs":100.0,"img":5,"act":true},{"k":"3600-NAT-M","t":"NAT M","s":4,"pr":58.9,"cs":100.0,"img":5,"act":true},{"k":"3600-NAT-L","t":"NAT L","s":4,"pr":58.9,"cs":100.0,"img":5,"act":true},{"k":"3600-NAT-XL","t":"NAT XL","s":3,"pr":58.9,"cs":100.0,"img":5,"act":true}]},{"m":"3585-NEG-S","b":"Cocoon","n":"Boxer seamless multishape","u":"https://www.falabella.com.pe/falabella-pe/product/156447910/BOXER-SEAMLESS-MULTISHAPE-NEGRO-S/156447918","v":[{"k":"3585-NEG-S","t":"NEG S","s":5,"pr":54.9,"cs":80.0,"img":2,"act":true},{"k":"3585-NEG-M","t":"NEG M","s":5,"pr":54.9,"cs":80.0,"img":2,"act":true},{"k":"3585-NEG-L","t":"NEG L","s":9,"pr":54.9,"cs":80.0,"img":2,"act":true},{"k":"3585-NEG-XL","t":"NEG XL","s":5,"pr":54.9,"cs":80.0,"img":2,"act":true},{"k":"3585-NAT-S","t":"NAT S","s":2,"pr":54.9,"cs":80.0,"img":3,"act":true},{"k":"3585-NAT-M","t":"NAT M","s":3,"pr":54.9,"cs":80.0,"img":3,"act":true},{"k":"3585-NAT-L","t":"NAT L","s":2,"pr":54.9,"cs":80.0,"img":3,"act":true},{"k":"3585-NAT-XL","t":"NAT XL","s":2,"pr":54.9,"cs":80.0,"img":3,"act":true}]},{"m":"3572-NEG-S","b":"Cocoon","n":"Body short cubre busto sin costuras","u":"https://www.falabella.com.pe/falabella-pe/product/156448707/BODY-SHORT-CUBRE-BUSTO-SIN-COSTURAS-NEGRO-S/156448715","v":[{"k":"3572-NEG-S","t":"NEG S","s":1,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"3572-NEG-M","t":"NEG M","s":3,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"3572-NEG-L","t":"NEG L","s":7,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"3572-NEG-XL","t":"NEG XL","s":3,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"3572-COC-S","t":"COC S","s":7,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"3572-COC-M","t":"COC M","s":6,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"3572-COC-L","t":"COC L","s":4,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"3572-COC-XL","t":"COC XL","s":4,"pr":84.9,"cs":94.0,"img":2,"act":true}]},{"m":"2501-NEG-S","b":"Cocoon","n":"Camiseta tiras","u":"https://www.falabella.com.pe/falabella-pe/product/156523425/CAMISETA-TIRAS-NEGRO-S/156523437","v":[{"k":"2501-NEG-S","t":"NEG S","s":4,"pr":69.9,"cs":100.0,"img":2,"act":true},{"k":"2501-NEG-M","t":"NEG M","s":4,"pr":69.9,"cs":100.0,"img":2,"act":true},{"k":"2501-NEG-L","t":"NEG L","s":5,"pr":69.9,"cs":100.0,"img":2,"act":true},{"k":"2501-NEG-XL","t":"NEG XL","s":4,"pr":69.9,"cs":100.0,"img":2,"act":true},{"k":"2501-BLA-S","t":"BLA S","s":2,"pr":69.9,"cs":100.0,"img":2,"act":true},{"k":"2501-BLA-M","t":"BLA M","s":7,"pr":69.9,"cs":100.0,"img":2,"act":true},{"k":"2501-BLA-L","t":"BLA L","s":5,"pr":69.9,"cs":100.0,"img":2,"act":true},{"k":"2501-BLA-XL","t":"BLA XL","s":2,"pr":69.9,"cs":100.0,"img":2,"act":true},{"k":"2501-NAT-S","t":"NAT S","s":6,"pr":69.9,"cs":100.0,"img":1,"act":true},{"k":"2501-NAT-M","t":"NAT M","s":5,"pr":69.9,"cs":100.0,"img":1,"act":true},{"k":"2501-NAT-L","t":"NAT L","s":5,"pr":69.9,"cs":100.0,"img":1,"act":true},{"k":"2501-NAT-XL","t":"NAT XL","s":6,"pr":69.9,"cs":100.0,"img":1,"act":true}]},{"m":"2536-NEG-S","b":"Cocoon","n":"Boxer faja","u":"https://www.falabella.com.pe/falabella-pe/product/156524325/BOXER-FAJA-NEGRO-S/156524338","v":[{"k":"2536-NEG-S","t":"NEG S","s":9,"pr":58.9,"cs":90.0,"img":2,"act":true},{"k":"2536-NEG-M","t":"NEG M","s":8,"pr":58.9,"cs":90.0,"img":2,"act":true},{"k":"2536-NEG-L","t":"NEG L","s":9,"pr":58.9,"cs":90.0,"img":2,"act":true},{"k":"2536-NEG-XL","t":"NEG XL","s":6,"pr":58.9,"cs":90.0,"img":2,"act":true},{"k":"2536-CAF-S","t":"CAF S","s":6,"pr":58.9,"cs":90.0,"img":1,"act":true},{"k":"2536-CAF-M","t":"CAF M","s":9,"pr":58.9,"cs":90.0,"img":1,"act":true},{"k":"2536-CAF-L","t":"CAF L","s":10,"pr":58.9,"cs":90.0,"img":1,"act":true},{"k":"2536-CAF-XL","t":"CAF XL","s":6,"pr":58.9,"cs":90.0,"img":1,"act":true},{"k":"2536-NAT-S","t":"NAT S","s":4,"pr":58.9,"cs":90.0,"img":2,"act":true},{"k":"2536-NAT-M","t":"NAT M","s":3,"pr":58.9,"cs":90.0,"img":2,"act":true},{"k":"2536-NAT-L","t":"NAT L","s":3,"pr":58.9,"cs":90.0,"img":2,"act":true},{"k":"2536-NAT-XL","t":"NAT XL","s":2,"pr":58.9,"cs":90.0,"img":2,"act":true}]},{"m":"2944-NEG-S","b":"Cocoon","n":"Boxer super control y levantacola","u":"https://www.falabella.com.pe/falabella-pe/product/156524778/BOXER-SUPER-CONTROL-Y-LEVANTACOLA/156524786","v":[{"k":"2944-NEG-S","t":"NEG S","s":1,"pr":49.9,"cs":100.0,"img":1,"act":true},{"k":"2944-NEG-M","t":"NEG M","s":1,"pr":49.9,"cs":100.0,"img":1,"act":false},{"k":"2944-NEG-L","t":"NEG L","s":0,"pr":49.9,"cs":100.0,"img":1,"act":false},{"k":"2944-NEG-XL","t":"NEG XL","s":1,"pr":49.9,"cs":100.0,"img":1,"act":false},{"k":"2944-NAT-S","t":"NAT S","s":1,"pr":49.9,"cs":100.0,"img":2,"act":false},{"k":"2944-NAT-M","t":"NAT M","s":0,"pr":49.9,"cs":100.0,"img":2,"act":true},{"k":"2944-NAT-L","t":"NAT L","s":1,"pr":49.9,"cs":100.0,"img":2,"act":true},{"k":"2944-NAT-XL","t":"NAT XL","s":1,"pr":49.9,"cs":100.0,"img":2,"act":false}]},{"m":"3571-NEG-S","b":"Cocoon","n":"Body hilo cubre busto sin costuras","u":"https://www.falabella.com.pe/falabella-pe/product/156544812/BODY-HILO-CUBRE-BUSTO-SIN-COSTURAS-NEGRO-S/156544824","v":[{"k":"3571-NEG-S","t":"NEG S","s":2,"pr":82.9,"cs":100.0,"img":2,"act":true},{"k":"3571-NEG-M","t":"NEG M","s":2,"pr":82.9,"cs":100.0,"img":2,"act":true},{"k":"3571-NEG-L","t":"NEG L","s":1,"pr":82.9,"cs":100.0,"img":2,"act":true},{"k":"3571-NEG-XL","t":"NEG XL","s":1,"pr":82.9,"cs":100.0,"img":2,"act":true},{"k":"3571-NAT-S","t":"NAT S","s":2,"pr":82.9,"cs":100.0,"img":2,"act":true},{"k":"3571-NAT-M","t":"NAT M","s":2,"pr":82.9,"cs":100.0,"img":2,"act":true},{"k":"3571-NAT-L","t":"NAT L","s":1,"pr":82.9,"cs":100.0,"img":2,"act":true},{"k":"3571-NAT-XL","t":"NAT XL","s":1,"pr":82.9,"cs":100.0,"img":2,"act":true},{"k":"3571-UVA-S","t":"UVA S","s":2,"pr":82.9,"cs":100.0,"img":1,"act":false},{"k":"3571-UVA-M","t":"UVA M","s":2,"pr":82.9,"cs":100.0,"img":1,"act":false},{"k":"3571-UVA-L","t":"UVA L","s":1,"pr":82.9,"cs":100.0,"img":1,"act":false},{"k":"3571-UVA-XL","t":"UVA XL","s":1,"pr":82.9,"cs":100.0,"img":1,"act":false}]},{"m":"52044-NEGR-S/M","b":"Cocoon","n":"Camiseta clara","u":"https://www.falabella.com.pe/falabella-pe/product/156545793/CAMISETA-CLARA-NEGRO-S-M/156545797","v":[{"k":"52044-NEGR-S/M","t":"NEGR S/M","s":2,"pr":58.9,"cs":100.0,"img":2,"act":true},{"k":"52044-NEGR-L/XL","t":"NEGR L/XL","s":2,"pr":58.9,"cs":100.0,"img":2,"act":true},{"k":"52044-BLAN-S/M","t":"BLAN S/M","s":2,"pr":58.9,"cs":100.0,"img":3,"act":true},{"k":"52044-BLAN-L/XL","t":"BLAN L/XL","s":2,"pr":58.9,"cs":100.0,"img":3,"act":true}]},{"m":"5600-NEG-S/M","b":"Cocoon","n":"Short esvelta","u":"https://www.falabella.com.pe/falabella-pe/product/156547295/SHORT-ESVELTA-NEGRO-S-M/156547299","v":[{"k":"5600-NEG-S/M","t":"NEG S/M","s":3,"pr":58.9,"cs":80.0,"img":2,"act":true},{"k":"5600-NEG-L/XL","t":"NEG L/XL","s":2,"pr":58.9,"cs":80.0,"img":2,"act":true},{"k":"5600-COC-S/M","t":"COC S/M","s":3,"pr":58.9,"cs":80.0,"img":2,"act":true},{"k":"5600-COC-L/XL","t":"COC L/XL","s":3,"pr":58.9,"cs":80.0,"img":2,"act":true}]},{"m":"5601-NEG-S/M","b":"Cocoon","n":"Boxer serena","u":"https://www.falabella.com.pe/falabella-pe/product/156548383/BOXER-SERENA-NEGRO-S-M/156548387","v":[{"k":"5601-NEG-S/M","t":"NEG S/M","s":1,"pr":52.9,"cs":90.0,"img":2,"act":true},{"k":"5601-NEG-L/XL","t":"NEG L/XL","s":1,"pr":52.9,"cs":90.0,"img":2,"act":true},{"k":"5601-COC-S/M","t":"COC S/M","s":1,"pr":52.9,"cs":90.0,"img":3,"act":true},{"k":"5601-COC-L/XL","t":"COC L/XL","s":1,"pr":52.9,"cs":90.0,"img":3,"act":true}]},{"m":"SAM.02....NGR.M","b":"Samsara","n":"Sheer support","u":"https://www.falabella.com.pe/falabella-pe/product/156549406/SAMSARA-SHEER-SUPPORT/156549412","v":[{"k":"SAM.02....NGR.M","t":"NGR M","s":4,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.02....NGR.L","t":"NGR L","s":2,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.02....NGRXL","t":" NGRXL","s":6,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.02....NAT.M","t":"NAT M","s":6,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.02....NAT.L","t":"NAT L","s":6,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.02....NATXL","t":" NATXL","s":4,"pr":28.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.03CAB.BRW.M","b":"Samsara","n":"Pantymedias ctrl abdomen","u":"https://www.falabella.com.pe/falabella-pe/product/156555384/SAMSARA-PANTYMEDIAS-CTRL-ABDOMEN/156555399","v":[{"k":"SAM.03CAB.BRW.M","t":"BRW M","s":2,"pr":39.9,"cs":100.0,"img":5,"act":true},{"k":"SAM.03CAB.BRW.L","t":"BRW L","s":3,"pr":39.9,"cs":100.0,"img":5,"act":true},{"k":"SAM.03CAB.BRWXL","t":"03CAB BRWXL","s":3,"pr":39.9,"cs":100.0,"img":5,"act":true},{"k":"SAM.03CAB.CAN.M","t":"CAN M","s":3,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.CAN.L","t":"CAN L","s":3,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.CANXL","t":"03CAB CANXL","s":3,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.DUR.M","t":"DUR M","s":3,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.DUR.L","t":"DUR L","s":3,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.DURXL","t":"03CAB DURXL","s":3,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.NAT.M","t":"NAT M","s":6,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.NAT.L","t":"NAT L","s":6,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.NATXL","t":"03CAB NATXL","s":6,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.NGR.M","t":"NGR M","s":6,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.NGR.L","t":"NGR L","s":6,"pr":39.9,"cs":100.0,"img":6,"act":true},{"k":"SAM.03CAB.NGRXL","t":"03CAB NGRXL","s":6,"pr":39.9,"cs":100.0,"img":6,"act":true}]},{"m":"SAM.04....BLA.M","b":"Samsara","n":"Descanso","u":"https://www.falabella.com.pe/falabella-pe/product/156558772/SAMSARA-DESCANSO-SAM.04.../156558787","v":[{"k":"SAM.04....BLA.M","t":"BLA M","s":7,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....BLA.L","t":"BLA L","s":7,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....BLAXL","t":" BLAXL","s":4,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....BRW.M","t":"BRW M","s":1,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....BRW.L","t":"BRW L","s":3,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....BRWXL","t":" BRWXL","s":3,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....CAN.M","t":"CAN M","s":3,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....CAN.L","t":"CAN L","s":3,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....CANXL","t":" CANXL","s":3,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....DUR.M","t":"DUR M","s":6,"pr":29.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.04....DUR.L","t":"DUR L","s":6,"pr":29.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.04....DURXL","t":" DURXL","s":3,"pr":29.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.04....NGR.M","t":"NGR M","s":7,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....NGR.L","t":"NGR L","s":7,"pr":29.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.04....NGRXL","t":" NGRXL","s":7,"pr":29.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.05....NGR.U","b":"Samsara","n":"Slack sheer x4","u":"https://www.falabella.com.pe/falabella-pe/product/156559416/SAMSARA-SLACK-SHEER-SAM.05...-x4/156559417","v":[{"k":"SAM.05....NGR.U","t":"NGR U","s":4,"pr":56.0,"cs":90.0,"img":2,"act":true}]},{"m":"SAM.05....NAT.U","b":"Samsara","n":"Slack sheer","u":"https://www.falabella.com.pe/falabella-pe/product/156559879/SAMSARA-SLACK-SHEER-NATURAL-U-X4/156559880","v":[{"k":"SAM.05....NAT.U","t":"NAT U","s":0,"pr":56.0,"cs":90.0,"img":2,"act":true}]},{"m":"SAM.05DES.NGR.U","b":"Samsara","n":"Slack descanso x4","u":"https://www.falabella.com.pe/falabella-pe/product/156563448/SAMSARA-SLACK-DESCANSO-SAM.05DES-x4/156563453","v":[{"k":"SAM.05DES.NGR.U","t":"NGR U","s":1,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05DES.DUR.U","t":"DUR U","s":4,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05DES.NAT.U","t":"NAT U","s":1,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05DES.CAN.U","t":"CAN U","s":1,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05DES.BRW.U","t":"BRW U","s":0,"pr":56.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.05NYL.ZAR.U","b":"Samsara","n":"Slack nylon x4","u":"https://www.falabella.com.pe/falabella-pe/product/156577385/SAMSARA-SLACK-NYLON-SAM.05NYL-x4/156577393","v":[{"k":"SAM.05NYL.ZAR.U","t":"ZAR U","s":3,"pr":48.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05NYL.SAL.U","t":"SAL U","s":3,"pr":48.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05NYL.NGR.U","t":"NGR U","s":3,"pr":48.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05NYL.BLA.U","t":"BLA U","s":0,"pr":48.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05NYL.SIC.U","t":"SIC U","s":1,"pr":48.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.05OPA.NGR.U","b":"Samsara","n":"Zapatilla opaca x4","u":"https://www.falabella.com.pe/falabella-pe/product/156599123/SAMSARA-ZAPATILLA-OPACA-SAM.05OPA-x4/156599125","v":[{"k":"SAM.05OPA.NGR.U","t":"NGR U","s":2,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05OPA.PIE.U","t":"PIE U","s":2,"pr":56.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.05SED.NGR.U","b":"Samsara","n":"Slack seda fria mate x4","u":"https://www.falabella.com.pe/falabella-pe/product/156600490/SLACK-SEDA-FRIA-MATE-SAM.05SED-x4/156600494","v":[{"k":"SAM.05SED.NGR.U","t":"NGR U","s":4,"pr":56.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.05SED.NAT.U","t":"NAT U","s":4,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05SED.DUR.U","t":"DUR U","s":4,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05SED.GFT.U","t":"GFT U","s":1,"pr":56.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.05TRA.NGR.U","b":"Samsara","n":"Slack translucida x4","u":"https://www.falabella.com.pe/falabella-pe/product/156600810/SAMSARA-SLACK-TRANSLUCIDA-SAM.05TRA-x4/156600813","v":[{"k":"SAM.05TRA.NGR.U","t":"NGR U","s":4,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05TRA.DUR.U","t":"DUR U","s":4,"pr":56.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05TRA.NAT.U","t":"NAT U","s":4,"pr":56.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.05VAR.NGR.U","b":"Samsara","n":"Slack compresion x4","u":"https://www.falabella.com.pe/falabella-pe/product/156602053/SAMSARA-SLACK-COMPRESION-SAM.05VAR-x4/156602058","v":[{"k":"SAM.05VAR.NGR.U","t":"NGR U","s":2,"pr":64.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05VAR.DUR.U","t":"DUR U","s":2,"pr":64.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05VAR.CAN.U","t":"CAN U","s":2,"pr":64.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05VAR.BLA.U","t":"BLA U","s":1,"pr":64.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05VAR.BRW.U","t":"BRW U","s":1,"pr":64.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.05ZAP.NGR.U","b":"Samsara","n":"Zapatilla x4","u":"https://www.falabella.com.pe/falabella-pe/product/156609660/SAMSARA-ZAPATILLA-SAM.05ZAP-x4/156609662","v":[{"k":"SAM.05ZAP.NGR.U","t":"NGR U","s":3,"pr":40.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.05ZAP.NAT.U","t":"NAT U","s":2,"pr":40.0,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.06CKT.NGR.M","b":"Samsara","n":"Disenos cocktail","u":"https://www.falabella.com.pe/falabella-pe/product/156609772/SAMSARA-DISENOS-COCKTAIL-SAM.06CKT/156609775","v":[{"k":"SAM.06CKT.NGR.M","t":"NGR M","s":6,"pr":28.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.06CKT.NGR.L","t":"NGR L","s":6,"pr":28.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.06CKT.NGRXL","t":"06CKT NGRXL","s":12,"pr":28.0,"cs":100.0,"img":3,"act":true}]},{"m":"SAM.06LIG.BLASM","b":"Samsara","n":"Diseños liguero","u":"https://www.falabella.com.pe/falabella-pe/product/156610765/SAMSARA-DISE%C3%91OS-LIGUERO-SAM.06LIG/156610769","v":[{"k":"SAM.06LIG.BLASM","t":"06LIG BLASM","s":5,"pr":44.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.06LIG.BLALX","t":"06LIG BLALX","s":5,"pr":44.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.06LIG.NGRSM","t":"06LIG NGRSM","s":5,"pr":44.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.06LIG.NGRLX","t":"06LIG NGRLX","s":5,"pr":44.0,"cs":100.0,"img":3,"act":true}]},{"m":"SAM.06LOV.NGR.M","b":"Samsara","n":"Pantimedia in love","u":"https://www.falabella.com.pe/falabella-pe/product/156677222/PANTIMEDIA-IN-LOVE-SAM.06LOV/156677225","v":[{"k":"SAM.06LOV.NGR.M","t":"NGR M","s":5,"pr":28.0,"cs":90.0,"img":2,"act":true},{"k":"SAM.06LOV.NGR.L","t":"NGR L","s":5,"pr":28.0,"cs":90.0,"img":2,"act":true},{"k":"SAM.06LOV.NGRXL","t":"06LOV NGRXL","s":5,"pr":28.0,"cs":90.0,"img":2,"act":true}]},{"m":"SAM.07....DUR.M","b":"Samsara","n":"Seda fria mate","u":"https://www.falabella.com.pe/falabella-pe/product/156679682/SAMSARA-SEDA-FRIA-MATE-SAM.07.../156679692","v":[{"k":"SAM.07....DUR.M","t":"DUR M","s":8,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.07....DUR.L","t":"DUR L","s":8,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.07....DURXL","t":" DURXL","s":5,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.07....NAT.M","t":"NAT M","s":7,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.07....NAT.L","t":"NAT L","s":7,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.07....NATXL","t":" NATXL","s":2,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.07....NGR.M","t":"NGR M","s":7,"pr":28.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.07....NGR.L","t":"NGR L","s":7,"pr":28.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.07....NGRXL","t":" NGRXL","s":2,"pr":28.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.07....PIEXL","t":" PIEXL","s":1,"pr":28.0,"cs":100.0,"img":3,"act":true}]},{"m":"SAM.08PRE.NGR.M","b":"Samsara","n":"Velada premium","u":"https://www.falabella.com.pe/falabella-pe/product/156680016/SAMSARA-VELADA-PREMIUM-SAM.08PRE/156680019","v":[{"k":"SAM.08PRE.NGR.M","t":"NGR M","s":9,"pr":56.0,"cs":100.0,"img":5,"act":true},{"k":"SAM.08PRE.NGR.L","t":"NGR L","s":9,"pr":56.0,"cs":100.0,"img":5,"act":true},{"k":"SAM.08PRE.NGRXL","t":"08PRE NGRXL","s":6,"pr":56.0,"cs":100.0,"img":5,"act":true}]},{"m":"SAM.17....BLA.M","b":"Samsara","n":"Support compresion","u":"https://www.falabella.com.pe/falabella-pe/product/156681353/SAMSARA-SUPPORT-COMPRESION-SAM.17.../156681367","v":[{"k":"SAM.17....BLA.M","t":"BLA M","s":4,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....BLA.L","t":"BLA L","s":4,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....BLAXL","t":" BLAXL","s":4,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....BRW.M","t":"BRW M","s":1,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....BRW.L","t":"BRW L","s":2,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....BRWXL","t":" BRWXL","s":1,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....CAN.M","t":"CAN M","s":3,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....CAN.L","t":"CAN L","s":4,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....CANXL","t":" CANXL","s":3,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....DUR.M","t":"DUR M","s":4,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....DUR.L","t":"DUR L","s":4,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....DURXL","t":" DURXL","s":1,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....NGR.M","t":"NGR M","s":5,"pr":39.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.17....NGR.L","t":"NGR L","s":4,"pr":39.9,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.20....DUR.M","b":"Samsara","n":"Translucida","u":"https://www.falabella.com.pe/falabella-pe/product/156682218/SAMSARA-TRANSLUCIDA-SAM.20.../156682227","v":[{"k":"SAM.20....DUR.M","t":"DUR M","s":6,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.20....DUR.L","t":"DUR L","s":6,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.20....DURXL","t":" DURXL","s":4,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.20....NAT.M","t":"NAT M","s":6,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.20....NAT.L","t":"NAT L","s":6,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.20....NATXL","t":" NATXL","s":3,"pr":28.0,"cs":100.0,"img":2,"act":true},{"k":"SAM.20....NGR.M","t":"NGR M","s":12,"pr":28.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.20....NGR.L","t":"NGR L","s":12,"pr":28.0,"cs":100.0,"img":3,"act":true},{"k":"SAM.20....NGRXL","t":" NGRXL","s":6,"pr":28.0,"cs":100.0,"img":3,"act":true}]},{"m":"SAM.73FIO.BLA.S","b":"Samsara","n":"Camiseta fiore","u":"https://www.falabella.com.pe/falabella-pe/product/156683836/SAMSARA-CAMISETA-FIORE-SAM.73FIO/156683848","v":[{"k":"SAM.73FIO.BLA.S","t":"BLA S","s":3,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.BLA.M","t":"BLA M","s":4,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.BLA.L","t":"BLA L","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.CHO.S","t":"CHO S","s":3,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.CHO.M","t":"CHO M","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.CHO.L","t":"CHO L","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.NGR.S","t":"NGR S","s":3,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.NGR.M","t":"NGR M","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.NGR.L","t":"NGR L","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.VRE.S","t":"VRE S","s":3,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.VRE.M","t":"VRE M","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FIO.VRE.L","t":"VRE L","s":4,"pr":74.9,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.73FRI.BLA.S","b":"Samsara","n":"Camiseta frida","u":"https://www.falabella.com.pe/falabella-pe/product/156684308/SAMSARA-CAMISETA-FRIDA-SAM.73FRI/156684311","v":[{"k":"SAM.73FRI.BLA.S","t":"BLA S","s":3,"pr":53.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FRI.BLA.M","t":"BLA M","s":5,"pr":53.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FRI.BLA.L","t":"BLA L","s":5,"pr":53.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FRI.NGR.S","t":"NGR S","s":3,"pr":53.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FRI.NGR.M","t":"NGR M","s":5,"pr":53.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73FRI.NGR.L","t":"NGR L","s":5,"pr":53.9,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.73LED.APR.S","b":"Samsara","n":"Camiseta leda","u":"https://www.falabella.com.pe/falabella-pe/product/156688093/SAMSARA-CAMISETA-LEDA-SAM.73LED/156688102","v":[{"k":"SAM.73LED.APR.S","t":"APR S","s":2,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73LED.APR.M","t":"APR M","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73LED.APR.L","t":"APR L","s":4,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73LED.BLA.S","t":"BLA S","s":3,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73LED.BLA.M","t":"BLA M","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73LED.BLA.L","t":"BLA L","s":5,"pr":74.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73LED.NGR.S","t":"NGR S","s":3,"pr":74.9,"cs":100.0,"img":4,"act":true},{"k":"SAM.73LED.NGR.M","t":"NGR M","s":5,"pr":74.9,"cs":100.0,"img":4,"act":true},{"k":"SAM.73LED.NGR.L","t":"NGR L","s":5,"pr":74.9,"cs":100.0,"img":4,"act":true}]},{"m":"SAM.73MAI.NGR.S","b":"Samsara","n":"Camiseta maira","u":"https://www.falabella.com.pe/falabella-pe/product/156689581/SAMSARA-CAMISETA-MAIRA-SAM.73MAI/156689588","v":[{"k":"SAM.73MAI.NGR.S","t":"NGR S","s":3,"pr":49.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73MAI.NGR.M","t":"NGR M","s":5,"pr":49.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73MAI.NGR.L","t":"NGR L","s":5,"pr":49.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73MAI.BLA.S","t":"BLA S","s":3,"pr":49.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73MAI.BLA.M","t":"BLA M","s":5,"pr":49.9,"cs":100.0,"img":2,"act":true},{"k":"SAM.73MAI.BLA.L","t":"BLA L","s":4,"pr":49.9,"cs":100.0,"img":2,"act":true}]},{"m":"SAM.92ALB.MAR.S","b":"Samsara","n":"Body exterior alba","u":"https://www.falabella.com.pe/falabella-pe/product/156692155/BODY-EXTERIOR-ALBA-SAM.92ALB/156692161","v":[{"k":"SAM.92ALB.MAR.S","t":"MAR S","s":1,"pr":78.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92ALB.MAR.M","t":"MAR M","s":2,"pr":78.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92ALB.MAR.L","t":"MAR L","s":2,"pr":78.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92ALB.NGR.S","t":"NGR S","s":1,"pr":78.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92ALB.NGR.M","t":"NGR M","s":1,"pr":78.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92ALB.NGR.L","t":"NGR L","s":1,"pr":78.9,"cs":94.0,"img":2,"act":true}]},{"m":"SAM.92BAL.APR.S","b":"Samsara","n":"Body exterior balti","u":"https://www.falabella.com.pe/falabella-pe/product/156693270/BODY-EXTERIOR-BALTI-SAM.92BAL/156693282","v":[{"k":"SAM.92BAL.APR.S","t":"APR S","s":3,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.APR.M","t":"APR M","s":2,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.APR.L","t":"APR L","s":3,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.BLA.S","t":"BLA S","s":3,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.BLA.M","t":"BLA M","s":2,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.BLA.L","t":"BLA L","s":2,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.NGR.S","t":"NGR S","s":3,"pr":74.9,"cs":94.0,"img":2,"act":false},{"k":"SAM.92BAL.NGR.M","t":"NGR M","s":2,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.NGR.L","t":"NGR L","s":2,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.PRL.S","t":"PRL S","s":3,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.PRL.M","t":"PRL M","s":3,"pr":74.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BAL.PRL.L","t":"PRL L","s":3,"pr":74.9,"cs":94.0,"img":2,"act":true}]},{"m":"SAM.92BEV.CHO.S","b":"Samsara","n":"Body exterior beverly","u":"https://www.falabella.com.pe/falabella-pe/product/156694159/BODY-EXTERIOR-BEVERLY-SAM.92BEV/156694168","v":[{"k":"SAM.92BEV.CHO.S","t":"CHO S","s":3,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BEV.CHO.M","t":"CHO M","s":4,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BEV.CHO.L","t":"CHO L","s":5,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BEV.NGR.S","t":"NGR S","s":3,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BEV.NGR.M","t":"NGR M","s":3,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BEV.NGR.L","t":"NGR L","s":5,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BEV.VRE.S","t":"VRE S","s":3,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BEV.VRE.M","t":"VRE M","s":5,"pr":84.9,"cs":94.0,"img":2,"act":true},{"k":"SAM.92BEV.VRE.L","t":"VRE L","s":5,"pr":84.9,"cs":94.0,"img":2,"act":true}]},{"m":"SAM.92RUB.BLA.S","b":"Samsara","n":"Body exterior sin control rubi","u":"https://www.falabella.com.pe/falabella-pe/product/156725074/SAMSARA-BODY-EXTERIOR-SIN-CONTROL-RUBI-SAM.92RUB/156725083","v":[{"k":"SAM.92RUB.BLA.S","t":"BLA S","s":5,"pr":84.9,"cs":84.0,"img":2,"act":true},{"k":"SAM.92RUB.BLA.M","t":"BLA M","s":5,"pr":84.9,"cs":84.0,"img":2,"act":true},{"k":"SAM.92RUB.BLA.L","t":"BLA L","s":5,"pr":84.9,"cs":84.0,"img":2,"act":true},{"k":"SAM.92RUB.CFC.S","t":"CFC S","s":4,"pr":84.9,"cs":84.0,"img":2,"act":true},{"k":"SAM.92RUB.CFC.M","t":"CFC M","s":5,"pr":84.9,"cs":84.0,"img":2,"act":true},{"k":"SAM.92RUB.CFC.L","t":"CFC L","s":5,"pr":84.9,"cs":84.0,"img":2,"act":true},{"k":"SAM.92RUB.NGR.S","t":"NGR S","s":5,"pr":84.9,"cs":84.0,"img":2,"act":true},{"k":"SAM.92RUB.NGR.M","t":"NGR M","s":5,"pr":84.9,"cs":84.0,"img":2,"act":true},{"k":"SAM.92RUB.NGR.L","t":"NGR L","s":5,"pr":84.9,"cs":84.0,"img":2,"act":true}]}]};
+const COM = 0.25, HOY = '2026-10-16', C0 = '2026-09-16', C1 = '2026-10-16';
+const nf0 = new Intl.NumberFormat('es-PE', {maximumFractionDigits:0});
+const nf2 = new Intl.NumberFormat('es-PE', {minimumFractionDigits:2, maximumFractionDigits:2});
+const soles = v => 'S/ ' + nf0.format(v);
+const VALID = e => e === 'Entregado' || e === 'Enviado';
+const $ = id => document.getElementById(id);
+const MESC = ['ene','feb','mar','abr','may','jun','jul','ago','set','oct','nov','dic'];
+const corta = f => Number(f.slice(8)) + ' ' + MESC[Number(f.slice(5,7))-1];
+// semanas de lunes a domingo desde la del 12 de agosto
+const SEM = (() => { const out = []; let t = Date.parse('2026-08-10'); while (t <= Date.parse(HOY)){ out.push(new Date(t).toISOString().slice(0,10)); t += 7*864e5; } return out; })();
+const semDe = f => { let i = SEM.length - 1; while (i > 0 && SEM[i] > f) i--; return i; };
+const enCamp = i => { const a = SEM[i], b = new Date(Date.parse(a) + 6*864e5).toISOString().slice(0,10); return b >= C0 && a <= C1; };
+const dias = f => Math.round((Date.parse(HOY) - Date.parse(f)) / 864e5);
+const ACC = {
+  rep:{t:'Reponer', c:'var(--bad)', o:1},
+  imp:{t:'Impulsar', c:'var(--acc)', o:2},
+  vig:{t:'Vigilar', c:'var(--prev)', o:3},
+  arr:{t:'Arreglar ficha', c:'var(--warn)', o:4},
+  sva:{t:'Sin venta aún', c:'var(--muted)', o:5},
+  sst:{t:'Sin stock', c:'var(--muted)', o:6}
+};
+const estado = {b:'', f:null};
+
+const todas = DATA.ventas;
+const modelos = DATA.modelos.map(m => {
+  const rs = todas.filter(r => r.m === m.m && VALID(r.e));
+  const vend = new Set(rs.map(r => r.k));
+  const st = m.v.reduce((t,v) => t + v.s, 0), val = m.v.reduce((t,v) => t + v.s*v.pr, 0);
+  const cero = m.v.filter(v => v.s === 0).map(v => ({t:v.t, sold: vend.has(v.k)}));
+  const soldCero = cero.some(c => c.sold) || [...vend].some(k => !m.v.some(v => v.k === k));
+  const cs = Math.min(...m.v.map(v => v.cs ?? 100)), img = Math.min(...m.v.map(v => v.img ?? 9));
+  const sem = new Set(rs.map(r => semDe(r.f)));
+  const ult = rs.reduce((t,r) => r.f > t ? r.f : t, '');
+  const n = rs.length;
+  let a;
+  if (n >= 2 && (soldCero || st <= 3)) a = 'rep';
+  else if (n >= 2) a = 'imp';
+  else if (n === 1) a = 'vig';
+  else if (st > 0 && (cs < 85 || img <= 1)) a = 'arr';
+  else if (st > 0) a = 'sva';
+  else a = 'sst';
+  return {...m, rs, q:n, bt:rs.reduce((t,r)=>t+r.p,0), st, val, cero, cs, img, sem, ult, a, act: m.v.some(v => v.act)};
+});
+
+function pintar(){
+  const B = estado.b;
+  const ms = modelos.filter(m => !B || m.b === B);
+  const vs = todas.filter(r => VALID(r.e) && (!B || r.b === B));
+  const bruto = vs.reduce((t,r) => t + r.p, 0), com = bruto*COM, neto = bruto - com;
+  $('k-bruto').textContent = soles(bruto);
+  $('k-com').textContent = soles(com);
+  $('k-neto').textContent = soles(neto);
+  $('k-unid').textContent = nf0.format(vs.length);
+  $('k-tk').textContent = vs.length ? 'S/ ' + nf2.format(neto/vs.length) + ' netos por unidad' : '—';
+  const sem = (Date.parse(HOY) - Date.parse('2026-08-12')) / (7*864e5);
+  $('lede').textContent = (B || 'Angeltex') + ' lleva ' + Math.round(sem) + ' semanas en Falabella: ' + nf0.format(vs.length) + ' unidades, ' +
+    soles(neto) + ' netos después de comisión. ' + ms.filter(m => m.q).length + ' de sus ' + ms.length + ' modelos vendieron al menos una vez.';
+  alertas(ms); cascada(vs); decidir(); grafico(); campana();
+}
+
+function alertas(ms){
+  const box = $('alertas'); box.innerHTML = '';
+  const card = (sev, tag, num, txt, filtro) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'alerta'; b.style.setProperty('--sev', sev);
+    const t = document.createElement('span'); t.className = 'tag'; t.textContent = tag;
+    const n = document.createElement('b'); n.textContent = num;
+    const s = document.createElement('span'); s.textContent = txt;
+    b.append(t, n, s);
+    if (filtro) b.addEventListener('click', () => { estado.f = filtro; decidir(); $('decidir').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
+    box.append(b);
+  };
+  const rep = ms.filter(m => m.a === 'rep').sort((x,z) => z.q - x.q);
+  card('var(--bad)', 'Reponer ya', rep.length + (rep.length === 1 ? ' modelo' : ' modelos'),
+    rep.length ? 'Venden y se quedaron sin una talla o color que sale: ' + rep.slice(0,3).map(m => m.n).join(', ') + '.' : 'Ningún modelo que vende está sin stock.', 'rep');
+  const imp = ms.filter(m => m.a === 'imp');
+  card('var(--acc)', 'Impulsar', imp.length + (imp.length === 1 ? ' modelo' : ' modelos'),
+    imp.length ? 'Ya vendieron 2 o más y tienen stock: ' + imp.sort((x,z) => z.q - x.q).slice(0,3).map(m => m.n).join(', ') + '.' : '—', 'imp');
+  const dorm = ms.filter(m => !m.q && m.st > 0), dv = dorm.reduce((t,m) => t + m.val, 0), du = dorm.reduce((t,m) => t + m.st, 0);
+  const tv = ms.reduce((t,m) => t + m.val, 0);
+  card('var(--warn)', 'Plata parada', soles(dv), dorm.length + ' modelos sin una sola venta con ' + nf0.format(du) + ' u, el ' + (tv ? Math.round(dv/tv*100) : 0) + '% del stock en Falabella a precio de venta.', 'sva+arr');
+  const all = todas.filter(r => !estado.b || r.b === estado.b), mal = all.filter(r => !VALID(r.e));
+  card(mal.length/all.length > 0.03 ? 'var(--bad)' : 'var(--acc)', 'Cancelaciones y devoluciones', (all.length ? Math.round(mal.length/all.length*100) : 0) + '%',
+    mal.length + ' de ' + all.length + ' ítems (' + mal.filter(r => r.e === 'Devuelto').length + ' devueltos, ' + mal.filter(r => r.e === 'Cancelado').length + ' cancelados). La referencia en marketplaces es menos de 3%; en fajas la talla suele ser la causa.', null);
+}
+
+function decidir(){
+  const B = estado.b;
+  const ms = modelos.filter(m => !B || m.b === B);
+  const ch = $('chips'); ch.innerHTML = '';
+  const cuenta = {}; ms.forEach(m => cuenta[m.a] = (cuenta[m.a]||0) + 1);
+  const mk = (key, txt, c) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
+    b.setAttribute('aria-pressed', String(estado.f === key));
+    if (c){ const i = document.createElement('i'); i.style.setProperty('--c', c); b.append(i); }
+    b.append(txt);
+    b.addEventListener('click', () => { estado.f = key; decidir(); });
+    ch.append(b);
+  };
+  mk(null, 'Todos · ' + ms.length);
+  Object.entries(ACC).forEach(([k, v]) => { if (cuenta[k]) mk(k, v.t + ' · ' + cuenta[k], v.c); });
+  const ok = estado.f ? estado.f.split('+') : null;
+  const sinTilde = t => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const q = sinTilde(($('dbus').value || '').trim());
+  const rows = ms.filter(m => (!ok || ok.includes(m.a)) && (!q || sinTilde(m.n).includes(q) || m.v.some(v => sinTilde(v.k).includes(q))))
+    .sort((x,z) => ACC[x.a].o - ACC[z.a].o || z.q - x.q || z.val - x.val);
+  $('d-note').textContent = rows.length + ' modelos' + (ok ? ' en ' + ok.map(k => ACC[k].t.toLowerCase()).join(' y ') : '') +
+    '. Un modelo agrupa todas sus tallas y colores. Ventas desde el 12 de agosto; stock y Content Score traídos de la API hoy.';
+  const tb = document.querySelector('#tdec tbody'); tb.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  for (const m of rows){
+    const tr = document.createElement('tr');
+    const td = (txt, cls) => { const c = document.createElement('td'); if (txt != null) c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+    const tn = td(null, 'l');
+    if (m.u){ const a = document.createElement('a'); a.href = m.u; a.target = '_blank'; a.rel = 'noopener'; a.className = 'plink'; a.textContent = m.n; tn.append(a); }
+    else tn.textContent = m.n;
+    if (!B){ const s = document.createElement('span'); s.className = 'sinc'; s.textContent = ' · ' + m.b; tn.append(s); }
+    if (!m.act){ const s = document.createElement('span'); s.className = 'inact'; s.textContent = 'inactiva'; tn.append(s); }
+    const ta = td(null, 'l'); const p = document.createElement('span'); p.className = 'acc'; p.style.setProperty('--c', ACC[m.a].c); p.textContent = ACC[m.a].t; ta.append(p);
+    td(m.q ? nf0.format(m.q) : '—');
+    const tr12 = td(null, 'l'); const g = document.createElement('span'); g.className = 'ritmo'; g.style.setProperty('--n', SEM.length);
+    g.title = m.sem.size + ' de ' + SEM.length + ' semanas con venta';
+    // Inicial del mes solo en la primera semana de cada mes (el mes se toma a mitad de semana)
+    const mesSem = SEM.map(x => new Date(Date.parse(x) + 3*864e5).getUTCMonth());
+    SEM.forEach((s, i) => { const em = document.createElement('em'); em.textContent = (i === 0 || mesSem[i] !== mesSem[i-1]) ? 'EFMAMJJASOND'[mesSem[i]] : ''; g.append(em); });
+    SEM.forEach((s, i) => { const e = document.createElement('i'); if (m.sem.has(i)) e.classList.add('on'); if (enCamp(i)) e.classList.add('camp'); e.title = 'Semana del ' + corta(s); g.append(e); });
+    tr12.append(g);
+    td(m.ult ? nf0.format(dias(m.ult)) : 'nunca vendió');
+    const ts = td(null); const pill = document.createElement('span');
+    pill.className = 'pill ' + (m.st === 0 ? 'cero' : m.st <= 3 ? 'bajo' : 'ok'); pill.textContent = nf0.format(m.st); ts.append(pill); if (m.val){ const sv = document.createElement('span'); sv.className = 'sinc'; sv.textContent = ' ' + soles(m.val); ts.append(sv); }
+    const tz = td(null, 'l agot');
+    if (!m.cero.length) tz.textContent = '—';
+    else m.cero.forEach((c, i) => { if (i) tz.append(', '); if (c.sold){ const b = document.createElement('b'); b.textContent = c.t; tz.append(b); } else tz.append(c.t); });
+    td(nf0.format(m.cs), 'hide-sm sc' + (m.cs < 85 ? ' bajo' : ''));
+    frag.append(tr);
+  }
+  tb.append(frag);
+}
+
+function grafico(){
+  const box = $('chart'); box.innerHTML = '';
+  const marcas = estado.b ? [estado.b] : ['Samsara','Cocoon'];
+  const col = {Samsara:'var(--now)', Cocoon:'var(--prev)'};
+  const datos = marcas.map(b => SEM.map((_, i) => todas.filter(r => VALID(r.e) && r.b === b && semDe(r.f) === i).reduce((t,r) => t + r.p, 0)*(1-COM)));
+  const tot = SEM.map((_, i) => datos.reduce((t,d) => t + d[i], 0));
+  const max = Math.max(1, ...tot);
+  const leg = $('leg'); leg.innerHTML = '';
+  marcas.forEach((b, j) => { const s = document.createElement('span'); const i = document.createElement('i'); i.style.background = col[b]; s.append(i, b + ': ' + soles(datos[j].reduce((t,v)=>t+v,0))); leg.append(s); });
+  const sc = document.createElement('span'); const ic = document.createElement('i'); ic.style.background = 'var(--acc-soft)'; ic.style.border = '1px solid var(--line)'; sc.append(ic, 'Semanas de campaña'); leg.append(sc);
+  const W = Math.max(480, SEM.length*64), H = 260, T = 22, Bm = 30, L = 10, R = 10;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('role','img');
+  const add = (tag, at, txt) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in at) e.setAttribute(k, at[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; };
+  const alto = H - T - Bm, base = T + alto, y = v => (v / max) * alto;
+  const ancho = (W - L - R) / SEM.length, bw = Math.min(30, ancho*0.6);
+  SEM.forEach((s, i) => {
+    const cx = L + ancho*i + ancho/2;
+    if (enCamp(i)) add('rect', {x: L + ancho*i, y: T - 8, width: ancho, height: alto + 8, fill: 'var(--acc-soft)', opacity: .7});
+    let acc = 0;
+    marcas.forEach((b, j) => { const v = datos[j][i]; if (!v) return; add('rect', {x: cx-bw/2, y: base - acc - y(v), width: bw, height: Math.max(1, y(v) - 1), rx: 2, fill: col[b]}); acc += y(v); });
+    if (tot[i]) add('text', {x: cx, y: base - acc - 5, 'text-anchor': 'middle', class: 'gv'}, nf0.format(Math.round(tot[i])));
+    add('text', {x: cx, y: base + 18, 'text-anchor': 'middle', class: 'gx'}, corta(s));
+  });
+  add('line', {x1: L, x2: W-R, y1: base, y2: base, class: 'gl'});
+  box.appendChild(svg);
+  $('g-note').textContent = 'Soles netos de comisión por semana (de lunes a domingo; cada etiqueta es el lunes). El fondo marca las semanas de la campaña del 16 de setiembre al 16 de octubre.';
+}
+
+// --- costo: precio mayorista por SKU de la lista de Angeltex [mayorista, pvp lista]
+const COSTO = {"2500-BLA-M":[41.59,69.9],"2500-BLA-L":[41.59,69.9],"2500-BLA-S":[41.59,69.9],"SAM.07....NATXL":[16.66,28],"SAM.01....GRI.S":[11.31,19],"SAM.01....PIE.L":[11.31,19],"2500-BLA-XL":[41.59,69.9],"3601-NEG-XL":[26.12,43.9],"SAM.02....NGRXL":[16.66,28],"SAM.07....NGRXL":[16.66,28],"SAM.01....ZAR.S":[11.31,19],"SAM.01....ZAR.M":[11.31,19],"SAM.01....ZAR.L":[11.31,19],"SAM.01....PIE.S":[11.31,19],"SAM.01....PIE.M":[11.31,19],"2500-NEG-S":[41.59,69.9],"2501-BLA-S":[41.59,69.9],"2501-BLA-XL":[41.59,69.9],"2944-NEG-L":[29.69,49.9],"2944-NEG-XL":[29.69,49.9],"2944-NAT-S":[29.69,49.9],"2944-NAT-XL":[29.69,49.9],"3571-NEG-L":[49.33,82.9],"3571-UVA-L":[49.33,82.9],"2500-COC-S":[41.59,69.9],"SAM.17....BRW.M":[23.74,39.9],"SAM.17....BRWXL":[23.74,39.9],"SAM.07....PIEXL":[16.66,28],"SAM.05NYL.CAN.U":[7.14,12],"SAM.17....DURXL":[23.74,39.9],"SAM.07....NAT.L":[16.66,28],"SAM.07....NAT.M":[16.66,28],"1420-NAT-S":[32.67,54.9],"1420-NAT-XL":[32.67,54.9],"2536-NAT-S":[35.05,58.9],"2536-NAT-XL":[35.05,58.9],"3571-NAT-M":[49.33,82.9],"3571-NAT-L":[49.33,82.9],"3571-NEG-S":[49.33,82.9],"3571-NEG-M":[49.33,82.9],"3585-NAT-S":[32.67,54.9],"3585-NAT-XL":[32.67,54.9],"3571-UVA-M":[49.33,82.9],"3571-UVA-XL":[49.33,82.9],"3601-NEG-L":[26.12,43.9],"3601-NAT-L":[26.12,43.9],"5201-NEG-S/M":[43.38,72.9],"5201-NEG-L/XL":[43.38,72.9],"5201-BLA-S/M":[43.38,72.9],"5201-BLA-L/XL":[43.38,72.9],"5601-NEG-S/M":[31.48,52.9],"5601-NEG-L/XL":[31.48,52.9],"5601-COC-S/M":[31.48,52.9],"5601-COC-L/XL":[31.48,52.9],"SAM.17....BRW.L":[23.74,39.9],"SAM.05SED.GFT.U":[8.33,14],"SAM.02....NATXL":[16.66,28],"2500-NEG-XL":[41.59,69.9],"3571-NAT-S":[49.33,82.9],"3571-NAT-XL":[49.33,82.9],"2944-NEG-S":[29.69,49.9],"2944-NEG-M":[29.69,49.9],"2944-NAT-M":[29.69,49.9],"2944-NAT-L":[29.69,49.9],"3571-NEG-XL":[49.33,82.9],"3585-NAT-M":[32.67,54.9],"3585-NAT-L":[32.67,54.9],"3571-UVA-S":[49.33,82.9],"3600-NEG-S":[35.05,58.9],"3600-NAT-S":[35.05,58.9],"3600-NAT-XL":[35.05,58.9],"3601-NAT-XL":[26.12,43.9],"2500-COC-L":[41.59,69.9],"5600-NEG-S/M":[35.05,58.9],"5600-NEG-L/XL":[35.05,58.9],"5600-COC-S/M":[35.05,58.9],"5600-COC-L/XL":[35.05,58.9],"SAM.02....NGR.M":[16.66,28],"SAM.02....NGR.L":[16.66,28],"SAM.04....BRW.M":[17.26,29],"SAM.04....CAN.M":[17.26,29],"SAM.04....BRW.L":[17.26,29],"SAM.04....CAN.L":[17.26,29],"SAM.04....BRWXL":[17.26,29],"SAM.04....CANXL":[17.26,29],"SAM.17....CAN.M":[23.74,39.9],"SAM.17....CANXL":[23.74,39.9],"SAM.05VAR.BRW.U":[9.52,16],"SAM.05NYL.SIC.U":[7.14,12],"SAM.05NYL.GRI.U":[7.14,12],"SAM.05DES.BRW.U":[8.33,14],"SAM.05DES.CAN.U":[8.33,14],"SAM.07....DURXL":[16.66,28],"SAM.03CAB.BRW.M":[23.74,39.9],"SAM.03CAB.BRW.L":[23.74,39.9],"SAM.03CAB.BRWXL":[23.74,39.9],"SAM.03CAB.CAN.M":[23.74,39.9],"SAM.03CAB.CAN.L":[23.74,39.9],"SAM.03CAB.CANXL":[23.74,39.9],"SAM.03CAB.DUR.M":[23.74,39.9],"SAM.03CAB.DUR.L":[23.74,39.9],"SAM.03CAB.DURXL":[23.74,39.9],"SAM.73FIO.NGR.S":[44.57,74.9],"SAM.73FIO.BLA.S":[44.57,74.9],"SAM.04....DURXL":[17.26,29],"SAM.92BAL.NGR.S":[44.57,74.9],"SAM.92BEV.NGR.S":[50.52,84.9],"SAM.92ALB.NGR.S":[46.95,78.9],"SAM.92BAL.PRL.S":[44.57,74.9],"SAM.73LED.APR.S":[44.57,74.9],"SAM.73FIO.VRE.S":[44.57,74.9],"SAM.73FIO.CHO.S":[44.57,74.9],"SAM.92BEV.VRE.S":[50.52,84.9],"SAM.92BEV.CHO.S":[50.52,84.9],"SAM.92ALB.MAR.S":[46.95,78.9],"SAM.92BAL.BLA.S":[44.57,74.9],"SAM.92BAL.APR.S":[44.57,74.9],"SAM.73MAI.BLA.S":[29.69,49.9],"SAM.73MAI.NGR.S":[29.69,49.9],"SAM.73FRI.BLA.S":[32.07,53.9],"SAM.73FRI.NGR.S":[32.07,53.9],"SAM.73LED.BLA.S":[44.57,74.9],"SAM.73LED.NGR.S":[44.57,74.9],"1490-NAT-S":[70.81,119],"1490-NAT-XL":[70.81,119],"2500-NEG-M":[41.59,69.9],"2500-NEG-L":[41.59,69.9],"2536-NAT-M":[35.05,58.9],"2536-NAT-L":[35.05,58.9],"2406-NEG-S":[41.59,69.9],"2406-NEG-XL":[41.59,69.9],"2406-COC-L":[41.59,69.9],"2406-COC-XL":[41.59,69.9],"3572-NEG-S":[50.52,84.9],"3600-NEG-M":[35.05,58.9],"3600-NEG-L":[35.05,58.9],"3600-NAT-M":[35.05,58.9],"3600-NAT-L":[35.05,58.9],"5200-NEG-S/M":[44.57,74.9],"5200-NEG-L/XL":[44.57,74.9],"5200-BLA-S/M":[44.57,74.9],"5200-BLA-L/XL":[44.57,74.9],"5202-NEG-S/M":[38.62,64.9],"5202-NEG-L/XL":[38.62,64.9],"5202-BLA-S/M":[38.62,64.9],"5202-BLA-L/XL":[38.62,64.9],"5203-NEG-S/M":[37.43,62.9],"5203-NEG-L/XL":[37.43,62.9],"5203-BLA-S/M":[37.43,62.9],"5203-BLA-L/XL":[37.43,62.9],"5204-NEG-S/M":[37.43,62.9],"5204-NEG-L/XL":[37.43,62.9],"5204-BLA-S/M":[37.43,62.9],"5204-BLA-L/XL":[37.43,62.9],"SAM.04....BLAXL":[17.26,29],"SAM.07....NGR.M":[16.66,28],"SAM.07....NGR.L":[16.66,28],"SAM.01....GRI.M":[11.31,19],"SAM.01....GRI.L":[11.31,19],"SAM.17....CAN.L":[23.74,39.9],"SAM.17....BLA.M":[23.74,39.9],"SAM.17....BLA.L":[23.74,39.9],"SAM.17....BLAXL":[23.74,39.9],"SAM.05VAR.BLA.U":[9.52,16],"SAM.17....DUR.M":[23.74,39.9],"1404-NAT-S":[29.16,49],"1404-NAT-XL":[29.16,49],"1378-NAT-S":[46.95,78.9],"1378-NAT-XL":[46.95,78.9],"1420-NAT-M":[32.67,54.9],"1420-NAT-L":[32.67,54.9],"2501-NEG-S":[41.59,69.9],"2501-NEG-XL":[41.59,69.9],"2501-NAT-S":[41.59,69.9],"2501-NAT-XL":[41.59,69.9],"3572-COC-L":[50.52,84.9],"3572-COC-XL":[50.52,84.9],"3572-NEG-XL":[50.52,84.9],"3585-NEG-S":[32.67,54.9],"3585-NEG-XL":[32.67,54.9],"SAM.17....NGR.M":[23.74,39.9],"SAM.17....NGR.L":[23.74,39.9],"SAM.06LIG.BLASM":[26.18,44],"SAM.06LIG.BLALX":[26.18,44],"SAM.06LIG.NGRSM":[26.18,44],"SAM.06LIG.NGRLX":[26.18,44],"SAM.05NYL.BLA.U":[7.14,12],"SAM.07....DUR.M":[16.66,28],"SAM.07....DUR.L":[16.66,28],"SAM.17....DUR.L":[23.74,39.9],"SAM.73FIO.NGR.M":[44.57,74.9],"SAM.73FIO.NGR.L":[44.57,74.9],"SAM.73FIO.BLA.M":[44.57,74.9],"SAM.73FIO.BLA.L":[44.57,74.9],"SAM.92BAL.NGR.M":[44.57,74.9],"SAM.92BAL.NGR.L":[44.57,74.9],"SAM.92BEV.NGR.M":[50.52,84.9],"SAM.92BEV.NGR.L":[50.52,84.9],"SAM.06LOV.NGR.M":[16.874,28],"SAM.06LOV.NGR.L":[16.874,28],"SAM.06LOV.NGRXL":[16.874,28],"SAM.92ALB.NGR.M":[46.95,78.9],"SAM.92ALB.NGR.L":[46.95,78.9],"SAM.92RUB.CFC.S":[50.52,84.9],"SAM.92RUB.CFC.M":[50.52,84.9],"SAM.92RUB.CFC.L":[50.52,84.9],"SAM.92BAL.PRL.M":[44.57,74.9],"SAM.92BAL.PRL.L":[44.57,74.9],"SAM.73LED.APR.M":[44.57,74.9],"SAM.73LED.APR.L":[44.57,74.9],"SAM.73FIO.VRE.M":[44.57,74.9],"SAM.73FIO.VRE.L":[44.57,74.9],"SAM.73FIO.CHO.M":[44.57,74.9],"SAM.73FIO.CHO.L":[44.57,74.9],"SAM.92BEV.VRE.M":[50.52,84.9],"SAM.92BEV.VRE.L":[50.52,84.9],"SAM.92BEV.CHO.M":[50.52,84.9],"SAM.92BEV.CHO.L":[50.52,84.9],"SAM.92ALB.MAR.M":[46.95,78.9],"SAM.92ALB.MAR.L":[46.95,78.9],"SAM.92BAL.BLA.M":[44.57,74.9],"SAM.92BAL.BLA.L":[44.57,74.9],"SAM.92BAL.APR.M":[44.57,74.9],"SAM.92BAL.APR.L":[44.57,74.9],"SAM.73MAI.BLA.M":[29.69,49.9],"SAM.73MAI.BLA.L":[29.69,49.9],"SAM.73MAI.NGR.M":[29.69,49.9],"SAM.73MAI.NGR.L":[29.69,49.9],"SAM.73FRI.BLA.M":[32.07,53.9],"SAM.73FRI.BLA.L":[32.07,53.9],"SAM.73FRI.NGR.M":[32.07,53.9],"SAM.73FRI.NGR.L":[32.07,53.9],"SAM.73LED.BLA.M":[44.57,74.9],"SAM.73LED.BLA.L":[44.57,74.9],"SAM.73LED.NGR.M":[44.57,74.9],"SAM.73LED.NGR.L":[44.57,74.9],"SAM.92RUB.BLA.L":[50.52,84.9],"SAM.92RUB.BLA.M":[50.52,84.9],"SAM.92RUB.BLA.S":[50.52,84.9],"SAM.92RUB.NGR.L":[50.52,84.9],"SAM.92RUB.NGR.M":[50.52,84.9],"SAM.92RUB.NGR.S":[50.52,84.9],"1420-NEG-S":[32.67,54.9],"1420-NEG-XL":[32.67,54.9],"2501-BLA-M":[41.59,69.9],"2501-BLA-L":[41.59,69.9],"2536-NEG-S":[35.05,58.9],"2536-NEG-XL":[35.05,58.9],"2536-CAF-S":[35.05,58.9],"2536-CAF-XL":[35.05,58.9],"2500-COC-XL":[41.59,69.9],"SAM.01....NGR.M":[11.31,19],"SAM.01....SIC.S":[11.31,19],"SAM.01....SIC.M":[11.31,19],"SAM.01....SIC.L":[11.31,19],"SAM.05NYL.NGR.U":[7.14,12],"SAM.05NYL.PIE.U":[7.14,12],"SAM.06CKT.NGRXL":[16.66,28],"SAM.20....DURXL":[16.66,28],"SAM.20....NGRXL":[16.66,28],"SAM.20....NATXL":[16.66,28],"SAM.03CAB.NGR.M":[23.74,39.9],"SAM.03CAB.NGR.L":[23.74,39.9],"SAM.03CAB.NGRXL":[23.74,39.9],"SAM.02....NAT.L":[16.66,28],"SAM.02....NAT.M":[16.66,28],"SAM.08PRE.NGRXL":[33.32,56],"SAM.03CAB.NAT.M":[23.74,39.9],"SAM.03CAB.NAT.L":[23.74,39.9],"SAM.03CAB.NATXL":[23.74,39.9],"SAM.04....DUR.M":[17.26,29],"SAM.04....DUR.L":[17.26,29],"3572-COC-M":[50.52,84.9],"3572-NEG-M":[50.52,84.9],"3601-NAT-S":[26.12,43.9],"3601-NAT-M":[26.12,43.9],"SAM.04....NGR.M":[17.26,29],"SAM.04....NGR.L":[17.26,29],"SAM.04....NGRXL":[17.26,29],"SAM.04....BLA.M":[17.26,29],"SAM.04....BLA.L":[17.26,29],"3572-COC-S":[50.52,84.9],"3600-NEG-XL":[35.05,58.9],"SAM.01....SAL.M":[11.31,19],"SAM.01....SAL.L":[11.31,19],"SAM.05SED.DUR.U":[8.33,14],"SAM.05SED.NAT.U":[8.33,14],"2501-NEG-M":[41.59,69.9],"2501-NEG-L":[41.59,69.9],"2501-NAT-M":[41.59,69.9],"2501-NAT-L":[41.59,69.9],"2406-NEG-M":[41.59,69.9],"2406-NEG-L":[41.59,69.9],"3572-NEG-L":[50.52,84.9],"3585-NEG-M":[32.67,54.9],"3585-NEG-L":[32.67,54.9],"SAM.01....NGR.S":[11.31,19],"SAM.01....NGR.L":[11.31,19],"SAM.01....SAL.S":[11.31,19],"SAM.05VAR.CAN.U":[9.52,16],"SAM.05DES.DUR.U":[8.33,14],"SAM.20....DUR.M":[16.66,28],"SAM.20....DUR.L":[16.66,28],"SAM.05VAR.DUR.U":[9.52,16],"SAM.08PRE.NGR.L":[33.32,56],"SAM.08PRE.NGR.M":[33.32,56],"1404-NAT-M":[29.16,49],"1404-NAT-L":[29.16,49],"1404-NEG-S":[29.16,49],"1404-NEG-XL":[29.16,49],"1378-NAT-M":[46.95,78.9],"1378-NAT-L":[46.95,78.9],"1420-NEG-M":[32.67,54.9],"1420-NEG-L":[32.67,54.9],"1378-NEG-S":[46.95,78.9],"1378-NEG-XL":[46.95,78.9],"1490-NAT-M":[70.81,119],"1490-NAT-L":[70.81,119],"1490-NEG-S":[70.81,119],"1490-NEG-XL":[70.81,119],"2536-NEG-M":[35.05,58.9],"2536-NEG-L":[35.05,58.9],"2536-CAF-M":[35.05,58.9],"2536-CAF-L":[35.05,58.9],"2406-COC-S":[41.59,69.9],"2406-COC-M":[41.59,69.9],"3601-NEG-S":[26.12,43.9],"3601-NEG-M":[26.12,43.9],"SAM.06CKT.NGR.M":[16.66,28],"SAM.06CKT.NGR.L":[16.66,28],"SAM.20....NGR.M":[16.66,28],"SAM.20....NGR.L":[16.66,28],"SAM.20....NAT.M":[16.66,28],"SAM.20....NAT.L":[16.66,28],"SAM.05TRA.NGR.U":[8.33,14],"SAM.05TRA.DUR.U":[8.33,14],"SAM.05DES.NAT.U":[8.33,14],"SAM.05DES.NGR.U":[8.33,14],"SAM.05SED.NGR.U":[8.33,14],"1490-NEG-M":[70.81,119],"1490-NEG-L":[70.81,119],"SAM.05VAR.NGR.U":[9.52,16],"SAM.05NYL.SAL.U":[7.14,12],"SAM.05NYL.ZAR.U":[7.14,12],"SAM.05....NGR.U":[8.33,14],"SAM.05CKT.NGR.U":[9.52,16],"SAM.05CKT.CAN.U":[9.52,16],"SAM.05ZAP.NGR.U":[5.95,10],"SAM.05TRA.NAT.U":[8.33,14],"SAM.05ZAP.NAT.U":[5.95,10],"SAM.05OPA.NGR.U":[8.33,14],"SAM.05OPA.PIE.U":[8.33,14],"SAM.05....NAT.U":[8.33,14],"1404-NEG-M":[29.16,49],"1404-NEG-L":[29.16,49],"1378-NEG-M":[46.95,78.9],"1378-NEG-L":[46.95,78.9],"SAM.05NYL":[7.14,12]};
+// unidades por ítem: un pack x4 se vende a 4 veces el PVP de lista de una unidad
+const costoItem = r => { const c = COSTO[r.k]; if (!c) return null; return Math.max(1, Math.round(r.p / c[1])) * c[0]; };
+function cascada(vs){
+  const con = vs.filter(r => costoItem(r) != null);
+  const p = con.reduce((t,r) => t + r.p, 0);
+  const cos = con.reduce((t,r) => t + costoItem(r), 0), com = p*COM, mx = p - cos - com, neto = p - com;
+  const ul = $('w-note'); ul.innerHTML = '';
+  ['Costo = precio mayorista de Angeltex, cerca del 60% del PVP.',
+   'Lo que sobra sobre el mayorista (cerca del 40% del PVP) se lo reparten la comisión de Saga (25%) y MXD.',
+   'Neto = lo que deja Falabella después de su comisión: costo + MXD.']
+   .forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.append(li); });
+  const segs = [
+    ['Costo (precio mayorista)', cos, '#8a5cd6', ''],
+    ['Comisión Saga 25%', com, 'var(--com)', ''],
+    ['Queda para MXD', mx, 'var(--mxd)', 'mx']
+  ];
+  const bar = $('wcas'), leg = $('wleg'); bar.innerHTML = ''; leg.innerHTML = '';
+  if (!con.length) return;
+  // barra y leyenda comparten columnas: cada leyenda queda bajo su color
+  const cols = segs.map(([, v]) => 'minmax(min(6.5rem,19%),' + Math.max(v, 0).toFixed(2) + 'fr)').join(' ');
+  bar.style.gridTemplateColumns = cols; leg.style.gridTemplateColumns = cols;
+  for (const [n, v, c, cls] of segs){
+    const d = document.createElement('div'); d.style.background = c; d.title = n + ': ' + soles(v); bar.append(d);
+    const l = document.createElement('div'); if (cls) l.className = cls; l.style.setProperty('--c', c);
+    const s = document.createElement('span'); s.textContent = n;
+    const b = document.createElement('b'); b.textContent = 'S/ ' + nf2.format(v);
+    const sm = document.createElement('small'); sm.textContent = Math.round(v/p*100) + '% del facturado' + (cls ? ' · neto ' + soles(neto) + ' (costo + MXD)' : '');
+    l.append(s, b, sm); leg.append(l);
+  }
+  // modelo por modelo
+  const mods = new Map(modelos.map(m => [m.m, m]));
+  const map = new Map();
+  for (const r of vs){
+    const o = map.get(r.m) || {m:r.m, u:0, b:0, co:0, sc:false, ult:''};
+    const c = costoItem(r); o.u++; o.b += r.p; if (r.f > o.ult) o.ult = r.f; if (c == null) o.sc = true; else o.co += c;
+    map.set(r.m, o);
+  }
+  filasCos = [...map.values()].map(o => {
+    const mo = mods.get(o.m) || {n:o.m, b:'', v:[], st:null, u:''};
+    const cm = o.b*COM, mx = o.sc ? null : o.b - o.co - cm;
+    return {...o, n: mo.n, mo, cm, mx, mxp: mx == null ? null : mx/o.b, pr: mo.v.length ? Math.max(...mo.v.map(v => v.pr)) : null, st: mo.st ?? null};
+  });
+  tablaCos();
+}
+let filasCos = [];
+const ordCos = {s:'mx', dir:-1};
+function tablaCos(){
+  const {s, dir} = ordCos;
+  filasCos.sort((x,z) => {
+    const vx = x[s] == null ? -Infinity : x[s], vz = z[s] == null ? -Infinity : z[s];
+    return (typeof vx === 'string' ? String(vx).localeCompare(String(vz),'es') : vx - vz) * dir;
+  });
+  document.querySelectorAll('#tcos th').forEach(th => th.setAttribute('aria-sort', th.dataset.s === s ? (dir === 1 ? 'ascending' : 'descending') : 'none'));
+  const maxU = Math.max(1, ...filasCos.map(f => f.u));
+  const tb = document.querySelector('#tcos tbody'); tb.innerHTML = '';
+  for (const f of filasCos){
+    const tr = document.createElement('tr');
+    const td = (txt, cls) => { const c = document.createElement('td'); if (txt != null) c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+    const tn = td(null, 'l');
+    if (f.mo.u){ const a = document.createElement('a'); a.href = f.mo.u; a.target = '_blank'; a.rel = 'noopener'; a.className = 'plink'; a.textContent = f.n; tn.append(a); } else tn.textContent = f.n;
+    if (!estado.b && f.mo.b){ const sp = document.createElement('span'); sp.className = 'sinc'; sp.textContent = ' · ' + f.mo.b; tn.append(sp); }
+    const tu = td(null); const w = document.createElement('span'); w.className = 'bar';
+    const bi = document.createElement('i'); bi.style.width = Math.max(3, f.u/maxU*40) + 'px';
+    const nu = document.createElement('span'); nu.textContent = nf0.format(f.u); w.append(bi, nu); tu.append(w);
+    td(f.pr == null ? '—' : 'S/ ' + nf2.format(f.pr));
+    td(soles(f.b));
+    if (f.sc) td('sin costo', 'sinc col-co'); else td('− ' + soles(f.co), 'resta col-co');
+    td('− ' + soles(f.cm), 'resta col-com');
+    if (f.mx == null){ td('—', 'sinc'); td('—', 'sinc'); } else { td(soles(f.mx), 'queda'); td(Math.round(f.mxp*100) + '%'); }
+    const ts = td(null); const pill = document.createElement('span');
+    if (f.st == null){ pill.textContent = 'sin ficha'; pill.className = 'pill'; pill.style.color = 'var(--muted)'; }
+    else { pill.textContent = nf0.format(f.st); pill.className = 'pill ' + (f.st === 0 ? 'cero' : f.st <= 3 ? 'bajo' : 'ok'); }
+    ts.append(pill);
+    const p = f.ult.split('-'); td(Number(p[2]) + ' ' + MESC[Number(p[1])-1] + " '" + p[0].slice(2), 'hide-sm');
+    tb.append(tr);
+  }
+}
+document.querySelectorAll('#tcos th').forEach(th => th.addEventListener('click', () => {
+  const c = th.dataset.s; if (!c) return;
+  ordCos.dir = ordCos.s === c ? -ordCos.dir : (c === 'n' ? 1 : -1); ordCos.s = c; tablaCos();
+}));
+
+const CAMP = {"ini":"2026-09-16","fin":"2026-10-16","tot":{"Impresiones":494087,"Clics":2024,"Clics cargados":1918,"Ventas":959.1,"Gasto":290,"CTR":0.004096444553287174,"CPC":0.15119916579770595,"ROAS":3.3,"ACOS":0.3024,"Número de Compras":13,"Cantidad":21,"Fecha de Inicio":"2026-09-16","Fecha de Finalización":"2026-10-16"},"mod":[{"m":"2944-NEG-S","i":338,"c":12,"g":1.5,"v":0,"h":0,"q":0,"u":0},{"m":"3571-NEG-S","i":236,"c":3,"g":0.48,"v":0,"h":0,"q":0,"u":0},{"m":"52044-NEGR-S/M","i":41372,"c":119,"g":16.48,"v":0,"h":0,"q":0,"u":0},{"m":"5600-NEG-S/M","i":318,"c":1,"g":0.15,"v":0,"h":0,"q":0,"u":0},{"m":"5601-NEG-S/M","i":400,"c":5,"g":0.7,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.02....NGR.M","i":1135,"c":7,"g":0.95,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.03CAB.BRW.M","i":2828,"c":25,"g":3.3,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.04....BLA.M","i":11108,"c":61,"g":8.4,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.05....NGR.U","i":188,"c":0,"g":0,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.05....NAT.U","i":578,"c":1,"g":0.15,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.05DES.NGR.U","i":499,"c":1,"g":0.15,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.05NYL.ZAR.U","i":2741,"c":18,"g":2.55,"v":48,"h":0,"q":1,"u":4},{"m":"SAM.05OPA.NGR.U","i":2602,"c":15,"g":2.25,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.05SED.NGR.U","i":883,"c":2,"g":0.15,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.05TRA.NGR.U","i":550,"c":2,"g":0.2,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.05VAR.NGR.U","i":10270,"c":77,"g":10.35,"v":224,"h":0,"q":4,"u":8},{"m":"SAM.05ZAP.NGR.U","i":2017,"c":9,"g":1.35,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.06CKT.NGR.M","i":2442,"c":16,"g":2.2,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.06LIG.BLASM","i":2002,"c":7,"g":1.05,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.06LOV.NGR.M","i":1420,"c":23,"g":3.1,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.07....DUR.M","i":1117,"c":5,"g":0.75,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.08PRE.NGR.M","i":1054,"c":5,"g":0.75,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.17....BLA.M","i":2466,"c":38,"g":5.25,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.20....DUR.M","i":598,"c":2,"g":0.3,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.73FIO.BLA.S","i":66078,"c":235,"g":32.73,"v":74.9,"h":0,"q":1,"u":1},{"m":"SAM.73FRI.BLA.S","i":31603,"c":132,"g":19.08,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.73LED.APR.S","i":39577,"c":119,"g":17.7,"v":149.8,"h":0,"q":2,"u":2},{"m":"SAM.73MAI.NGR.S","i":25977,"c":87,"g":12.15,"v":49.9,"h":0,"q":1,"u":1},{"m":"SAM.92ALB.MAR.S","i":72140,"c":390,"g":55.49,"v":157.8,"h":0,"q":2,"u":2},{"m":"SAM.92BAL.APR.S","i":49556,"c":170,"g":24.27,"v":0,"h":0,"q":0,"u":0},{"m":"SAM.92BEV.CHO.S","i":62242,"c":264,"g":39.78,"v":169.8,"h":0,"q":1,"u":2},{"m":"SAM.92RUB.BLA.S","i":57752,"c":173,"g":26.29,"v":84.9,"h":0,"q":1,"u":1}]};
+function campana(){
+  const B = estado.b;
+  const T = CAMP.tot, g = +T.Gasto, v = +T.Ventas;
+  const vc = todas.filter(r => VALID(r.e) && r.f >= C0 && r.f <= C1).reduce((t,r) => t + r.p, 0);
+  const box = $('c-sem'); box.innerHTML = '';
+  [['S/ ' + nf0.format(g), 'Invertido'], [nf0.format(+T.Clics), 'Clics'], ['S/ ' + nf0.format(v), 'Vendido por el anuncio'],
+   [(v*(1-COM)/g).toFixed(2) + 'x', 'Retorno neto por sol (ROAS)'], [vc ? Math.round(v/vc*100) + '%' : '—', 'De la venta del mes vino del anuncio']]
+   .forEach(([b, t]) => { const d = document.createElement('div'); const bb = document.createElement('b'); bb.textContent = b; const sp = document.createElement('span'); sp.textContent = t; d.append(bb, sp); box.append(d); });
+  const mods = new Map(modelos.map(m => [m.m, m]));
+  const filas = CAMP.mod.map(c => {
+    const m = mods.get(c.m) || {n:c.m, b:'', q:0};
+    const r = c.g ? c.v*(1-COM)/c.g : 0;
+    let l;
+    if (c.v > 0) l = r >= 1 ? 'ok' : 'no'; else if (c.c >= 30) l = 'sin'; else l = 'poco';
+    return {...c, mo:m, l, r};
+  }).filter(f => !B || f.mo.b === B);
+  const LEC = {ok:['Se paga','var(--acc)'], no:['No se paga','var(--warn)'], sin:['Clics sin venta','var(--bad)'], poco:['Poco tráfico','var(--muted)'], fuera:['Vende y no está en campaña','var(--prev)']};
+  const enCampSet = new Set(CAMP.mod.map(c => c.m));
+  const fuera = modelos.filter(m => (!B || m.b === B) && m.q >= 2 && !enCampSet.has(m.m)).sort((x,z) => z.q - x.q);
+  const gt = filas.reduce((t,f) => t + f.g, 0);
+  const por = k => filas.filter(f => f.l === k).reduce((t,f) => t + f.g, 0);
+  const top = filas.filter(f => f.l === 'ok').sort((x,z) => z.r - x.r)[0];
+  const nOk = filas.filter(f => f.l === 'ok').length, nSin = filas.filter(f => f.l === 'sin').length;
+  const bul = [
+    'Cada sol invertido volvió como ' + (v*(1-COM)/g).toFixed(2) + ' soles netos.',
+    nOk + ' modelos se pagan solos' + (top ? ' (el mejor, ' + top.mo.n + ', ' + top.r.toFixed(0) + 'x).' : '.'),
+    nSin + ' modelos reciben clics sin vender: ahí conviene cortar.',
+    'De los S/ ' + nf0.format(gt) + ' invertidos: S/ ' + nf0.format(por('ok')) + ' a modelos que se pagan, S/ ' + nf0.format(por('sin')) + ' a modelos con clics y sin venta, y S/ ' + nf0.format(por('poco')) + ' a ' + filas.filter(f => f.l === 'poco').length + ' modelos con poco tráfico (no salen en la tabla).'
+  ];
+  if (fuera.length) bul.push(fuera.map(m => m.n).slice(0,3).join(', ') + ' venden y no están en la campaña.');
+  const ul = $('c-lede'); ul.innerHTML = '';
+  bul.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.append(li); });
+  const tb = document.querySelector('#tcamp tbody'); tb.innerHTML = '';
+  const orden = {ok:1, no:2, sin:3, fuera:4, poco:5};
+  const todasF = filas.concat(fuera.map(m => ({m:m.m, i:0, c:0, g:0, v:0, q:0, r:0, u:0, mo:m, l:'fuera'})));
+  for (let i = todasF.length - 1; i >= 0; i--) if (todasF[i].l === 'poco') todasF.splice(i, 1);
+  todasF.sort((x,z) => orden[x.l] - orden[z.l] || z.r - x.r || z.g - x.g || z.mo.q - x.mo.q);
+  for (const f of todasF){
+    const tr = document.createElement('tr');
+    const td = (txt, cls) => { const c = document.createElement('td'); if (txt != null) c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+    const tn = td(f.mo.n, 'l'); if (!B && f.mo.b){ const sp = document.createElement('span'); sp.className = 'sinc'; sp.textContent = ' · ' + f.mo.b; tn.append(sp); }
+    const tl = td(null, 'l'); const p = document.createElement('span'); p.className = 'acc'; p.style.setProperty('--c', LEC[f.l][1]); p.textContent = LEC[f.l][0]; tl.append(p);
+    td(f.g ? 'S/ ' + nf2.format(f.g) : '—');
+    td(f.c ? nf0.format(f.c) : '—');
+    td(f.v ? soles(f.v) : '—');
+    td(f.u ? nf0.format(f.u) : '—');
+    td(f.v ? f.r.toFixed(1) + 'x' : '—', f.l === 'ok' ? 'queda' : '');
+    tb.append(tr);
+  }
+}
+
+document.querySelectorAll('#marca button').forEach(b => b.addEventListener('click', () => {
+  estado.b = b.dataset.b; estado.f = null;
+  document.querySelectorAll('#marca button').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  pintar();
+}));
+$('dbus').addEventListener('input', decidir);
+pintar();
+</script>
+</body></html>

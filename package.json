@@ -1,0 +1,6 @@
+{
+  "name": "mxd-dashboards",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" }
+}

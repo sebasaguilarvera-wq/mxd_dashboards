@@ -1,0 +1,769 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body><div style="position:sticky;top:0;z-index:50;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,sans-serif;padding:8px 16px;display:flex;gap:16px;align-items:center"><a href="/" style="color:#fff;text-decoration:none;font-weight:600">← MXD Dashboards</a></div>
+<title>Dashboard_ECOM_SAGA_ClassicWorld</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Panel de una columna: controles arriba, indicadores, ritmo mensual y detalle por producto */
+:root{
+  --bg:#f7f6f3; --panel:#ffffff; --line:#e2ded6; --fg:#1d1b17; --muted:#6c675e;
+  --acc:#0f6b55; --acc-soft:#e6efec; --now:#eb6834; --prev:#2a78d6; --warn:#a15c00; --bad:#b3261e; --igv:#c9c3b8; --fob:#6c675e; --imp:#c98a2e; --com:#b3261e; --mxd:#0f6b55;
+  --serif:Georgia,"Times New Roman",serif;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14171a; --panel:#1b1f23; --line:#2d3338; --fg:#eceae5; --muted:#9aa0a6;
+  --acc:#4cc5a2; --acc-soft:#1e2d29; --now:#e2743f; --prev:#5b9bea; --warn:#e0a24a; --bad:#f2918a; --igv:#454b51; --fob:#9aa0a6; --imp:#e0a24a; --com:#f2918a; --mxd:#4cc5a2;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#14171a; --panel:#1b1f23; --line:#2d3338; --fg:#eceae5; --muted:#9aa0a6;
+  --acc:#4cc5a2; --acc-soft:#1e2d29; --now:#e2743f; --prev:#5b9bea; --warn:#e0a24a; --bad:#f2918a; --igv:#454b51; --fob:#9aa0a6; --imp:#e0a24a; --com:#f2918a; --mxd:#4cc5a2;
+  color-scheme:dark;
+}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5;margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding-block:28px 56px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid;gap:26px}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:600}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,5vw,40px);line-height:1.08;margin:6px 0 0;text-wrap:balance}
+h2{font-family:var(--serif);font-weight:400;font-size:21px;margin:0}
+.lede{color:var(--muted);max-width:66ch;margin:10px 0 0;font-size:15px}
+section{display:grid;gap:12px;min-width:0}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.note{color:var(--muted);font-size:13px;max-width:72ch;margin:0}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+
+.filtros{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end}
+.campo{display:grid;gap:4px}
+.campo label{font-size:12px;color:var(--muted);font-weight:500}
+input[type=date]{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);min-width:150px}
+input[type=date]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:8px 13px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--acc-soft);color:var(--acc);font-weight:600}
+.seg button:focus-visible{outline:2px solid var(--acc);outline-offset:-2px}
+
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13.5rem),1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;padding:14px 16px;display:grid;gap:3px;align-content:start;min-width:0}
+.kpi.q{border-left-color:var(--line)}
+.kpi b{font-family:var(--serif);font-size:27px;font-weight:400;font-variant-numeric:tabular-nums;line-height:1.15}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi .d{font-size:13px;font-weight:500}
+.up{color:var(--acc)}.down{color:var(--warn)}
+
+.leyenda{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--muted);align-items:center}
+.leyenda i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:6px;vertical-align:-1px}
+.chart{overflow-x:auto}
+.chart svg{display:block;width:100%;min-width:480px;height:auto}
+.gx{font-size:11px;fill:var(--muted)}
+.gv{font-size:10.5px;fill:var(--fg);font-variant-numeric:tabular-nums}
+.gl{stroke:var(--line);stroke-width:1}
+
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{background:var(--panel);font-weight:500;color:var(--muted);font-size:12px;position:sticky;top:0;cursor:pointer}
+th.l,td.l{text-align:left;white-space:normal}
+tbody tr:hover td{background:var(--acc-soft)}
+.bar{display:inline-flex;align-items:center;gap:7px;justify-content:flex-end}
+.bar i{height:6px;border-radius:99px;background:var(--now);display:inline-block}
+.pill{display:inline-block;padding:2px 8px;border-radius:99px;font-size:12.5px;font-weight:500}
+.pill.cero{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.pill.bajo{background:color-mix(in srgb,var(--warn) 20%,transparent);color:var(--warn)}
+.pill.ok{background:var(--acc-soft);color:var(--acc)}
+a.plink{color:inherit;text-decoration:none;border-bottom:1px solid var(--line)}
+a.plink:hover{color:var(--acc);border-bottom-color:var(--acc)}
+.buscador{display:grid;gap:4px;min-width:min(100%,320px)}
+.buscador label{font-size:12px;color:var(--muted);font-weight:500}
+input[type=text]{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg);width:100%}
+input[type=text]:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.ficha{display:flex;flex-wrap:wrap;gap:18px;font-size:13px;color:var(--muted);margin-top:2px}
+.ficha b{color:var(--fg);font-weight:500;font-variant-numeric:tabular-nums}
+.vacio{color:var(--muted);font-size:14px;padding:18px 0;text-align:center}
+.foot{font-size:12.5px;color:var(--muted);max-width:74ch;margin:0}
+
+.alertas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15rem),1fr));gap:12px}
+.alerta{font:inherit;text-align:left;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--sev,var(--acc));border-radius:10px;padding:14px 16px;display:grid;gap:4px;align-content:start;min-width:0;cursor:pointer}
+.alerta:hover{border-color:var(--sev,var(--acc))}
+.alerta:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.alerta .tag{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;color:var(--sev,var(--acc))}
+.alerta b{font-family:var(--serif);font-size:27px;font-weight:400;line-height:1.15;font-variant-numeric:tabular-nums}
+.alerta span{font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:99px;padding:5px 12px;cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip i{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted))}
+.chip[aria-pressed=true]{background:var(--acc-soft);border-color:var(--acc);font-weight:600}
+.chip:focus-visible{outline:2px solid var(--acc);outline-offset:1px}
+.acc{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12.5px;font-weight:500;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 15%,transparent)}
+.ritmo{display:inline-grid;grid-template-columns:repeat(12,9px);column-gap:2px;row-gap:1px;vertical-align:middle}
+.ritmo em{font-style:normal;font-size:8.5px;line-height:1;text-align:center;color:var(--muted)}
+.ritmo i{width:9px;height:12px;border-radius:2px;background:var(--line)}
+.ritmo i.on{background:var(--now)}
+
+.inact{font-size:11px;color:var(--bad);margin-left:6px}
+.sc.bajo{color:var(--warn);font-weight:600}
+.cas{display:grid;height:44px;border-radius:8px;overflow:hidden;background:var(--line)}
+.cas div{height:100%;min-width:2px}
+.casleg{display:grid;margin-top:12px}
+.casleg div{display:flex;flex-direction:column;gap:3px;font-size:13px;padding:8px 10px 0 0;border-top:3px solid var(--c);min-width:0;hyphens:auto}
+.casleg i{display:none}
+.casleg b{font-weight:500;font-variant-numeric:tabular-nums}
+.casleg small{color:var(--muted);font-size:12px}
+@media (max-width:640px){.casleg div{font-size:11px;padding-right:5px;overflow-wrap:anywhere}.casleg small{font-size:11px}.casleg .mx b{font-size:17px!important}}
+.casleg .mx b{font-family:var(--serif);font-size:22px;font-weight:400}
+.sinc{color:var(--muted);font-size:12px}
+.resta{color:var(--muted)}
+.col-co,th[data-s=co]{background:color-mix(in srgb,#8a5cd6 11%,var(--panel))}
+.col-com,th[data-s=cm]{background:color-mix(in srgb,var(--acc) 10%,var(--panel))}
+.queda{color:var(--acc);font-weight:600}
+th[data-s=co],th[data-s=cm],th[data-s=iv],th[data-s=mx],th[data-s=mxp]{white-space:normal;line-height:1.25}
+@media (max-width:620px){.hide-sm{display:none}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Saga Falabella · Classic World</div>
+    <h1>Dashboard_ECOM_SAGA_ClassicWorld</h1>
+    <p class="lede" id="lede">—</p>
+  </header>
+
+
+  <section>
+    <div class="panel">
+      <div class="filtros">
+        <div class="campo"><label for="desde">Desde</label><input type="date" id="desde"></div>
+        <div class="campo"><label for="hasta">Hasta</label><input type="date" id="hasta"></div>
+        <div class="campo"><label>Atajos</label>
+          <div class="seg" id="presets">
+            <button data-p="2026">2026</button>
+            <button data-p="2025">2025</button>
+            <button data-p="12m">Últimos 12 meses</button>
+            <button data-p="todo">Todo</button>
+          </div>
+        </div>
+        <div class="campo"><label>Medida</label>
+          <div class="seg" id="medida">
+            <button data-m="soles" aria-pressed="true">Soles</button>
+            <button data-m="unid" aria-pressed="false">Unidades</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="kpis">
+      <div class="kpi"><b id="k-bruto">—</b><span>Facturado en el rango</span><span class="d" id="c-bruto">—</span></div>
+      <div class="kpi"><b id="k-neto">—</b><span>Neto después de comisión</span><span class="d" id="c-neto">—</span></div>
+      <div class="kpi q"><b id="k-unid">—</b><span>Unidades vendidas</span><span class="d" id="c-unid">—</span></div>
+      <div class="kpi q"><b id="k-ticket">—</b><span>Ticket neto por unidad</span><span class="d" id="c-ticket">—</span></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head"><h2>De la venta a lo que te queda</h2></div>
+    <p class="note" id="w-note">—</p>
+    <div class="panel">
+      <div class="cas" id="cas" role="img" aria-label="Reparto de la venta"></div>
+      <div class="casleg" id="casleg"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head"><h2 id="g-tit">Ritmo mes a mes</h2></div>
+    <p class="note" id="g-note">—</p>
+    <div class="panel">
+      <div class="leyenda" id="leg"></div>
+      <div class="chart" id="chart"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head"><h2>Producto por producto</h2></div>
+    <p class="note" id="t-note">—</p>
+    <div class="panel">
+      <div class="tablewrap">
+        <table id="tabla">
+          <thead><tr>
+            <th class="hide-sm l" data-s="k">SKU</th>
+            <th class="l" data-s="n">Producto</th>
+            <th data-s="u">Unid.</th>
+            <th data-s="pr">Precio hoy<br>(con IGV)</th>
+            <th data-s="b">Facturado</th>
+            <th data-s="co">− Costo<br>(FOB + importación)</th>
+            <th data-s="cm">− Comisión<br>Saga 15%</th>
+            <th data-s="iv">− IGV<br>18%</th>
+            <th data-s="mx">= Queda<br>MXD</th>
+            <th data-s="mxp">% del<br>facturado</th>
+            <th data-s="st">Stock hoy</th>
+            <th class="hide-sm" data-s="ult">Última venta</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="vacio" id="vacio" hidden>No hay ventas en el rango elegido.</div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head">
+      <h2 id="s-tit">Secuencia de un producto desde 2025</h2>
+      <div class="seg" id="s-medida">
+        <button data-m="soles" aria-pressed="true">Soles</button>
+        <button data-m="unid" aria-pressed="false">Unidades</button>
+      </div>
+    </div>
+    <p class="note">Mes a mes desde enero de 2025, sin importar el rango elegido arriba. Escribe para buscar el producto.</p>
+    <div class="panel">
+      <div class="buscador">
+        <label for="prod">Producto</label>
+        <input type="text" id="prod" list="prods" placeholder="Escribe parte del nombre o el SKU" autocomplete="off">
+        <datalist id="prods"></datalist>
+      </div>
+      <div class="ficha" id="s-ficha"></div>
+      <div class="leyenda" id="s-leg"></div>
+      <div class="chart" id="s-chart"></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head"><h2>Lo que pide atención hoy</h2></div>
+    <p class="note">Toca una tarjeta para ver esas fichas en la tabla de abajo.</p>
+    <div class="alertas" id="alertas"></div>
+  </section>
+
+  <section id="decidir">
+    <div class="head"><h2>Qué hacer con cada ficha</h2></div>
+    <p class="note" id="d-note">—</p>
+    <div class="buscador"><label for="dbus">Buscar ficha</label><input type="text" id="dbus" placeholder="Escribe parte del nombre o el SKU" autocomplete="off"></div>
+    <div class="chips" id="chips"></div>
+    <div class="panel">
+      <div class="tablewrap">
+        <table id="tdec">
+          <thead><tr>
+            <th class="l">Producto</th>
+            <th class="l">Acción</th>
+            <th>Vendidas 12 m</th>
+            <th class="l">Meses con venta (nov a oct)</th>
+            <th>Días sin vender</th>
+            <th>Stock</th>
+            <th class="hide-sm">Stock en S/</th>
+            <th class="hide-sm">Content Score</th>
+            <th class="hide-sm">Fotos</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+    <ul class="foot" style="padding-left:18px;margin-top:10px;line-height:1.6">
+      <li><b>Reponer:</b> vendió en 2 o más meses del último año y tiene 2 u o menos.</li>
+      <li><b>Impulsar:</b> vendió en 2 o más meses y tiene stock.</li>
+      <li><b>Evaluar reponer:</b> vendió una vez y está en 0.</li>
+      <li><b>Vigilar:</b> vendió una vez y tiene stock.</li>
+      <li><b>Arreglar ficha:</b> no vendió en 12 meses y tiene Content Score bajo 85 o menos de 5 fotos.</li>
+      <li><b>Dormida:</b> no vendió en 12 meses aunque la ficha está completa; conviene moverla a tiendas o promocionarla.</li>
+    </ul>
+  </section>
+
+  <ul class="foot" style="padding-left:18px;line-height:1.6">
+    <li><b>Fuente:</b> Classic World en Saga Falabella, traído de la API de Seller Center el 16 de octubre de 2026.</li>
+    <li><b>Venta:</b> cuenta el pedido entregado o enviado; lo cancelado y lo devuelto se excluye.</li>
+    <li><b>Neto:</b> descuenta la comisión de juguetería de Falabella, 15% con IGV sobre el precio del producto, sin el envío.</li>
+    <li><b>Costo:</b> FOB + importación del Excel de costos de setiembre 2026; los que faltaban, de la lista de Iván.</li>
+    <li><b>Comparación:</b> toma el mismo rango de días del año anterior.</li>
+  </ul>
+</div>
+
+<script>
+const DATA = {"ventas":[{"f":"2025-01-06","k":"40527","n":"Maraca Arco Iris Rainbow Marca Classic World","e":"Devuelto","p":28.0},{"f":"2025-02-15","k":"53771","n":"Transportador de Coches de Madera marca Classic World","e":"Entregado","p":109.9},{"f":"2025-02-15","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2025-03-11","k":"53658","n":"Garaje Moderno de Madera marca Classic World","e":"Entregado","p":396.9},{"f":"2025-03-24","k":"50575","n":"Bandeja Desayuno Vintage Vintage Breakfast Tray ClassicWorld","e":"Entregado","p":130.0},{"f":"2025-03-25","k":"20192","n":"Cubo Actividades Abeja Honeybee Activity Cube Classic World","e":"Entregado","p":375.0},{"f":"2025-03-25","k":"20102","n":"Anillos Apilables Pequeño Bosque marca Classic World","e":"Entregado","p":119.9},{"f":"2025-03-25","k":"CW20100","n":"Torre del Oso Bear Tower Classic World","e":"Entregado","p":65.0},{"f":"2025-03-25","k":"20101","n":"Apilables Jardín Flores Rings Flower Garden Classic World","e":"Entregado","p":98.0},{"f":"2025-03-28","k":"3567","n":"Cubos Apilables marca Classic World","e":"Entregado","p":89.9},{"f":"2025-05-02","k":"40528","n":"Hacedor de Lluvia Sonaja marca Classic World","e":"Entregado","p":39.9},{"f":"2025-05-08","k":"40527","n":"Maraca Arco Iris Rainbow Marca Classic World","e":"Entregado","p":28.0},{"f":"2025-05-11","k":"3567","n":"Cubos Apilables marca Classic World","e":"Entregado","p":89.9},{"f":"2025-06-04","k":"40528","n":"Hacedor de Lluvia Sonaja marca Classic World","e":"Entregado","p":39.9},{"f":"2025-06-21","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2025-06-23","k":"50574","n":"Banco de Trabajo Cohete de Madera marca Classic World","e":"Entregado","p":417.9},{"f":"2025-06-27","k":"CW4164","n":"110 Juego de Trenes -  110 Train Set - Classic World","e":"Entregado","p":482.0},{"f":"2025-06-29","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2025-07-04","k":"3567","n":"Cubos Apilables marca Classic World","e":"Entregado","p":89.9},{"f":"2025-07-07","k":"3567","n":"Cubos Apilables marca Classic World","e":"Entregado","p":89.9},{"f":"2025-07-11","k":"40528","n":"Hacedor de Lluvia Sonaja marca Classic World","e":"Entregado","p":39.9},{"f":"2025-08-18","k":"4025","n":"Xilófono Estrella Star Xylophone Classic World","e":"Entregado","p":96.0},{"f":"2025-08-28","k":"20170","n":"Tablero cohete Rocket Busy Board Classic World","e":"Entregado","p":123.0},{"f":"2025-08-28","k":"20171","n":"Tablero Viajero Travelling Busy Board Classic World","e":"Entregado","p":123.0},{"f":"2025-08-28","k":"53771","n":"Transportador de Coches de Madera marca Classic World","e":"Entregado","p":109.9},{"f":"2025-09-04","k":"CW10030","n":"Set de juego para bebé Mara Mara Baby Play set Classic World","e":"Entregado","p":99.0},{"f":"2025-09-12","k":"CW53634","n":"Mi Primera Camara - My First Camera - Classic World","e":"Devuelto","p":74.0},{"f":"2025-09-19","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2025-09-21","k":"3567","n":"Cubos Apilables marca Classic World","e":"Cancelado","p":89.9},{"f":"2025-09-27","k":"3632","n":"Cuentas del Zoo Zoo Beads Classic World","e":"Entregado","p":56.0},{"f":"2025-10-20","k":"3326","n":"Andador Didactico Learning Walker Classic World","e":"Entregado","p":390.0},{"f":"2025-11-03","k":"3644","n":"Puzzle Geometrico Geometry Puzzle Classic World","e":"Entregado","p":45.0},{"f":"2025-11-18","k":"54181","n":"Abaco Abacus Classic World","e":"Entregado","p":140.0},{"f":"2025-11-29","k":"50509","n":"Juego de Tostadora de Madera marca Classic World","e":"Entregado","p":124.9},{"f":"2025-11-29","k":"50560","n":"Cafetera Coffee Maker de Madera Classic World","e":"Entregado","p":136.0},{"f":"2025-12-09","k":"3326","n":"Andador Didactico Learning Walker Classic World","e":"Entregado","p":390.0},{"f":"2025-12-09","k":"54167","n":"Caja Registradora de Madera Cash Register Classic World","e":"Entregado","p":150.9},{"f":"2025-12-14","k":"54426","n":"Puzzle Alfabetico Alphabet Puzzle Classic World","e":"Entregado","p":58.0},{"f":"2025-12-17","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2025-12-18","k":"CW50556","n":"Set Pequeño Dentista - Little Dentist Set - Classic World","e":"Entregado","p":128.0},{"f":"2025-12-19","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2025-12-20","k":"CW4164","n":"110 Juego de Trenes -  110 Train Set - Classic World","e":"Entregado","p":482.0},{"f":"2025-12-20","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2025-12-21","k":"40528","n":"Hacedor de Lluvia Sonaja marca Classic World","e":"Entregado","p":39.9},{"f":"2025-12-21","k":"20188","n":"Hacer el Arca de Noe Making Noahs Ark Classic World","e":"Cancelado","p":151.0},{"f":"2025-12-21","k":"20188","n":"Hacer el Arca de Noe Making Noahs Ark Classic World","e":"Entregado","p":151.0},{"f":"2026-01-02","k":"10515","n":"Robot Caminante Robot Walker Classic World","e":"Entregado","p":464.0},{"f":"2026-01-26","k":"54167","n":"Caja Registradora de Madera Cash Register Classic World","e":"Entregado","p":150.9},{"f":"2026-02-28","k":"CW53634","n":"Mi Primera Camara - My First Camera - Classic World","e":"Cancelado","p":74.0},{"f":"2026-03-15","k":"20211","n":"Bloques de Mármol Marble Blocks Classic World","e":"Entregado","p":230.0},{"f":"2026-03-18","k":"40036","n":"Rompecabezas Coco Egipto Coco In Egypt Puzzle ClassicWorld","e":"Entregado","p":58.0},{"f":"2026-03-18","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2026-03-23","k":"20211","n":"Bloques de Mármol Marble Blocks Classic World","e":"Entregado","p":173.6},{"f":"2026-03-25","k":"20170","n":"Tablero cohete Rocket Busy Board Classic World","e":"Cancelado","p":123.0},{"f":"2026-04-13","k":"CW54419","n":"Maletín de Médico - Doctor Case - Classic World","e":"Entregado","p":129.0},{"f":"2026-04-29","k":"50571","n":"Cocina Retro Azul Blue Retro Kitchen de Madera Classic World","e":"Entregado","p":697.0},{"f":"2026-05-11","k":"4027","n":"Guitarra Tucán de Madera marca Classic World","e":"Entregado","p":152.9},{"f":"2026-05-12","k":"CW10030","n":"Set de juego para bebé Mara Mara Baby Play set Classic World","e":"Entregado","p":99.0},{"f":"2026-05-15","k":"40528","n":"Hacedor de Lluvia Sonaja marca Classic World","e":"Entregado","p":39.9},{"f":"2026-05-15","k":"40528","n":"Hacedor de Lluvia Sonaja marca Classic World","e":"Entregado","p":39.9},{"f":"2026-06-04","k":"54167","n":"Caja Registradora de Madera Cash Register Classic World","e":"Entregado","p":150.9},{"f":"2026-06-04","k":"54167","n":"Caja Registradora de Madera Cash Register Classic World","e":"Entregado","p":150.9},{"f":"2026-06-04","k":"54167","n":"Caja Registradora de Madera Cash Register Classic World","e":"Entregado","p":150.9},{"f":"2026-06-10","k":"20170","n":"Tablero cohete Rocket Busy Board Classic World","e":"Cancelado","p":123.0},{"f":"2026-06-18","k":"20168","n":"Tablero camión bomberos Fire Engine Busy Board Classic World","e":"Entregado","p":123.0},{"f":"2026-06-29","k":"54181","n":"Abaco Abacus Classic World","e":"Entregado","p":140.0},{"f":"2026-07-05","k":"3644","n":"Puzzle Geometrico Geometry Puzzle Classic World","e":"Entregado","p":45.0},{"f":"2026-07-15","k":"40528","n":"Hacedor de Lluvia Sonaja marca Classic World","e":"Entregado","p":39.9},{"f":"2026-07-15","k":"4027","n":"Guitarra Tucán de Madera marca Classic World","e":"Entregado","p":152.9},{"f":"2026-07-20","k":"4027","n":"Guitarra Tucán de Madera marca Classic World","e":"Entregado","p":152.9},{"f":"2026-07-20","k":"4027","n":"Guitarra Tucán de Madera marca Classic World","e":"Entregado","p":152.9},{"f":"2026-07-27","k":"CW53634","n":"Mi Primera Camara - My First Camera - Classic World","e":"Entregado","p":74.0},{"f":"2026-08-11","k":"3634","n":"Cuentas del Bosque Forest Beads Classic World","e":"Entregado","p":56.0},{"f":"2026-09-21","k":"40531","n":"Rainmaker Classic World","e":"Entregado","p":49.0},{"f":"2026-09-24","k":"3752","n":"Juego Torre Colorido de Lujo Deluxe Tower Game Classic World","e":"Entregado","p":84.0},{"f":"2026-10-02","k":"CW53634","n":"Mi Primera Camara - My First Camera - Classic World","e":"Enviado","p":74.0}],"stock":{"2824":{"n":"Fruta para Cortar de Madera","s":119,"pr":94.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132405696/Fruta-para-Cortar-de-Madera/132405697"},"54167":{"n":"Caja Registradora de Madera Cash Register Classic World","s":112,"pr":150.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132452521/Caja-Registradora-de-Madera-Cash-Register-Classic-World/132452522"},"20172":{"n":"Caja de Actividades Gallina Feliz","s":0,"pr":352.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132452431/Caja-de-Actividades-Gallina-Feliz/132452432"},"20102":{"n":"Anillos Apilables Pequeño Bosque marca Classic World","s":8,"pr":119.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132453129/Anillos-Apilables-Pequen%CC%83o-Bosque-marca-Classic-World/132453130"},"50574":{"n":"Banco de Trabajo Cohete de Madera marca Classic World","s":1,"pr":417.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132453252/Banco-de-Trabajo-Cohete-de-Madera-marca-Classic-World/132453253"},"50563":{"n":"Cabaña de Flores de Madera marca Classic World","s":0,"pr":434.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132454764/Caba%C3%B1a-de-Flores-de-Madera-marca-Classic-World/132454765"},"53658":{"n":"Garaje Moderno de Madera marca Classic World","s":0,"pr":396.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132454846/Garaje-Moderno-de-Madera-marca-Classic-World/132454847"},"53818":{"n":"90 Cuentas de Cordón, de Madera, marca Classic World","s":80,"pr":79.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132462899/90-Cuentas-de-Cordo%CC%81n-de-Madera-marca-Classic-World/132462900"},"3538":{"n":"Bloques Geométricos de Madera marca Classic World","s":1,"pr":104.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132463118/Bloques-Geome%CC%81tricos-de-Madera-marca-Classic-World/132463119"},"5106":{"n":"Bloques Uni León Rompecabezas marca Classic World","s":60,"pr":79.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132464790/Bloques-Uni-Leon-Rompecabezas-marca-Classic-World/132464791"},"53863":{"n":"Cocina de Sobremesa 2 en 1, de Madera, marca Classic World","s":10,"pr":255.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132465379/Cocina-de-Sobremesa-2-en-1-de-Madera-marca-Classic-World/132465380"},"40559":{"n":"Conjunto de Música Iris de Madera marca Classic World","s":30,"pr":199.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132468908/Conjunto-de-Mu%CC%81sica-Iris-de-Madera-marca-Classic-World/132468909"},"3567":{"n":"Cubos Apilables marca Classic World","s":0,"pr":89.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132468951/Cubos-Apilables-marca-Classic-World/132468952"},"4027":{"n":"Guitarra Tucán de Madera marca Classic World","s":17,"pr":152.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132468962/Guitarra-Tuca%CC%81n-de-Madera-marca-Classic-World/132468963"},"40528":{"n":"Hacedor de Lluvia Sonaja marca Classic World","s":133,"pr":49.0,"u":"https://www.falabella.com.pe/falabella-pe/product/132468979/Hacedor-de-Lluvia-Sonaja-marca-Classic-World/132468980"},"3537":{"n":"Juego de Apilamiento y Equilibrio marca Classic World","s":0,"pr":87.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132469062/Juego-de-Apilamiento-y-Equilibrio-marca-Classic-World/132469063"},"50509":{"n":"Juego de Tostadora de Madera marca Classic World","s":95,"pr":124.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132469236/Juego-de-Tostadora-de-Madera-marca-Classic-World/132469237"},"3570":{"n":"Pista de Carreras F1 de Madera marca Classic World","s":2,"pr":199.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132469155/Pista-de-Carreras-F1-de-Madera-marca-Classic-World/132469156"},"53771":{"n":"Transportador de Coches de Madera marca Classic World","s":0,"pr":109.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132469163/Transportador-de-Coches-de-Madera-marca-Classic-World/132469164"},"20164":{"n":"Vida de Colores de Madera marca Classic World","s":144,"pr":97.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132469267/Vida-de-Colores-de-Madera-marca-Classic-World/132469268"},"4028":{"n":"Xilófono Tucán de Madera marca Classic World","s":120,"pr":90.9,"u":"https://www.falabella.com.pe/falabella-pe/product/132469286/Xilo%CC%81fono-Tuca%CC%81n-de-Madera-marca-Classic-World/132469287"},"50575":{"n":"Bandeja Desayuno Vintage Vintage Breakfast Tray ClassicWorld","s":10,"pr":130.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569556/Bandeja-Desayuno-Vintage-Vintage-Breakfast-Tray-ClassicWorld/135569557"},"50571":{"n":"Cocina Retro Azul Blue Retro Kitchen de Madera Classic World","s":0,"pr":697.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569558/Cocina-Retro-Azul-Blue-Retro-Kitchen-de-Madera-Classic-World/135569559"},"2825":{"n":"Juego de Vegetales p cortar Cutting Vegetable ClassicWorld","s":20,"pr":95.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135568573/Juego-de-Vegetales-p-cortar-Cutting-Vegetable-ClassicWorld/135568574"},"5011":{"n":"Juego Cortar Verdudas Cutting Vegetables Puzzle ClassicWorld","s":9,"pr":100.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569560/Juego-Cortar-Verdudas-Cutting-Vegetables-Puzzle-ClassicWorld/135569561"},"5012":{"n":"Juego para Cortar Frutas Cutting Fruit Puzzle ClassicWorld","s":10,"pr":100.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569238/Juego-para-Cortar-Frutas-Cutting-Fruit-Puzzle-ClassicWorld/135569239"},"50560":{"n":"Cafetera Coffee Maker de Madera Classic World","s":10,"pr":136.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569562/Cafetera-Coffee-Maker-de-Madera-Classic-World/135569564"},"CW50576":{"n":"Juego de Te Vintage Vintage Afternoon Tea Set Classic World","s":4,"pr":158.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569563/Juego-de-Te-Vintage-Vintage-Afternoon-Tea-Set-Classic-World/135569565"},"CW53627":{"n":"Mi Primer Teléfono - My First Cell Phone - Classic World","s":10,"pr":80.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479801/Mi-Primer-Telefono-My-First-Cell-Phone-Classic-World/135479802"},"CW20180":{"n":"Tablero de Tornillos - Screw Board - Classic World","s":10,"pr":119.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479803/Tablero-de-Tornillos-Screw-Board-Classic-World/135479804"},"CW3655":{"n":"Tic-tac - Classic World","s":10,"pr":90.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479805/Tic-tac-Classic-World/135479806"},"CW50585":{"n":"Juego de Bomberos - Firefighting Set - Classic World","s":10,"pr":173.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135473337/Juego-de-Bomberos-Firefighting-Set-Classic-World/135473338"},"CW50556":{"n":"Set Pequeño Dentista - Little Dentist Set - Classic World","s":0,"pr":128.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479797/Set-Peque%C3%B1o-Dentista-Little-Dentist-Set-Classic-World/135479798"},"CW54402":{"n":"Set de Maquillaje - Make-up Set - Classic World","s":0,"pr":124.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479774/Set-de-Maquillaje-Make-up-Set-Classic-World/135479775"},"CW54419":{"n":"Maletín de Médico - Doctor Case - Classic World","s":0,"pr":129.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135474637/Maletin-de-Medico-Doctor-Case-Classic-World/135474638"},"CW4164":{"n":"110 Juego de Trenes -  110 Train Set - Classic World","s":0,"pr":482.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479772/110-Juego-de-Trenes-110-Train-Set-Classic-World/135479773"},"CW53634":{"n":"Mi Primera Camara - My First Camera - Classic World","s":8,"pr":74.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479770/Mi-Primera-Camara-My-First-Camera-Classic-World/135479771"},"CW3511":{"n":"Pequeño Juego Carpintero Small Carpenter Set Classic World","s":0,"pr":140.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135475633/Peque%C3%B1o-Juego-Carpintero-Small-Carpenter-Set-Classic-World/135475634"},"20168":{"n":"Tablero camión bomberos Fire Engine Busy Board Classic World","s":9,"pr":123.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479809/Tablero-camion-bomberos-Fire-Engine-Busy-Board-Classic-World/135479810"},"20170":{"n":"Tablero cohete Rocket Busy Board Classic World","s":18,"pr":123.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479811/Tablero-cohete-Rocket-Busy-Board-Classic-World/135479812"},"20171":{"n":"Tablero Viajero Travelling Busy Board Classic World","s":0,"pr":123.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135479813/Tablero-Viajero-Travelling-Busy-Board-Classic-World/135479814"},"20147":{"n":"Hercules Levanta Pesas Hercules Weightlifting Classic World","s":20,"pr":99.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135481261/Hercules-Levanta-Pesas-Hercules-Weightlifting-Classic-World/135481262"},"54181":{"n":"Abaco Abacus Classic World","s":20,"pr":140.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135481357/Abaco-Abacus-Classic-World/135481358"},"54556":{"n":"Apilador Contador Counting Stacker Classic World","s":20,"pr":98.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135481462/Apilador-Contador-Counting-Stacker-Classic-World/135481463"},"CW10027":{"n":"Caja Hola 0M+  Hello Box 0M+ Classic World","s":20,"pr":210.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135495926/Caja-Hola-0M%2B-Hello-Box%C2%A00M%2B-Classic-World/135495927"},"CW10028":{"n":"Caja Hola 6-12m Hello Box 6M+ Classic World","s":20,"pr":205.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135495979/Caja-Hola-6-12m-Hello-Box-6M%2B-Classic-World/135495980"},"CW10030":{"n":"Set de juego para bebé Mara Mara Baby Play set Classic World","s":10,"pr":99.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135496085/Set-de-juego-para-bebe-Mara-Mara-Baby-Play-set-Classic-World/135496086"},"CW20100":{"n":"Torre del Oso Bear Tower Classic World","s":0,"pr":65.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135496152/Torre-del-Oso-Bear-Tower-Classic-World/135496153"},"CW20137":{"n":"Banco golpea erizos Hedgehog Pounding Bench Classic World","s":0,"pr":132.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135496168/Banco-golpea-erizos-Hedgehog-Pounding-Bench-Classic-World/135496169"},"40579":{"n":"Set de Música Vintage Classic World","s":19,"pr":199.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135498111/Set-de-Mu%CC%81sica-Vintage-Classic-World/135498112"},"4025":{"n":"Xilófono Estrella Star Xylophone Classic World","s":19,"pr":96.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135498383/Xilofono-Estrella-Star-Xylophone-Classic-World/135498384"},"40531":{"n":"Rainmaker Classic World","s":18,"pr":49.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135498704/Rainmaker-Classic-World/135498705"},"40527":{"n":"Maraca Arco Iris Rainbow Marca Classic World","s":0,"pr":28.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135498714/Maraca-Arco-Iris-Rainbow-Marca-Classic-World/135498715"},"10519":{"n":"Jungla para Jalar Pull Jungle Classic World","s":0,"pr":155.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135511753/Jungla-para-Jalar-Pull-Jungle-Classic-World/135511754"},"10513":{"n":"Patos para Jalar Pull Padding Duck Classic World","s":0,"pr":109.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135511850/Patos-para-Jalar-Pull-Padding-Duck-Classic-World/135511851"},"10508":{"n":"Tren para Jalar Pull Train Classic World","s":0,"pr":160.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135511901/Tren-para-Jalar-Pull-Train-Classic-World/135511902"},"10509":{"n":"Andador 2 en1 2in1 Rider Walker Classic World","s":2,"pr":336.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135512005/Andador-2-en1-2in1-Rider-Walker-Classic-World/135512006"},"10517":{"n":"Caballo Balancin Rocking Horse Classic World","s":2,"pr":335.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135520304/Caballo-Balancin-Rocking-Horse-Classic-World/135520305"},"60002":{"n":"Bicleta de Equilibrio Balance Bike Classic World","s":3,"pr":603.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135520312/Bicleta-de-Equilibrio-Balance-Bike-Classic-World/135520313"},"53870":{"n":"Pizarra de Mesa Tabletop Easel Classic World","s":20,"pr":290.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135520413/Pizarra-de-Mesa-Tabletop-Easel-Classic-World/135520414"},"53887":{"n":"Pizarra Multifuncional Multi-functional Easel Classic World","s":2,"pr":545.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135520359/Pizarra-Multifuncional-Multi-functional-Easel-Classic-World/135520360"},"3632":{"n":"Cuentas del Zoo Zoo Beads Classic World","s":12,"pr":56.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135531000/Cuentas-del-Zoo-Zoo-Beads-Classic-World/135531001"},"3634":{"n":"Cuentas del Bosque Forest Beads Classic World","s":18,"pr":56.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135530771/Cuentas-del-Bosque-Forest-Beads-Classic-World/135530772"},"20199":{"n":"Vida en el Bosque Forest Life Classic World","s":2,"pr":267.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135533343/Vida-en-el-Bosque-Forest-Life-Classic-World/135533344"},"20192":{"n":"Cubo Actividades Abeja Honeybee Activity Cube Classic World","s":4,"pr":375.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135533329/Cubo-Actividades-Abeja-Honeybee-Activity-Cube-Classic-World/135533330"},"4121":{"n":"Cohete Multiactividad Multi-Activity Rocket Classic World","s":0,"pr":516.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135533313/Cohete-Multiactividad-Multi-Activity-Rocket-Classic-World/135533315"},"20101":{"n":"Apilables Jardín Flores Rings Flower Garden Classic World","s":0,"pr":98.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135534393/Apilables-Jardin-Flores-Rings-Flower-Garden-Classic-World/135534400"},"3708":{"n":"Juego de Bloques Buho Owl Blocks Set Classic World","s":15,"pr":91.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135534413/Juego-de-Bloques-Buho-Owl-Blocks-Set-Classic-World/135534414"},"3326":{"n":"Andador Didactico Learning Walker Classic World","s":0,"pr":390.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135538659/Andador-Didactico-Learning-Walker-Classic-World/135538660"},"10515":{"n":"Robot Caminante Robot Walker Classic World","s":0,"pr":464.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135538201/Robot-Caminante-Robot-Walker-Classic-World/135538202"},"20220":{"n":"Dominó Oceánico Ocean Dominoes Classic World","s":20,"pr":195.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135566576/Domino-Oceanico-Ocean-Dominoes-Classic-World/135566577"},"20211":{"n":"Bloques de Mármol Marble Blocks Classic World","s":18,"pr":230.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569643/Bloques-de-Marmol-Marble-Blocks-Classic-World/135569644"},"54174":{"n":"Bloques de Exploracion Exploration Blocks Classic World","s":10,"pr":104.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569637/Bloques-de-Exploracion-Exploration-Blocks-Classic-World/135569638"},"20128":{"n":"Bloques de cubos dulces Sweet Cube Blocks Classic World","s":20,"pr":116.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569593/Bloques-de-cubos-dulces-Sweet-Cube-Blocks-Classic-World/135569594"},"5005":{"n":"Bloques ConstrucciónCiudades CityBuildingBlocks ClassicWorld","s":9,"pr":237.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135571076/Bloques-ConstruccionCiudades-CityBuildingBlocks-ClassicWorld/135571077"},"3752":{"n":"Juego Torre Colorido de Lujo Deluxe Tower Game Classic World","s":19,"pr":84.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135569663/Juego-Torre-Colorido-de-Lujo-Deluxe-Tower-Game-Classic-World/135569664"},"20179":{"n":"Bloques Iris Iris Blocks Classic World","s":20,"pr":157.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135567801/Bloques-Iris-Iris-Blocks-Classic-World/135567802"},"20188":{"n":"Hacer el Arca de Noe Making Noahs Ark Classic World","s":0,"pr":151.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135578038/Hacer-el-Arca-de-Noe-Making-Noahs-Ark-Classic-World/135578039"},"40036":{"n":"Rompecabezas Coco Egipto Coco In Egypt Puzzle ClassicWorld","s":8,"pr":58.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135578121/Rompecabezas-Coco-Egipto-Coco-In-Egypt-Puzzle-ClassicWorld/135578122"},"40037":{"n":"Rompecabezas Coco Reino Unido Coco In UK Puzzle ClassicWorld","s":8,"pr":58.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135579222/Rompecabezas-Coco-Reino-Unido-Coco-In-UK-Puzzle-ClassicWorld/135579223"},"40038":{"n":"Rompecabezas Coco Francia Coco In France Puzzle ClassicWorld","s":8,"pr":58.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135578557/Rompecabezas-Coco-Francia-Coco-In-France-Puzzle-ClassicWorld/135578558"},"3644":{"n":"Puzzle Geometrico Geometry Puzzle Classic World","s":18,"pr":45.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135579147/Puzzle-Geometrico-Geometry-Puzzle-Classic-World/135579148"},"54433":{"n":"Puzzle de Numeros Number Puzzle Classic World","s":20,"pr":42.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135578449/Puzzle-de-Numeros-Number-Puzzle-Classic-World/135578450"},"54426":{"n":"Puzzle Alfabetico Alphabet Puzzle Classic World","s":50,"pr":58.0,"u":"https://www.falabella.com.pe/falabella-pe/product/135578371/Puzzle-Alfabetico-Alphabet-Puzzle-Classic-World/135578372"}}};
+const COM = 0.15;
+const MES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const nf0 = new Intl.NumberFormat('es-PE', {maximumFractionDigits:0});
+const nf2 = new Intl.NumberFormat('es-PE', {minimumFractionDigits:2, maximumFractionDigits:2});
+const soles = v => 'S/ ' + nf0.format(v);
+const VALID = e => e === 'Entregado' || e === 'Enviado';
+const ventas = DATA.ventas.filter(r => VALID(r.e));
+const MIN = ventas[0].f, MAX = ventas[ventas.length-1].f;
+const estado = {m:'soles', sort:'b', dir:-1};
+
+const $ = id => document.getElementById(id);
+const desde = $('desde'), hasta = $('hasta');
+desde.min = hasta.min = MIN; desde.max = hasta.max = MAX;
+desde.value = MAX.slice(0,4) + '-01-01'; hasta.value = MAX;
+
+
+// --- costo de venta (Excel de importación, setiembre 2026): FOB y costo de importación por unidad, en S/ sin IGV
+const COSTO = {"10048":{"fob":59.79,"imp":14.57},"10049":{"fob":19.57,"imp":2.39},"10031":{"fob":10.78,"imp":1.95},"53627":{"fob":14.5,"imp":0.55},"10543":{"fob":18.56,"imp":3.27},"10519":{"fob":22.95,"imp":2.85},"10508":{"fob":24.3,"imp":3.86},"10515":{"fob":77.03,"imp":17.81},"10509":{"fob":56.07,"imp":11.27},"20270":{"fob":24.13,"imp":3.29},"20143":{"fob":13.82,"imp":1.71},"20324":{"fob":8.08,"imp":1.27},"20316":{"fob":13.82,"imp":1.52},"20299":{"fob":17.37,"imp":4.03},"20150":{"fob":30.39,"imp":8.32},"20101":{"fob":17.75,"imp":2.84},"20137":{"fob":22.14,"imp":3.72},"3567":{"fob":12.81,"imp":3.38},"20188":{"fob":27.68,"imp":3.87},"54174":{"fob":20.92,"imp":1.64},"20171":{"fob":19.23,"imp":4.16},"20271":{"fob":18.56,"imp":1.21},"3523":{"fob":9.29,"imp":2.11},"20199":{"fob":35.79,"imp":13.55},"20192":{"fob":54.72,"imp":16.53},"20172":{"fob":51.34,"imp":19.7},"40085":{"fob":19.3,"imp":2.47},"40078":{"fob":19.3,"imp":2.47},"40070":{"fob":8.42,"imp":0.79},"40066":{"fob":14.47,"imp":2.26},"40527":{"fob":5.17,"imp":0.47},"50656":{"fob":38.6,"imp":4.8},"50665":{"fob":24.13,"imp":3.46},"50635":{"fob":19.3,"imp":1.76},"50623":{"fob":94.64,"imp":26.34},"50567":{"fob":48.3,"imp":14.66},"5011":{"fob":18.56,"imp":2.53},"54402":{"fob":19.57,"imp":2.26},"54419":{"fob":19.57,"imp":2.25},"20178":{"fob":26.06,"imp":4.57},"50647":{"fob":50.67,"imp":9.85},"20250":{"fob":9.09,"imp":1.43},"20251":{"fob":9.09,"imp":1.43},"20252":{"fob":9.09,"imp":1.43},"53771":{"fob":19.23,"imp":3.34},"50614":{"fob":60.81,"imp":11.36},"20232":{"fob":18.56,"imp":2.19},"20233":{"fob":18.56,"imp":2.19},"20100":{"fob":11.8,"imp":1.43},"53634":{"fob":12.81,"imp":0.86},"50575":{"fob":21.23,"imp":3.51},"53887":{"fob":78.04,"imp":24.92},"10513":{"fob":18.56,"imp":3.27},"5005":{"fob":35.79,"imp":9.88},"10030":{"fob":15.62,"imp":2.14},"20168":{"fob":20.25,"imp":4.18},"2824":{"t":22.73},"2825":{"t":23.53},"3326":{"t":105.27},"3511":{"t":34.7},"3537":{"t":21.05},"3538":{"t":25.16},"3570":{"t":44.99},"3632":{"t":12.59},"3634":{"t":12.86},"3644":{"t":9.9},"3655":{"t":19.83},"3708":{"t":22.65},"3752":{"t":27.18},"4025":{"t":24.8},"4027":{"t":36.29},"4028":{"t":21.51},"4121":{"t":116.71},"4164":{"t":118.48},"5012":{"t":27.23},"5106":{"t":24.13},"8039":{"t":53.17},"10027":{"t":53.59},"10028":{"t":53.75},"10517":{"t":85.48},"20102":{"t":28.98},"20128":{"t":35.45},"20147":{"t":21.06},"20164":{"t":23.94},"20170":{"t":28.53},"20179":{"t":48.4},"20180":{"t":26.64},"20211":{"t":62.65},"20220":{"t":50.09},"40036":{"t":17.08},"40037":{"t":17.08},"40038":{"t":17.08},"40514":{"t":24.02},"40517":{"t":6.73},"40525":{"t":105.95},"40528":{"t":9.83},"40531":{"t":10.09},"40559":{"t":47.94},"40579":{"t":46.37},"50509":{"t":29.83},"50556":{"t":27.97},"50560":{"t":36.31},"50563":{"t":104.45},"50571":{"t":201.26},"50574":{"t":102.62},"50576":{"t":39.39},"50585":{"t":37.11},"53481":{"t":427.93},"53535":{"t":385.09},"53658":{"t":89.52},"53818":{"t":19.01},"53863":{"t":60.71},"53870":{"t":67.22},"54112":{"t":24.68},"54129":{"t":24.26},"54136":{"t":25.16},"54167":{"t":38.29},"54181":{"t":30.31},"54426":{"t":14.9},"54433":{"t":10.6},"54556":{"t":25.63},"54600":{"t":620.9},"54617":{"t":655.1},"54624":{"t":627.74},"60002":{"t":132.29},"70003":{"t":875.75},"70038":{"t":1161.96},"70059":{"t":56.6},"70086":{"t":181.34},"70087":{"t":209.44},"70088":{"t":182.0},"70121":{"t":632.16},"70125":{"t":412.59},"70126":{"t":1120.34},"70129":{"t":54.01},"70130":{"t":134.42},"70131":{"t":58.57},"70132":{"t":75.29},"70152":{"t":1340.15},"70163":{"t":1709.12},"70248":{"t":295.98},"70260":{"t":472.21},"70261":{"t":167.66},"70262":{"t":337.48},"70265":{"t":157.83},"70266":{"t":160.48},"70271":{"t":1095.33},"70279":{"t":254.81},"70280":{"t":134.5},"70800":{"t":284.24},"70801":{"t":282.74},"70803":{"t":383.2}};
+const costoDe = k => COSTO[String(k).replace(/^CW/,'')] || null;
+const costoTot = cu => cu.t != null ? cu.t : cu.fob + cu.imp;
+function cascada(act){
+  const con = act.filter(r => costoDe(r.k));
+  const p = con.reduce((t,r) => t + r.p, 0), pt = act.reduce((t,r) => t + r.p, 0);
+  const sin = p / 1.18, igv = p - sin, com = sin * COM;
+  const cos = con.reduce((t,r) => t + costoTot(costoDe(r.k)), 0);
+  const mx = sin - com - cos;
+  const faltan = new Set(act.filter(r => !costoDe(r.k)).map(r => r.k)).size;
+  $('w-note').textContent = con.length
+    ? 'Solo ventas de productos con costo cargado: ' + con.length + ' de ' + act.length + ' ventas del rango, ' + soles(p) + ' de ' + soles(pt) +
+      ' facturados (' + Math.round(p/pt*100) + '%). El orden es facturado, menos el costo del producto (FOB + importación), menos la comisión de Saga y menos el IGV de la venta. ' +
+      (faltan ? 'Faltan los costos de ' + faltan + (faltan === 1 ? ' producto vendido' : ' productos vendidos') + ' en este rango.' : '')
+    : 'Ninguna venta del rango tiene costo cargado todavía.';
+  const segs = [
+    ['Costo del producto (FOB + importación)', cos, '#8a5cd6', ''],
+    ['Comisión Saga', com, 'var(--com)', ''],
+    ['IGV 18%', igv, 'var(--igv)', ''],
+    ['Queda para MXD', mx, 'var(--mxd)', 'mx']
+  ].filter(s => s[1] > 0.005 || s[3]);
+  const bar = $('cas'), leg = $('casleg'); bar.innerHTML = ''; leg.innerHTML = '';
+  if (!con.length) return;
+  // Barra y leyenda comparten columnas: cada leyenda queda bajo su color (los tramos chicos tienen un ancho mínimo para que se lean)
+  const cols = segs.map(([, v]) => 'minmax(min(6.5rem,19%),' + Math.max(v, 0).toFixed(2) + 'fr)').join(' ');
+  bar.style.gridTemplateColumns = cols; leg.style.gridTemplateColumns = cols;
+  for (const [n, v, c, cls] of segs){
+    const d = document.createElement('div'); d.style.background = c; d.title = n + ': ' + soles(v); bar.append(d);
+    const l = document.createElement('div'); if (cls) l.className = cls; l.style.setProperty('--c', c);
+    const i = document.createElement('i'); i.style.background = c;
+    const s = document.createElement('span'); s.textContent = n;
+    const b = document.createElement('b'); b.textContent = 'S/ ' + nf2.format(v);
+    const sm = document.createElement('small'); sm.textContent = Math.round(v/p*100) + '% del facturado' + (cls ? ' · ' + Math.round(v/sin*100) + '% del precio sin IGV' : '');
+    l.append(i, s, b, sm); leg.append(l);
+  }
+}
+
+function restaAnio(f){
+  const [y,m,d] = f.split('-').map(Number);
+  const dt = new Date(Date.UTC(y-1, m-1, d));
+  return dt.toISOString().slice(0,10);
+}
+function enRango(a,b){ return ventas.filter(r => r.f >= a && r.f <= b); }
+function suma(rs){
+  const b = rs.reduce((t,r)=>t+r.p, 0);
+  return {b, net:b*(1-COM), u:rs.length, ticket: rs.length ? b*(1-COM)/rs.length : 0};
+}
+function meses(a,b){
+  const out = [];
+  let y = Number(a.slice(0,4)), m = Number(a.slice(5,7));
+  const fin = b.slice(0,7);
+  for(;;){
+    const k = y + '-' + String(m).padStart(2,'0');
+    out.push(k);
+    if (k >= fin || out.length > 60) break;
+    m++; if (m === 13) { y++; m = 1; }
+  }
+  return out;
+}
+function delta(el, hoy, antes, fmt){
+  if (!antes) { el.textContent = 'Sin ventas en el mismo rango de 2025'; el.className = 'd'; return; }
+  const p = (hoy - antes) / antes;
+  el.textContent = (p >= 0 ? '+' : '') + Math.round(p*100) + '% contra ' + fmt(antes) + ' del año anterior';
+  el.className = 'd ' + (p >= 0 ? 'up' : 'down');
+}
+
+function pintar(){
+  const a = desde.value, b = hasta.value;
+  if (!a || !b || a > b) return;
+  const act = enRango(a,b), ant = enRango(restaAnio(a), restaAnio(b));
+  const A = suma(act), B = suma(ant);
+
+  $('k-bruto').textContent = soles(A.b);
+  $('k-neto').textContent = soles(A.net);
+  $('k-unid').textContent = nf0.format(A.u);
+  $('k-ticket').textContent = A.u ? 'S/ ' + nf2.format(A.ticket) : '—';
+  delta($('c-bruto'), A.b, B.b, soles);
+  delta($('c-neto'), A.net, B.net, soles);
+  delta($('c-unid'), A.u, B.u, v => nf0.format(v) + ' u.');
+  delta($('c-ticket'), A.ticket, B.ticket, v => 'S/ ' + nf2.format(v));
+
+  const dias = Math.round((Date.parse(b) - Date.parse(a)) / 864e5) + 1;
+  $('lede').textContent = 'Del ' + fechaLarga(a) + ' al ' + fechaLarga(b) + ', ' + dias + ' días: ' +
+    nf0.format(A.u) + (A.u === 1 ? ' unidad' : ' unidades') + ' por ' + soles(A.b) + ' facturados, ' +
+    soles(A.net) + ' netos después de la comisión de Falabella.';
+
+  cascada(act);
+  grafico(act, ant, a, b);
+  tabla(act, A.net);
+}
+const LARGO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','setiembre','octubre','noviembre','diciembre'];
+function fechaLarga(f){
+  const [y,m,d] = f.split('-');
+  return Number(d) + ' de ' + LARGO[Number(m)-1] + ' de ' + y;
+}
+
+function grafico(act, ant, a, b){
+  // Mes contra mes: eje de ene a dic, una barra por año en cada mes
+  const box = $('chart'); box.innerHTML = '';
+  const esSoles = estado.m === 'soles';
+  $('g-tit').textContent = esSoles ? 'Soles netos mes a mes, año contra año' : 'Unidades mes a mes, año contra año';
+  const val = rs => esSoles ? rs.reduce((t,r)=>t+r.p,0)*(1-COM) : rs.length;
+  const ya = Number(a.slice(0,4)), yb = Number(b.slice(0,4));
+  let series;
+  if (ya === yb) series = [{y: ya-1, rs: ant}, {y: ya, rs: act}];
+  else { series = []; for (let y = ya; y <= yb; y++) series.push({y, rs: act.filter(r => r.f.startsWith(String(y)))}); }
+  const mesesN = [...new Set(meses(a,b).map(k => Number(k.slice(5))))].sort((x,z) => x-z);
+  const colores = series.map((_, i) => i === series.length-1 ? 'var(--now)' : i === series.length-2 ? 'var(--prev)' : 'var(--muted)');
+  const datos = series.map(s => mesesN.map(m => val(s.rs.filter(r => Number(r.f.slice(5,7)) === m))));
+  const max = Math.max(1, ...datos.flat());
+  const leg = $('leg'); leg.innerHTML = '';
+  series.forEach((s, i) => mkLeg(leg, colores[i], String(s.y), total(datos[i], esSoles)));
+  const W = Math.max(480, mesesN.length * 74), H = 300, T = 32, B = 30, L = 10, R = 10;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('role','img');
+  const añadir = (tag, attrs, txt) => {
+    const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const k in attrs) el.setAttribute(k, attrs[k]);
+    if (txt != null) el.textContent = txt;
+    svg.appendChild(el); return el;
+  };
+  const alto = H - T - B, base = T + alto, y = v => base - (v / max) * alto;
+  const ancho = (W - L - R) / mesesN.length, n = series.length, bw = Math.min(22, (ancho - 14) / n);
+  const cx = j => L + ancho*j + ancho/2;
+  mesesN.forEach((m, j) => {
+    if (j % 2 === 1) añadir('rect', {x: L + ancho*j, y: T - 6, width: ancho, height: alto + 6, fill: 'var(--acc-soft)', opacity: .35});
+    añadir('text', {x: cx(j), y: base + 18, 'text-anchor': 'middle', class: 'gx'}, MES[m-1]);
+  });
+  // Líneas suavizadas (curva monótona: no inventa picos ni baja de cero)
+  const curva = pts => {
+    const k = pts.length; if (k < 2) return '';
+    const d = [], m = [];
+    for (let i = 0; i < k-1; i++) d.push((pts[i+1][1]-pts[i][1]) / (pts[i+1][0]-pts[i][0]));
+    m[0] = d[0]; m[k-1] = d[k-2];
+    for (let i = 1; i < k-1; i++) m[i] = d[i-1]*d[i] <= 0 ? 0 : (d[i-1]+d[i])/2;
+    for (let i = 0; i < k-1; i++) {
+      if (d[i] === 0) { m[i] = 0; m[i+1] = 0; continue; }
+      const a = m[i]/d[i], b = m[i+1]/d[i], h = a*a + b*b;
+      if (h > 9) { const t = 3/Math.sqrt(h); m[i] = t*a*d[i]; m[i+1] = t*b*d[i]; }
+    }
+    let p = 'M' + pts[0][0] + ',' + pts[0][1];
+    for (let i = 0; i < k-1; i++) {
+      const dx = (pts[i+1][0]-pts[i][0]) / 3;
+      p += ' C' + (pts[i][0]+dx) + ',' + (pts[i][1]+m[i]*dx) + ' ' + (pts[i+1][0]-dx) + ',' + (pts[i+1][1]-m[i+1]*dx) + ' ' + pts[i+1][0] + ',' + pts[i+1][1];
+    }
+    return p;
+  };
+  series.forEach((s, i) => {
+    const pts = mesesN.map((m, j) => [cx(j), y(datos[i][j])]);
+    añadir('path', {d: curva(pts), fill: 'none', stroke: colores[i], 'stroke-width': i === n-1 ? 3 : 2.5, 'stroke-linecap': 'round', opacity: i === n-1 ? .95 : .8});
+  });
+  series.forEach((s, i) => {
+    mesesN.forEach((m, j) => {
+      const v = datos[i][j]; if (!v) return;
+      const otro = n > 1 ? datos[i === n-1 ? n-2 : n-1][j] : 0, arriba = v >= otro || y(v) + 17 > base - 4;
+      añadir('circle', {cx: cx(j), cy: y(v), r: 4, fill: colores[i], stroke: 'var(--panel)', 'stroke-width': 1.5});
+      añadir('text', {x: cx(j), y: arriba ? y(v) - 9 : y(v) + 17, 'text-anchor': 'middle', class: 'gv', fill: colores[i]}, nf0.format(Math.round(v)));
+    });
+  });
+  añadir('line', {x1: L, x2: W-R, y1: base, y2: base, class: 'gl'});
+  box.appendChild(svg);
+  $('g-note').textContent = 'Una línea por año: ' + series.map((s, i) => s.y + (i === n-1 ? ' en naranja' : i === n-2 ? ' en azul' : ' en gris')).join(' y ') +
+    '. ' + (esSoles ? 'Los soles van netos de comisión.' : 'Cada unidad es un ítem vendido.');
+}
+function sumaAnio(k){ return (Number(k.slice(0,4))+1) + k.slice(4); }
+function total(arr, esSoles){
+  const t = arr.reduce((s,v)=>s+v, 0);
+  return esSoles ? soles(t) : nf0.format(t) + ' u.';
+}
+function mkLeg(leg, color, texto, tot){
+  const s = document.createElement('span');
+  const i = document.createElement('i'); i.style.background = color;
+  const t = document.createElement('span'); t.textContent = texto + ': ';
+  const b = document.createElement('b'); b.style.color = 'var(--fg)'; b.style.fontWeight = '500'; b.textContent = tot;
+  s.append(i, t, b); leg.append(s);
+}
+
+function tabla(act, netoTotal){
+  const tb = document.querySelector('#tabla tbody'); tb.innerHTML = '';
+  const map = new Map();
+  for (const r of act){
+    const o = map.get(r.k) || {k:r.k, n:r.n, u:0, b:0, ult:''};
+    o.u++; o.b += r.p; if (r.f > o.ult) o.ult = r.f;
+    map.set(r.k, o);
+  }
+  const filas = [...map.values()].map(o => {
+    const st = DATA.stock[o.k];
+    const cu = costoDe(o.k); const co = cu ? o.u*costoTot(cu) : null, cm = o.b/1.18*COM, iv = o.b - o.b/1.18;
+    const mx = cu ? o.b - co - cm - iv : null;
+    return {...o, co, cm, iv, mx, mxp: mx == null ? null : mx/o.b, net:o.b*(1-COM), part: netoTotal ? o.b*(1-COM)/netoTotal : 0, st: st ? st.s : null, pr: st ? st.pr : null, url: st ? st.u : ''};
+  });
+  $('vacio').hidden = filas.length > 0;
+  const s = estado.sort, dir = estado.dir;
+  filas.sort((x,z) => {
+    const vx = x[s] == null ? -Infinity : x[s], vz = z[s] == null ? -Infinity : z[s];
+    return (typeof vx === 'string' ? String(vx).localeCompare(String(vz),'es') : vx - vz) * dir;
+  });
+  document.querySelectorAll('#tabla th').forEach(th =>
+    th.setAttribute('aria-sort', th.dataset.s === s ? (dir === 1 ? 'ascending' : 'descending') : 'none'));
+  const maxU = Math.max(...filas.map(f => f.u), 1);
+  const sinStock = filas.filter(f => f.st === 0).length;
+  $('t-note').textContent = filas.length
+    ? filas.length + ' productos vendieron en el rango' + (sinStock ? ', y ' + sinStock + ' de ellos están hoy sin stock en Falabella' : '') +
+      '. Haz clic en una columna para ordenar.'
+    : 'Sin ventas en el rango elegido.';
+  for (const f of filas){
+    const tr = document.createElement('tr');
+    const td = (txt, cls) => { const c = document.createElement('td'); if (txt != null) c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+    td(f.k, 'hide-sm l');
+    const tn = td(null, 'l');
+    if (f.url){ const a = document.createElement('a'); a.href = f.url; a.target = '_blank'; a.rel = 'noopener'; a.className = 'plink'; a.textContent = f.n; tn.append(a); }
+    else tn.textContent = f.n;
+    const tu = td(null);
+    const w = document.createElement('span'); w.className = 'bar';
+    const bi = document.createElement('i'); bi.style.width = Math.max(3, f.u/maxU*40) + 'px';
+    const nu = document.createElement('span'); nu.textContent = nf0.format(f.u);
+    w.append(bi, nu); tu.append(w);
+    const tp = td(f.pr == null ? '—' : 'S/ ' + nf2.format(f.pr));
+    if (f.pr != null && Math.abs(f.b/f.u - f.pr) > 0.5) tp.title = 'Se vendió en promedio a S/ ' + nf2.format(f.b/f.u);
+    td(soles(f.b));
+    if (f.co == null) td('sin costo', 'sinc col-co'); else td('− ' + soles(f.co), 'resta col-co');
+    td('− ' + soles(f.cm), 'resta col-com');
+    td('− ' + soles(f.iv), 'resta');
+    if (f.mx == null){ td('—', 'sinc'); td('—', 'sinc'); }
+    else { td(soles(f.mx), 'queda'); td(Math.round(f.mxp*100) + '%'); }
+    const ts = td(null);
+    const pill = document.createElement('span');
+    if (f.st == null){ pill.textContent = 'sin ficha'; pill.className = 'pill'; pill.style.color = 'var(--muted)'; }
+    else if (f.st === 0){ pill.textContent = '0'; pill.className = 'pill cero'; }
+    else if (f.st <= 5){ pill.textContent = nf0.format(f.st); pill.className = 'pill bajo'; }
+    else { pill.textContent = nf0.format(f.st); pill.className = 'pill ok'; }
+    ts.append(pill);
+    const p = f.ult.split('-');
+    td(Number(p[2]) + ' ' + MES[Number(p[1])-1] + " '" + p[0].slice(2), 'hide-sm');
+    tb.append(tr);
+  }
+}
+
+// --- secuencia por producto
+const sEstado = {m:'soles', k:null};
+const porSku = new Map();
+for (const r of ventas){
+  const o = porSku.get(r.k) || {k:r.k, n:r.n, u:0, b:0, ult:''};
+  o.u++; o.b += r.p; if (r.f > o.ult) o.ult = r.f;
+  porSku.set(r.k, o);
+}
+const lista = [...porSku.values()].sort((a,b) => b.b - a.b);
+const etiqueta = o => o.n + ' · ' + o.k;
+const porEtiqueta = new Map(lista.map(o => [etiqueta(o), o.k]));
+const dl = $('prods');
+for (const o of lista){
+  const op = document.createElement('option'); op.value = etiqueta(o); dl.append(op);
+}
+const prod = $('prod');
+sEstado.k = lista[0].k;
+prod.value = etiqueta(lista[0]);
+prod.addEventListener('input', () => {
+  const v = prod.value.trim();
+  let k = porEtiqueta.get(v);
+  if (!k){
+    const bajo = v.toLowerCase();
+    const hit = lista.find(o => etiqueta(o).toLowerCase() === bajo) ||
+                lista.find(o => String(o.k).toLowerCase() === bajo) ||
+                (v.length >= 3 ? lista.find(o => o.n.toLowerCase().includes(bajo)) : null);
+    k = hit ? hit.k : null;
+  }
+  if (k){ sEstado.k = k; secuencia(); }
+});
+document.querySelectorAll('#s-medida button').forEach(b => b.addEventListener('click', () => {
+  sEstado.m = b.dataset.m;
+  document.querySelectorAll('#s-medida button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  secuencia();
+}));
+
+function secuencia(){
+  const box = $('s-chart'); box.innerHTML = '';
+  const o = porSku.get(sEstado.k); if (!o) return;
+  const esSoles = sEstado.m === 'soles';
+  const ks = meses(MIN, MAX);
+  const rs = ventas.filter(r => r.k === sEstado.k);
+  const mapa = new Map(ks.map(k => [k, {u:0, b:0}]));
+  for (const r of rs){
+    const c = mapa.get(r.f.slice(0,7)); if (c){ c.u++; c.b += r.p; }
+  }
+  const val = c => esSoles ? c.b*(1-COM) : c.u;
+  const serie = ks.map(k => val(mapa.get(k)));
+  const max = Math.max(...serie, 1);
+  const st = DATA.stock[o.k];
+  const conVenta = serie.filter(v => v > 0).length;
+  const f = $('s-ficha'); f.innerHTML = '';
+  const dato = (et, v) => { const d = document.createElement('span'); d.textContent = et + ' '; const b = document.createElement('b'); b.textContent = v; d.append(b); f.append(d); };
+  dato('Vendidas:', nf0.format(o.u) + ' u.');
+  dato('Neto:', soles(o.b*(1-COM)));
+  dato('Meses con venta:', conVenta + ' de ' + ks.length);
+  dato('Última venta:', fechaLarga(o.ult));
+  dato('Stock hoy:', st ? nf0.format(st.s) + ' u.' : 'sin ficha');
+  if (st && st.pr) dato('Precio:', soles(st.pr));
+  const cu = costoDe(o.k);
+  if (cu){ dato('Costo (FOB + importación):', 'S/ ' + nf2.format(costoTot(cu)));
+    if (st && st.pr) dato('Queda por unidad al precio de hoy:', 'S/ ' + nf2.format(st.pr/1.18*(1-COM) - costoTot(cu))); }
+  else dato('Costo:', 'sin cargar');
+  const leg = $('s-leg'); leg.innerHTML = '';
+  mkLeg(leg, 'var(--now)', o.n, esSoles ? soles(o.b*(1-COM)) : nf0.format(o.u) + ' u.');
+  $('s-tit').textContent = esSoles ? 'Soles netos mes a mes desde 2025' : 'Unidades mes a mes desde 2025';
+
+  const W = Math.max(560, ks.length * 40), H = 250, T = 22, B = 46, L = 10, R = 10;
+  const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  const añadir = (tag, attrs, txt) => {
+    const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+    for (const a in attrs) e.setAttribute(a, attrs[a]);
+    if (txt != null) e.textContent = txt;
+    svg.appendChild(e); return e;
+  };
+  const alto = H - T - B, base = T + alto;
+  const y = v => base - (v / max) * alto;
+  añadir('line', {x1:L, x2:W-R, y1:base, y2:base, class:'gl'});
+  const ancho = (W - L - R) / ks.length, bw = Math.min(22, ancho*0.62);
+  ks.forEach((k,i) => {
+    const cx = L + ancho*i + ancho/2, v = serie[i];
+    if (v > 0){
+      añadir('rect', {x:cx-bw/2, y:y(v), width:bw, height:Math.max(1, base-y(v)), rx:3,
+        fill: k < '2026' ? 'var(--prev)' : 'var(--now)', opacity:.92});
+      añadir('text', {x:cx, y:y(v)-5, 'text-anchor':'middle', class:'gv'},
+        esSoles ? nf0.format(Math.round(v)) : nf0.format(v));
+    }
+    añadir('text', {x:cx, y:base+17, 'text-anchor':'middle', class:'gx'}, MES[Number(k.slice(5))-1]);
+    if (k.slice(5) === '01' || i === 0) añadir('text', {x:cx, y:base+32, 'text-anchor':'middle', class:'gx'}, k.slice(0,4));
+  });
+  box.appendChild(svg);
+}
+
+desde.addEventListener('change', () => { marcarPreset(null); pintar(); });
+hasta.addEventListener('change', () => { marcarPreset(null); pintar(); });
+document.querySelectorAll('#medida button').forEach(b => b.addEventListener('click', () => {
+  estado.m = b.dataset.m;
+  document.querySelectorAll('#medida button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  pintar();
+}));
+function marcarPreset(p){
+  document.querySelectorAll('#presets button').forEach(x => x.setAttribute('aria-pressed', x.dataset.p === p));
+}
+document.querySelectorAll('#presets button').forEach(b => b.addEventListener('click', () => {
+  const p = b.dataset.p;
+  if (p === 'todo'){ desde.value = MIN; hasta.value = MAX; }
+  else if (p === '12m'){
+    const d = new Date(Date.parse(MAX)); d.setUTCFullYear(d.getUTCFullYear()-1); d.setUTCDate(d.getUTCDate()+1);
+    desde.value = d.toISOString().slice(0,10); hasta.value = MAX;
+  } else {
+    desde.value = p + '-01-01';
+    hasta.value = p === MAX.slice(0,4) ? MAX : p + '-12-31';
+  }
+  marcarPreset(p); pintar();
+}));
+document.querySelectorAll('#tabla th').forEach(th => th.addEventListener('click', () => {
+  const c = th.dataset.s;
+  estado.dir = estado.sort === c ? -estado.dir : (c === 'n' || c === 'k' ? 1 : -1);
+  estado.sort = c;
+  pintar();
+}));
+// --- 2.0: decisiones por ficha
+const FICHAS = {"2824":{"cs":90.4,"img":4,"act":true},"54167":{"cs":90.4,"img":5,"act":true},"20172":{"cs":100.0,"img":7,"act":true},"20102":{"cs":88.0,"img":7,"act":true},"50574":{"cs":84.67,"img":6,"act":true},"50563":{"cs":90.4,"img":4,"act":true},"53658":{"cs":91.0,"img":6,"act":true},"53818":{"cs":100.0,"img":7,"act":true},"3538":{"cs":88.0,"img":8,"act":true},"5106":{"cs":83.0,"img":7,"act":true},"53863":{"cs":90.4,"img":5,"act":true},"40559":{"cs":91.0,"img":3,"act":true},"3567":{"cs":88.0,"img":8,"act":false},"4027":{"cs":91.0,"img":7,"act":true},"40528":{"cs":91.0,"img":4,"act":true},"3537":{"cs":88.0,"img":6,"act":true},"50509":{"cs":90.4,"img":7,"act":true},"3570":{"cs":91.0,"img":4,"act":true},"53771":{"cs":91.0,"img":8,"act":true},"20164":{"cs":100.0,"img":7,"act":true},"4028":{"cs":100.0,"img":6,"act":true},"50575":{"cs":72.0,"img":6,"act":true},"50571":{"cs":100.0,"img":6,"act":true},"2825":{"cs":100.0,"img":6,"act":true},"5011":{"cs":72.0,"img":6,"act":true},"5012":{"cs":72.0,"img":5,"act":true},"50560":{"cs":72.0,"img":6,"act":true},"CW50576":{"cs":72.0,"img":6,"act":true},"CW53627":{"cs":90.4,"img":5,"act":true},"CW20180":{"cs":90.4,"img":6,"act":true},"CW3655":{"cs":90.4,"img":6,"act":true},"CW50585":{"cs":100.0,"img":6,"act":true},"CW50556":{"cs":90.4,"img":6,"act":true},"CW54402":{"cs":90.4,"img":5,"act":true},"CW54419":{"cs":90.4,"img":6,"act":true},"CW4164":{"cs":90.4,"img":5,"act":true},"CW53634":{"cs":90.4,"img":6,"act":true},"CW3511":{"cs":90.4,"img":6,"act":true},"20168":{"cs":90.4,"img":6,"act":true},"20170":{"cs":90.4,"img":6,"act":true},"20171":{"cs":90.4,"img":6,"act":true},"20147":{"cs":100.0,"img":6,"act":true},"54181":{"cs":100.0,"img":6,"act":true},"54556":{"cs":100.0,"img":6,"act":true},"CW10027":{"cs":95.0,"img":6,"act":false},"CW10028":{"cs":95.0,"img":5,"act":false},"CW10030":{"cs":100.0,"img":6,"act":true},"CW20100":{"cs":100.0,"img":7,"act":true},"CW20137":{"cs":100.0,"img":6,"act":true},"40579":{"cs":100.0,"img":6,"act":true},"4025":{"cs":100.0,"img":6,"act":true},"40531":{"cs":100.0,"img":6,"act":true},"40527":{"cs":100.0,"img":6,"act":false},"10519":{"cs":92.8,"img":4,"act":true},"10513":{"cs":92.8,"img":5,"act":true},"10508":{"cs":76.0,"img":5,"act":true},"10509":{"cs":92.8,"img":6,"act":true},"10517":{"cs":90.0,"img":7,"act":true},"60002":{"cs":92.8,"img":6,"act":true},"53870":{"cs":100.0,"img":6,"act":true},"53887":{"cs":100.0,"img":6,"act":true},"3632":{"cs":90.0,"img":6,"act":true},"3634":{"cs":90.0,"img":6,"act":true},"20199":{"cs":96.33,"img":6,"act":true},"20192":{"cs":96.33,"img":6,"act":true},"4121":{"cs":96.33,"img":6,"act":true},"20101":{"cs":91.5,"img":7,"act":true},"3708":{"cs":91.0,"img":6,"act":true},"3326":{"cs":100.0,"img":6,"act":true},"10515":{"cs":100.0,"img":6,"act":true},"20220":{"cs":76.0,"img":6,"act":true},"20211":{"cs":100.0,"img":8,"act":true},"54174":{"cs":100.0,"img":6,"act":true},"20128":{"cs":100.0,"img":6,"act":true},"5005":{"cs":100.0,"img":6,"act":true},"3752":{"cs":100.0,"img":6,"act":true},"20179":{"cs":100.0,"img":6,"act":true},"20188":{"cs":91.5,"img":6,"act":true},"40036":{"cs":91.5,"img":6,"act":true},"40037":{"cs":91.5,"img":5,"act":true},"40038":{"cs":91.5,"img":6,"act":true},"3644":{"cs":91.5,"img":4,"act":true},"54433":{"cs":91.5,"img":2,"act":true},"54426":{"cs":91.0,"img":5,"act":true}};
+const HOY = '2026-10-16';
+const ACC = {
+  rep:{t:'Reponer', c:'var(--bad)', o:1},
+  imp:{t:'Impulsar', c:'var(--acc)', o:2},
+  eva:{t:'Evaluar reponer', c:'var(--warn)', o:3},
+  vig:{t:'Vigilar', c:'var(--prev)', o:4},
+  arr:{t:'Arreglar ficha', c:'var(--warn)', o:5},
+  dor:{t:'Dormida', c:'var(--muted)', o:6},
+  sin:{t:'Sin movimiento', c:'var(--muted)', o:7}
+};
+const M12 = (() => { const out = []; let y = 2025, m = 11; for (let i = 0; i < 12; i++){ out.push(y + '-' + String(m).padStart(2,'0')); m++; if (m === 13){ m = 1; y++; } } return out; })();
+const D12 = '2025-10-17';
+const dias = f => Math.round((Date.parse(HOY) - Date.parse(f)) / 864e5);
+const fichas = Object.entries(DATA.stock).map(([k, s]) => {
+  const rs = ventas.filter(r => r.k === k);
+  const r12 = rs.filter(r => r.f >= D12);
+  const meses = new Set(r12.map(r => r.f.slice(0,7)));
+  const ult = rs.reduce((t, r) => r.f > t ? r.f : t, '');
+  const fx = FICHAS[k] || {cs:null, img:null, act:true};
+  const n12 = r12.length, m12 = meses.size, st = s.s;
+  let a;
+  if (m12 >= 2 && st <= 2) a = 'rep';
+  else if (m12 >= 2) a = 'imp';
+  else if (n12 === 1 && st === 0) a = 'eva';
+  else if (n12 === 1) a = 'vig';
+  else if (st > 0 && ((fx.cs != null && fx.cs < 85) || (fx.img != null && fx.img < 5))) a = 'arr';
+  else if (st > 0) a = 'dor';
+  else a = 'sin';
+  return {k, n:s.n, u:s.u, st, pr:s.pr, val:st*s.pr, n12, meses, m12, ult, d: ult ? dias(ult) : null,
+          net12: r12.reduce((t,r)=>t+r.p,0)*(1-COM), cs:fx.cs, img:fx.img, act:fx.act, a};
+});
+const dEstado = {f:null};
+function alertas(){
+  const box = $('alertas'); box.innerHTML = '';
+  const rep = fichas.filter(f => f.a === 'rep').sort((x,z) => z.n12 - x.n12);
+  const dorm = fichas.filter(f => f.n12 === 0 && f.st > 0);
+  const dormV = dorm.reduce((t,f) => t + f.val, 0), dormU = dorm.reduce((t,f) => t + f.st, 0);
+  const totV = fichas.reduce((t,f) => t + f.val, 0);
+  const v25 = ventas.filter(r => r.f.startsWith('2025')), dic = v25.filter(r => r.f.startsWith('2025-12'));
+  const todas = DATA.ventas.length, malas = DATA.ventas.filter(r => !VALID(r.e)).length;
+  const porSkuMal = {}; DATA.ventas.filter(r => !VALID(r.e)).forEach(r => porSkuMal[r.k] = (porSkuMal[r.k]||0) + 1);
+  const peor = Object.entries(porSkuMal).sort((a,b) => b[1]-a[1])[0];
+  const faltan = Math.round((Date.parse('2026-12-01') - Date.parse(HOY)) / 864e5);
+  const card = (sev, tag, num, txt, filtro) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'alerta'; b.style.setProperty('--sev', sev);
+    const t = document.createElement('span'); t.className = 'tag'; t.textContent = tag;
+    const n = document.createElement('b'); n.textContent = num;
+    const s = document.createElement('span'); s.textContent = txt;
+    b.append(t, n, s);
+    b.addEventListener('click', () => { dEstado.f = filtro; decidir(); $('decidir').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
+    box.append(b);
+  };
+  card('var(--bad)', 'Reponer ya', rep.length + ' fichas', 'Venden seguido y no tienen stock: ' + rep.slice(0,3).map(f => f.n.split(' - ')[0].split(' marca')[0].replace(/ Classic ?World/,'')).join(', ') + '.', 'rep');
+  card('var(--warn)', 'Plata parada', soles(dormV), dorm.length + ' fichas sin venta en 12 meses con ' + nf0.format(dormU) + ' u, el ' + Math.round(dormV/totV*100) + '% del stock en Falabella a precio de venta.', 'dor+arr');
+}
+function decidir(){
+  const ch = $('chips'); ch.innerHTML = '';
+  const cuenta = {}; fichas.forEach(f => cuenta[f.a] = (cuenta[f.a]||0) + 1);
+  const mk = (key, txt, c) => {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'chip';
+    b.setAttribute('aria-pressed', String(dEstado.f === key));
+    if (c){ const i = document.createElement('i'); i.style.setProperty('--c', c); b.append(i); }
+    b.append(txt);
+    b.addEventListener('click', () => { dEstado.f = key; decidir(); });
+    ch.append(b);
+  };
+  mk(null, 'Todas · ' + fichas.length);
+  Object.entries(ACC).forEach(([k, v]) => { if (cuenta[k]) mk(k, v.t + ' · ' + cuenta[k], v.c); });
+  const ok = dEstado.f ? dEstado.f.split('+') : null;
+  const sinTilde = t => String(t).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const q = sinTilde(($('dbus').value || '').trim());
+  const rows = fichas.filter(f => (!ok || ok.includes(f.a)) && (!q || sinTilde(f.n).includes(q) || sinTilde(f.k).includes(q)))
+    .sort((x,z) => ACC[x.a].o - ACC[z.a].o || z.n12 - x.n12 || z.val - x.val);
+  $('d-note').textContent = rows.length + ' fichas' + (ok ? ' en ' + ok.map(k => ACC[k].t.toLowerCase()).join(' y ') : '') +
+    '. Ventas de los últimos 12 meses (17 oct 2025 al 16 oct 2026); stock, Content Score y fotos traídos de la API hoy.';
+  const tb = document.querySelector('#tdec tbody'); tb.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  for (const f of rows){
+    const tr = document.createElement('tr');
+    const td = (txt, cls) => { const c = document.createElement('td'); if (txt != null) c.textContent = txt; if (cls) c.className = cls; tr.append(c); return c; };
+    const tn = td(null, 'l');
+    const a = document.createElement('a'); a.href = f.u; a.target = '_blank'; a.rel = 'noopener'; a.className = 'plink'; a.textContent = f.n.replace(/ ?- ?Classic ?World$| Classic ?World$|ClassicWorld$/,''); tn.append(a);
+    if (!f.act){ const s = document.createElement('span'); s.className = 'inact'; s.textContent = 'inactiva'; tn.append(s); }
+    const ta = td(null, 'l'); const p = document.createElement('span'); p.className = 'acc'; p.style.setProperty('--c', ACC[f.a].c); p.textContent = ACC[f.a].t; ta.append(p);
+    td(f.n12 ? nf0.format(f.n12) : '—');
+    const tr12 = td(null, 'l'); const g = document.createElement('span'); g.className = 'ritmo';
+    g.title = f.m12 + ' de 12 meses con venta';
+    M12.forEach(m => { const i = document.createElement('i'); if (f.meses.has(m)) i.className = 'on'; g.append(i); });
+    M12.forEach(m => { const e = document.createElement('em'); e.textContent = 'EFMAMJJASOND'.charAt(Number(m.slice(5)) - 1); g.append(e); });
+    tr12.append(g);
+    td(f.d == null ? 'nunca vendió' : nf0.format(f.d));
+    const ts = td(null); const pill = document.createElement('span');
+    pill.className = 'pill ' + (f.st === 0 ? 'cero' : f.st <= 2 ? 'bajo' : 'ok'); pill.textContent = nf0.format(f.st); ts.append(pill);
+    td(f.val ? soles(f.val) : '—', 'hide-sm');
+    const tc = td(f.cs == null ? '—' : nf0.format(f.cs), 'hide-sm sc' + (f.cs != null && f.cs < 85 ? ' bajo' : ''));
+    td(f.img == null ? '—' : String(f.img), 'hide-sm sc' + (f.img != null && f.img < 5 ? ' bajo' : ''));
+    frag.append(tr);
+  }
+  tb.append(frag);
+}
+alertas();
+$('dbus').addEventListener('input', decidir);
+decidir();
+
+marcarPreset(MAX.slice(0,4));
+pintar();
+secuencia();
+</script>
+
+
+
+</body></html>

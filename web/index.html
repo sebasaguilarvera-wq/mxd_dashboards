@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Web y Google · MXD</title><link rel="stylesheet" href="/assets/mxd.css"></head>
+<body>
+<div class="top"><a href="/">← MXD Dashboards</a></div>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Google · Web MXD</div>
+    <h1>Web y Google</h1>
+    <p class="lede">Ventas de Shopify y tráfico de Google Analytics, en vivo. Semanas de lunes a domingo, hora de Lima. <span id="gen" class="muted"></span></p>
+    <p id="err" class="err"></p>
+  </header>
+
+  <section>
+    <h2>Última semana cerrada</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="l">Venta (sin envío)</div><div class="v" id="k-venta">—</div><div class="d" id="d-venta"></div></div>
+      <div class="kpi"><div class="l">Pedidos</div><div class="v" id="k-pedidos">—</div><div class="d" id="d-pedidos"></div></div>
+      <div class="kpi"><div class="l">Ticket promedio</div><div class="v" id="k-ticket">—</div><div class="d" id="d-ticket"></div></div>
+      <div class="kpi"><div class="l">Sesiones</div><div class="v" id="k-sesiones">—</div><div class="d" id="d-sesiones"></div></div>
+      <div class="kpi"><div class="l">Conversión</div><div class="v" id="k-conv">—</div><div class="d">pedidos ÷ sesiones</div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Venta y sesiones por semana</h2>
+    <div id="chart"></div>
+    <p class="muted" style="font-size:12px;margin:6px 0 0">Barras: venta S/ · Línea: sesiones · La última barra es la semana en curso.</p>
+  </section>
+
+  <section class="panel"><h2>Canales (últimos 28 días)</h2><table id="t-canales"></table></section>
+  <section class="panel"><h2>Campañas y fuentes (últimos 28 días)</h2><table id="t-campanas"></table></section>
+  <section class="panel"><h2>Ventas por marca (últimos 28 días)</h2><table id="t-marcas"></table></section>
+  <section class="panel"><h2>Productos más vendidos (últimos 28 días)</h2><table id="t-top"></table></section>
+  <section class="panel"><h2>Stock bajo (1 a 5 unidades)</h2><table id="t-stock"></table></section>
+</div>
+<script>
+const S = (n) => 'S/ ' + n.toLocaleString('es-PE', { maximumFractionDigits: 0 });
+const N = (n) => n.toLocaleString('es-PE', { maximumFractionDigits: 0 });
+const $ = (id) => document.getElementById(id);
+const fecha = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('es-PE', { day: 'numeric', month: 'short' });
+
+function delta(el, a, b) {
+  if (!b) { el.textContent = 'sin semana previa con datos'; return; }
+  const p = Math.round((a / b - 1) * 100);
+  el.textContent = (p >= 0 ? '+' : '') + p + '% vs semana anterior';
+}
+
+function tabla(id, cols, rows) {
+  const t = $(id);
+  t.textContent = '';
+  const hr = t.insertRow();
+  cols.forEach(([k, label, f]) => { const th = document.createElement('th'); th.textContent = label; if (f) th.className = 'n'; hr.appendChild(th); });
+  if (!rows.length) { const c = t.insertRow().insertCell(); c.colSpan = cols.length; c.className = 'muted'; c.textContent = 'Sin datos todavía'; return; }
+  rows.forEach((r) => {
+    const tr = t.insertRow();
+    cols.forEach(([k, , f]) => { const c = tr.insertCell(); c.textContent = f ? f(r[k]) : r[k]; if (f) c.className = 'n'; });
+  });
+}
+
+function grafico(sem) {
+  const el = $('chart'), W = Math.max(el.clientWidth, 300), H = 220, P = { l: 48, r: 40, t: 12, b: 26 };
+  const maxV = Math.max(1, ...sem.map((s) => s.venta)), maxS = Math.max(1, ...sem.map((s) => s.sesiones));
+  const bw = (W - P.l - P.r) / sem.length;
+  const y = (v) => P.t + (H - P.t - P.b) * (1 - v / maxV), ys = (v) => P.t + (H - P.t - P.b) * (1 - v / maxS);
+  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Venta y sesiones por semana">`;
+  svg += `<text x="4" y="${P.t + 8}">${S(maxV)}</text><text x="${W - 4}" y="${P.t + 8}" text-anchor="end">${N(maxS)} ses.</text>`;
+  sem.forEach((s, i) => {
+    const x = P.l + i * bw;
+    svg += `<rect x="${x + bw * .18}" y="${y(s.venta)}" width="${bw * .64}" height="${H - P.b - y(s.venta)}" fill="var(--acc)" opacity="${s.enCurso ? .45 : 1}" rx="2"><title>${fecha(s.semana)}: ${S(s.venta)} · ${s.pedidos} pedidos · ${N(s.sesiones)} sesiones</title></rect>`;
+    svg += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle">${fecha(s.semana)}</text>`;
+  });
+  svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2" points="${sem.map((s, i) => `${P.l + i * bw + bw / 2},${ys(s.sesiones)}`).join(' ')}"/>`;
+  sem.forEach((s, i) => { svg += `<circle cx="${P.l + i * bw + bw / 2}" cy="${ys(s.sesiones)}" r="3" fill="var(--now)"/>`; });
+  el.innerHTML = svg + '</svg>';
+}
+
+fetch('/api/web').then((r) => r.json()).then((d) => {
+  $('gen').textContent = 'Actualizado ' + new Date(d.generado).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) + '.';
+  if (d.errores.length) $('err').textContent = 'No cargó: ' + d.errores.join(' · ');
+  const cerradas = d.semanas.filter((s) => !s.enCurso), u = cerradas.at(-1), a = cerradas.at(-2);
+  const tk = (s) => (s.pedidos ? s.venta / s.pedidos : 0);
+  $('k-venta').textContent = S(u.venta); delta($('d-venta'), u.venta, a.venta);
+  $('k-pedidos').textContent = N(u.pedidos); delta($('d-pedidos'), u.pedidos, a.pedidos);
+  $('k-ticket').textContent = S(tk(u)); delta($('d-ticket'), tk(u), tk(a));
+  $('k-sesiones').textContent = N(u.sesiones); delta($('d-sesiones'), u.sesiones, a.sesiones);
+  $('k-conv').textContent = u.sesiones ? (u.pedidos / u.sesiones * 100).toFixed(1) + '%' : '—';
+  grafico(d.semanas);
+  addEventListener('resize', () => grafico(d.semanas));
+  tabla('t-canales', [['canal', 'Canal'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.canales);
+  tabla('t-campanas', [['campana', 'Campaña'], ['fuenteMedio', 'Fuente / medio'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.campanas);
+  tabla('t-marcas', [['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.marcas);
+  tabla('t-top', [['producto', 'Producto'], ['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.top);
+  tabla('t-stock', [['producto', 'Producto'], ['marca', 'Marca'], ['stock', 'Stock', N]], d.stockBajo);
+}).catch((e) => { $('err').textContent = 'No se pudieron cargar los datos: ' + e.message; });
+</script>
+</body></html>

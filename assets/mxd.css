@@ -12,7 +12,9 @@
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--sans)}
 a{color:inherit}
 .top{position:sticky;top:0;z-index:50;background:#1d1b17;color:#fff;font-size:13px;padding:8px 16px}
+.top{display:flex;align-items:center;gap:16px}
 .top a{color:#fff;text-decoration:none;font-weight:600}
+.btn{margin-left:auto;font:inherit;font-weight:600;background:#fff;color:#1d1b17;border:0;border-radius:6px;padding:4px 12px;cursor:pointer}
 .wrap{max-width:1080px;margin:0 auto;padding:28px 16px 56px;display:grid;gap:26px}
 .eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--acc);font-weight:600}
 h1{font-family:var(--serif);font-weight:400;font-size:clamp(28px,5vw,40px);line-height:1.08;margin:6px 0 0}

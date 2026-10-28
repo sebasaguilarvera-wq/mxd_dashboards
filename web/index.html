@@ -2,7 +2,7 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Web y Google · MXD</title><link rel="stylesheet" href="/assets/mxd.css"></head>
 <body>
-<div class="top"><a href="/">← MXD Dashboards</a></div>
+<div class="top"><a href="/">← MXD Dashboards</a><button type="button" class="btn" onclick="location.search='?t='+Date.now()">Actualizar</button></div>
 <div class="wrap">
   <header>
     <div class="eyebrow">Google · Web MXD</div>
@@ -75,7 +75,7 @@ function grafico(sem) {
   el.innerHTML = svg + '</svg>';
 }
 
-fetch('/api/web').then((r) => r.json()).then((d) => {
+fetch('/api/web' + (new URLSearchParams(location.search).get('t') ? '?t=' + new URLSearchParams(location.search).get('t') : '')).then((r) => r.json()).then((d) => {
   $('gen').textContent = 'Actualizado ' + new Date(d.generado).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) + '.';
   if (d.errores.length) $('err').textContent = 'No cargó: ' + d.errores.join(' · ');
   const cerradas = d.semanas.filter((s) => !s.enCurso), u = cerradas.at(-1), a = cerradas.at(-2);

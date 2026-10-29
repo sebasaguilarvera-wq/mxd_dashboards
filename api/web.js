@@ -56,10 +56,16 @@ async function shopify(desde) {
     if (!d.pageInfo.hasNextPage) break;
     cur = d.pageInfo.endCursor;
   }
+  // Sesiones por día según Shopify (ShopifyQL; requiere read_reports)
+  let sesionesShop = [];
+  try {
+    const q = (await gql(`{ shopifyqlQuery(query: "FROM sessions SHOW sessions TIMESERIES day SINCE -35d UNTIL today") { tableData { rows } parseErrors } }`)).shopifyqlQuery;
+    sesionesShop = (q.tableData?.rows || []).map((r) => ({ dia: r.day, sesiones: Number(r.sessions) }));
+  } catch (e) { sesionesShop = null; }
   // Pedidos válidos: sin cancelados, sin pruebas
   const validos = orders.filter((o) => !o.cancelledAt && !o.test &&
     !o.lineItems.nodes.some((li) => li.vendor === 'MXD' && /prueba/i.test(li.title)));
-  return { pedidos: validos, productos };
+  return { pedidos: validos, productos, sesionesShop };
 }
 
 // ---------- GA4 ----------
@@ -118,10 +124,12 @@ export default async function handler(req, res) {
   const desde = semanas[0];
   const hace28 = sumarDias(hoy, -27);
 
-  const out = { generado: new Date().toISOString(), hoy, semanas: [], marcas: [], top: [], stockBajo: [], canales: [], campanas: [], errores: [] };
+  const out = { generado: new Date().toISOString(), hoy, dias: [], semanas: [], marcas: [], top: [], stockBajo: [], canales: [], campanas: [], errores: [] };
   const fila = Object.fromEntries(semanas.map((s) => [s, { semana: s, enCurso: s === lunesActual, venta: 0, pedidos: 0, sesiones: 0, usuarios: 0, comprasGA: 0 }]));
 
   const [shop, ga] = await Promise.allSettled([shopify(desde), ga4(desde, hoy)]);
+  // Últimos 35 días, día por día
+  const dia = Object.fromEntries(Array.from({ length: 35 }, (_, i) => sumarDias(hoy, i - 34)).map((f) => [f, { dia: f, venta: 0, pedidos: 0, sesionesShop: null, sesionesGA: 0 }]));
 
   if (shop.status === 'fulfilled') {
     const marcas = {}, top = {};
@@ -131,6 +139,7 @@ export default async function handler(req, res) {
       if (!s) continue;
       s.venta += Number(o.currentSubtotalPriceSet.shopMoney.amount);
       s.pedidos += 1;
+      if (dia[f]) { dia[f].venta += Number(o.currentSubtotalPriceSet.shopMoney.amount); dia[f].pedidos += 1; }
       if (f < hace28) continue;
       for (const li of o.lineItems.nodes) {
         const q = li.currentQuantity || 0;
@@ -148,11 +157,15 @@ export default async function handler(req, res) {
       .filter((p) => p.tracksInventory && p.totalInventory >= 1 && p.totalInventory <= 5)
       .map((p) => ({ producto: p.title, marca: p.vendor, stock: p.totalInventory }))
       .sort((a, b) => a.stock - b.stock);
+    if (shop.value.sesionesShop) shop.value.sesionesShop.forEach((r) => { if (dia[r.dia]) dia[r.dia].sesionesShop = r.sesiones; });
+    else out.errores.push('Shopify: no entregó sesiones (falta permiso read_reports)');
   } else out.errores.push('Shopify: ' + shop.reason.message);
 
   if (ga.status === 'fulfilled') {
     for (const { d: [fecha], m } of ga.value.porDia) {
-      const s = fila[lunesDe(`${fecha.slice(0, 4)}-${fecha.slice(4, 6)}-${fecha.slice(6)}`)];
+      const f = `${fecha.slice(0, 4)}-${fecha.slice(4, 6)}-${fecha.slice(6)}`;
+      if (dia[f]) dia[f].sesionesGA = m[0];
+      const s = fila[lunesDe(f)];
       if (!s) continue;
       s.sesiones += m[0]; s.usuarios += m[1]; s.comprasGA += m[2];
     }
@@ -162,6 +175,7 @@ export default async function handler(req, res) {
       .sort((a, b) => b.sesiones - a.sesiones).slice(0, 15);
   } else out.errores.push('Google Analytics: ' + ga.reason.message);
 
+  out.dias = Object.values(dia).map((d) => ({ ...d, venta: Math.round(d.venta * 100) / 100 }));
   out.semanas = semanas.map((s) => ({ ...fila[s], venta: Math.round(fila[s].venta * 100) / 100 }));
   res.setHeader('Cache-Control', 's-maxage=900, stale-while-revalidate=3600');
   res.status(200).json(out);

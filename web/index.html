@@ -11,7 +11,7 @@
 .mxd-nav .nav-btn:hover{filter:brightness(1.1)}
 @keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .wrap>*{animation:mxdIn .35s ease both}
-</style></head>
+</style><style>.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}</style></head>
 <body>
 <nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web" aria-current=page>Web y Google</a><a href="/meta">Meta</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
 <div class="wrap">
@@ -28,15 +28,17 @@
       <div class="kpi"><div class="l" data-tip="Venta|Pedidos de la tienda Shopify en la semana, sin envío ni cancelados.">Venta (sin envío)</div><div class="v" id="k-venta">—</div><div class="d" id="d-venta"></div></div>
       <div class="kpi"><div class="l" data-tip="Pedidos|Compras completadas en la web en la semana.">Pedidos</div><div class="v" id="k-pedidos">—</div><div class="d" id="d-pedidos"></div></div>
       <div class="kpi"><div class="l" data-tip="Ticket promedio|Venta dividida entre pedidos.">Ticket promedio</div><div class="v" id="k-ticket">—</div><div class="d" id="d-ticket"></div></div>
-      <div class="kpi"><div class="l" data-tip="Sesiones|Visitas a la web según Google Analytics. Una persona puede hacer varias.">Sesiones</div><div class="v" id="k-sesiones">—</div><div class="d" id="d-sesiones"></div></div>
+      <div class="kpi"><div class="l" data-tip="Sesiones|Visitas a la tienda según Shopify. Una persona puede hacer varias.">Sesiones</div><div class="v" id="k-sesiones">—</div><div class="d" id="d-sesiones"></div></div>
       <div class="kpi"><div class="l" data-tip="Conversión|De cada 100 visitas, cuántas terminan en pedido.">Conversión</div><div class="v" id="k-conv">—</div><div class="d">pedidos ÷ sesiones</div></div>
     </div>
   </section>
 
   <section class="panel">
-    <h2>Venta y sesiones por semana</h2>
+    <h2>Visitas y ventas por día</h2>
+    <p class="muted" id="g-res" style="margin:0 0 8px"></p>
+    <div class="leg-w"><span><i style="background:var(--acc)"></i>Sesiones (Shopify)</span><span><i style="background:var(--now);height:3px"></i>Sesiones (Google Analytics)</span><span><i style="background:#8a5cd6;border-radius:50%"></i>Día con pedido</span></div>
     <div id="chart"></div>
-    <p class="muted" style="font-size:12px;margin:6px 0 0">Barras: venta S/ · Línea: sesiones · La última barra es la semana en curso.</p>
+    <p class="muted" style="font-size:12px;margin:6px 0 0">Últimos 35 días. Shopify cuenta todas las visitas a la tienda; Google Analytics recién mide desde el 26 de octubre. Pasa el mouse por un día para ver el detalle.</p>
   </section>
 
   <section class="panel"><h2>Canales (últimos 28 días)</h2><table id="t-canales"></table></section>
@@ -69,39 +71,51 @@ function tabla(id, cols, rows) {
   });
 }
 
-function grafico(sem) {
-  const el = $('chart'), W = Math.max(el.clientWidth, 300), H = 220, P = { l: 48, r: 40, t: 12, b: 26 };
-  const maxV = Math.max(1, ...sem.map((s) => s.venta)), maxS = Math.max(1, ...sem.map((s) => s.sesiones));
-  const bw = (W - P.l - P.r) / sem.length;
-  const y = (v) => P.t + (H - P.t - P.b) * (1 - v / maxV), ys = (v) => P.t + (H - P.t - P.b) * (1 - v / maxS);
-  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Venta y sesiones por semana">`;
-  svg += `<text x="4" y="${P.t + 8}">${S(maxV)}</text><text x="${W - 4}" y="${P.t + 8}" text-anchor="end">${N(maxS)} ses.</text>`;
-  sem.forEach((s, i) => {
-    const x = P.l + i * bw;
-    svg += `<rect x="${x + bw * .18}" y="${y(s.venta)}" width="${bw * .64}" height="${H - P.b - y(s.venta)}" fill="var(--acc)" opacity="${s.enCurso ? .45 : 1}" rx="2"/>`;
-    svg += `<text x="${x + bw / 2}" y="${H - 8}" text-anchor="middle">${fecha(s.semana)}</text>`;
+function grafico(dias) {
+  const el = $('chart'), W = Math.max(el.clientWidth, 300), H = 240, P = { l: 8, r: 44, t: 18, b: 26 };
+  const ses = (d) => d.sesionesShop ?? d.sesionesGA;
+  const max = Math.max(1, ...dias.map((d) => Math.max(ses(d), d.sesionesGA)));
+  const bw = (W - P.l - P.r) / dias.length, alto = H - P.t - P.b, base = P.t + alto;
+  const y = (v) => base - (v / max) * alto, cx = (i) => P.l + i * bw + bw / 2;
+  const corta = (f) => new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
+  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Visitas y ventas por día">`;
+  [0.5, 1].forEach((k) => { svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(max * k)}" y2="${y(max * k)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${y(max * k) + 4}">${N(max * k)}</text>`; });
+  const paso = Math.ceil(dias.length / Math.max(1, Math.floor((W - P.l - P.r) / 48)));
+  dias.forEach((d, i) => {
+    const w = Math.max(2, Math.min(18, bw * 0.7)), v = ses(d);
+    if (v) svg += `<rect x="${cx(i) - w / 2}" y="${y(v)}" width="${w}" height="${base - y(v)}" rx="2" fill="var(--acc)" opacity=".85"/>`;
+    if (d.pedidos) svg += `<circle cx="${cx(i)}" cy="${P.t - 8}" r="5" fill="#8a5cd6"/>`;
+    const ult = i === dias.length - 1;
+    if ((i % paso === 0 && dias.length - 1 - i >= paso) || ult) svg += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${ult ? 'end' : 'middle'}">${corta(d.dia)}</text>`;
   });
-  svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2" points="${sem.map((s, i) => `${P.l + i * bw + bw / 2},${ys(s.sesiones)}`).join(' ')}"/>`;
-  sem.forEach((s, i) => { svg += `<circle cx="${P.l + i * bw + bw / 2}" cy="${ys(s.sesiones)}" r="3" fill="var(--now)"/>`; });
-  sem.forEach((s, i) => {
-    const t = 'Semana del ' + fecha(s.semana) + (s.enCurso ? ' (en curso)' : '') + '|Venta: ' + S(s.venta) + '\nPedidos: ' + s.pedidos + '\nSesiones: ' + N(s.sesiones) + '\nUsuarios: ' + N(s.usuarios);
-    svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${H - P.t - P.b}" data-tip="${t.replace(/"/g, '&quot;')}"/>`;
+  const ga = dias.map((d, i) => [i, d]).filter(([, d]) => d.dia >= '2026-10-26');
+  if (ga.length) svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2.2" points="${ga.map(([i, d]) => cx(i) + ',' + y(d.sesionesGA)).join(' ')}"/>`;
+  svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+  dias.forEach((d, i) => {
+    const lin = ['## Visitas', 'Sesiones (Shopify)\t' + (d.sesionesShop ?? '—'), 'Sesiones (Google Analytics)\t' + (d.dia >= '2026-10-26' ? d.sesionesGA : 'sin medir'), '## Ventas web', 'Pedidos\t' + d.pedidos, 'Venta\t' + S(d.venta)];
+    const t = new Date(d.dia + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }) + '|' + lin.join('\n');
+    svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t - 14}" width="${bw}" height="${alto + 14}" data-tip="${t.replace(/"/g, '&quot;')}"/>`;
   });
   el.innerHTML = svg + '</svg>';
+  const u28 = dias.slice(-28), tot = u28.reduce((t, d) => t + (d.sesionesShop || 0), 0), ped = u28.reduce((t, d) => t + d.pedidos, 0);
+  $('g-res').textContent = 'Últimos 28 días: ' + N(tot) + ' sesiones según Shopify (' + (tot / 28).toFixed(1) + ' por día) y ' + ped + ' pedidos.';
 }
 
 fetch('/api/web' + (new URLSearchParams(location.search).get('t') ? '?t=' + new URLSearchParams(location.search).get('t') : '')).then((r) => r.json()).then((d) => {
   $('gen').textContent = 'Actualizado ' + new Date(d.generado).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) + '.';
   if (d.errores.length) $('err').textContent = 'No cargó: ' + d.errores.join(' · ');
   const cerradas = d.semanas.filter((s) => !s.enCurso), u = cerradas.at(-1), a = cerradas.at(-2);
+  // Sesiones de Shopify por semana (mide desde antes que Google Analytics)
+  const sesSem = (lunes) => d.dias.filter((x) => x.dia >= lunes && x.dia < new Date(Date.parse(lunes) + 7 * 864e5).toISOString().slice(0, 10)).reduce((t, x) => t + (x.sesionesShop ?? x.sesionesGA), 0);
+  u.sesiones = sesSem(u.semana); a.sesiones = sesSem(a.semana);
   const tk = (s) => (s.pedidos ? s.venta / s.pedidos : 0);
   $('k-venta').textContent = S(u.venta); delta($('d-venta'), u.venta, a.venta);
   $('k-pedidos').textContent = N(u.pedidos); delta($('d-pedidos'), u.pedidos, a.pedidos);
   $('k-ticket').textContent = S(tk(u)); delta($('d-ticket'), tk(u), tk(a));
   $('k-sesiones').textContent = N(u.sesiones); delta($('d-sesiones'), u.sesiones, a.sesiones);
   $('k-conv').textContent = u.sesiones ? (u.pedidos / u.sesiones * 100).toFixed(1) + '%' : '—';
-  grafico(d.semanas);
-  addEventListener('resize', () => grafico(d.semanas));
+  grafico(d.dias);
+  addEventListener('resize', () => grafico(d.dias));
   tabla('t-canales', [['canal', 'Canal'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.canales);
   tabla('t-campanas', [['campana', 'Campaña'], ['fuenteMedio', 'Fuente / medio'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.campanas);
   tabla('t-marcas', [['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.marcas);

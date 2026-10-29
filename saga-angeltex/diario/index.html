@@ -193,7 +193,8 @@ function grafico(s, sp) {
       acc += h;
     });
     const finde = [0, 6].includes(new Date(d.f + 'T12:00:00Z').getUTCDay());
-    if (i % paso === 0) g += `<text x="${cx(i)}" y="${base + 16}" text-anchor="middle"${finde ? ' font-weight="600"' : ''}>${fecha(d.f)}</text>`;
+    const ult = i === s.length - 1;
+    if ((i % paso === 0 && s.length - 1 - i >= paso / 2) || ult) g += `<text x="${cx(i)}" y="${base + 16}" text-anchor="${ult && i ? 'end' : 'middle'}"${finde ? ' font-weight="600"' : ''}>${fecha(d.f)}</text>`;
   });
   const linea = (arr, col, dash) => `<polyline fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round"${dash ? ' stroke-dasharray="5 4" opacity=".6"' : ''} points="${arr.map((d, i) => cx(i) + ',' + ya(d.acc)).join(' ')}"/>`;
   g += linea(sp, 'var(--muted)', true);

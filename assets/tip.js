@@ -3,11 +3,16 @@
 (() => {
   const css = document.createElement('style');
   css.textContent = `
-  .mxd-tip{position:fixed;z-index:9999;pointer-events:none;max-width:280px;padding:9px 12px;border-radius:9px;
+  .mxd-tip{position:fixed;z-index:9999;pointer-events:none;max-width:320px;padding:9px 12px;border-radius:9px;
     background:rgba(29,27,23,.96);color:#fff;font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    box-shadow:0 8px 24px rgba(0,0,0,.25);white-space:pre-line;opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
+    box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transform:translateY(4px);transition:opacity .12s,transform .12s}
   .mxd-tip.on{opacity:1;transform:none}
   .mxd-tip b{display:block;font-weight:600;margin-bottom:2px}
+  .mxd-tip .sec{margin-top:8px;padding-top:6px;border-top:1px solid rgba(255,255,255,.15);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:#bdb7ac}
+  .mxd-tip .fila{display:flex;gap:6px;align-items:center}
+  .mxd-tip .fila .val{margin-left:auto;padding-left:16px;white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
+  .mxd-tip i{display:inline-block;width:9px;height:9px;border-radius:2px;flex:none}
+  .mxd-tip .chico{font-size:12px;color:#bdb7ac}
   [data-tip]{cursor:help}
   svg [data-tip]{cursor:pointer}
   .mxd-hit{fill:transparent}
@@ -41,7 +46,18 @@
     tip.textContent = '';
     const [a, b] = texto.includes('|') ? texto.split('|') : [null, texto];
     if (a) { const h = document.createElement('b'); h.textContent = a; tip.append(h); }
-    tip.append(b);
+    // Líneas: "## Sección" = subtítulo; "{#color}texto" = punto de color; "texto\tvalor" = fila con valor a la derecha
+    b.split('\n').forEach((l) => {
+      const d = document.createElement('div');
+      if (l.startsWith('~ ')) { d.className = 'chico'; d.textContent = l.slice(2); tip.append(d); return; }
+      if (l.startsWith('## ')) { d.className = 'sec'; d.textContent = l.slice(3); tip.append(d); return; }
+      const m = l.match(/^\{(#[0-9a-f]{3,6})\}/i);
+      if (m) { const i = document.createElement('i'); i.style.background = m[1]; d.append(i); l = l.slice(m[0].length); }
+      const [x, y] = l.split('\t');
+      d.append(x);
+      if (y != null) { const v = document.createElement('span'); v.className = 'val'; v.textContent = y; d.append(v); d.className = 'fila'; }
+      tip.append(d);
+    });
   };
   const mover = (x, y) => {
     const r = tip.getBoundingClientRect(), m = 12;

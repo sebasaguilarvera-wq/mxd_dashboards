@@ -201,8 +201,14 @@ function grafico(s, sp) {
   g += linea(s, 'var(--acc)');
   g += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
   s.forEach((d, i) => {
-    const lin = (ms.length > 1 ? ms.map((m) => m + ': ' + fmt(d.por[m])).concat('Total: ' + fmt(d.tot)) : ['Venta: ' + fmt(d.tot)]);
-    lin.push(d.n + (d.n === 1 ? ' unidad' : ' unidades'), 'Acumulado: ' + fmt(d.acc), 'Mismo día del periodo anterior: acumulado ' + fmt(sp[i].acc));
+    const medida = est.m === 'unid' ? 'unidades' : est.m === 'bruto' ? 'venta bruta' : 'neto de comisión';
+    const lin = ['## Venta del día (' + medida + ')'];
+    if (ms.length > 1) ms.forEach((m) => lin.push('{' + COL[m] + '}' + m + '\t' + fmt(d.por[m])));
+    lin.push('Total del día\t' + fmt(d.tot), 'Unidades vendidas\t' + d.n);
+    const pa = sp[i].acc, dif = pa ? Math.round((d.acc / pa - 1) * 100) : null;
+    lin.push('## Acumulado del periodo', 'Este periodo\t' + fmt(d.acc), '~ del ' + fecha(s[0].f) + ' al ' + fecha(d.f),
+      'Periodo anterior\t' + fmt(pa), '~ del ' + fecha(sp[0].f) + ' al ' + fecha(sp[i].f) + ', mismos días');
+    if (dif != null) lin.push((dif >= 0 ? 'Vas ' + dif + '% arriba' : 'Vas ' + Math.abs(dif) + '% abajo') + ' del periodo anterior');
     const t = fecha(d.f, { weekday: 'long', day: 'numeric', month: 'long' }) + '|' + lin.join('\n');
     g += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${alto}" data-tip="${t.replace(/"/g, '&quot;')}"/>`;
   });

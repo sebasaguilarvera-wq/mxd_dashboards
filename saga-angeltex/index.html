@@ -475,10 +475,11 @@ function grafico(){
   });
   add('line', {x1: L, x2: W-R, y1: base, y2: base, class: 'gl'});
   B.forEach((s, i) => {
-    const lin = marcas.map((b, j) => b + ': ' + soles(datos[j][i]));
-    if (marcas.length > 1) lin.push('Total: ' + soles(tot[i]));
-    lin.push(unid[i] + (unid[i] === 1 ? ' unidad' : ' unidades'));
-    if (camp(i)) lin.push(dia ? 'Día de campaña' : 'Semana de campaña');
+    const hex = {Samsara:'#eb6834', Cocoon:'#2a78d6'};
+    const lin = ['## Neto de comisión'].concat(marcas.map((b, j) => '{' + hex[b] + '}' + b + '\t' + soles(datos[j][i])));
+    if (marcas.length > 1) lin.push('Total\t' + soles(tot[i]));
+    lin.push('Unidades vendidas\t' + unid[i]);
+    if (camp(i)) lin.push('## Con campaña activa en Falabella Media');
     const tit = dia ? new Date(s + 'T12:00:00Z').toLocaleDateString('es-PE', {timeZone:'UTC', weekday:'long', day:'numeric', month:'long'}) : 'Semana del ' + corta(s);
     add('rect', {x: L + ancho*i, y: T - 8, width: ancho, height: alto + 8, class: 'mxd-hit', 'data-tip': tit + '|' + lin.join('\n')});
   });

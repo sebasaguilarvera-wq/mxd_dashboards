@@ -28,6 +28,9 @@ input[type=date]{font:inherit;font-size:14px;padding:5px 8px;border:1px solid va
 .leg i{width:12px;height:12px;border-radius:3px;display:inline-block}
 .leg i.dash{height:0;border-top:2px dashed var(--muted);background:none!important;border-radius:0}
 .nota{font-size:12px;margin:8px 0 0}
+.plink{color:var(--fg);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.plink:hover{color:var(--acc);text-decoration-color:var(--acc)}
+.plink::after{content:' ↗';font-size:11px;color:var(--muted)}
 .kpi .d{font-weight:500}
 </style><style>
 .sub-tabs{display:flex;gap:6px;padding:10px 16px 0;max-width:1080px;margin:0 auto;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;flex-wrap:wrap}
@@ -114,7 +117,7 @@ const nDias = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / DIA) + 1;
 const fecha = (f, o = { day: 'numeric', month: 'short' }) => new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', ...o });
 const nf0 = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 0 });
 const est = { b: '', m: 'neto' };
-let D, HOY, PRIMERO, nombre = {};
+let D, HOY, PRIMERO, nombre = {}, url = {};
 
 const fmt = (v) => est.m === 'unid' ? nf0.format(v) + ' u.' : 'S/ ' + nf0.format(Math.round(v));
 const valor = (r) => est.m === 'unid' ? 1 : est.m === 'bruto' ? r.p : r.p * (1 - COM);
@@ -215,17 +218,22 @@ function tabla(t, cols, rows, vacio) {
   const hr = t.insertRow();
   cols.forEach(([, label, n]) => { const th = document.createElement('th'); th.textContent = label; if (n) th.className = 'n'; hr.append(th); });
   if (!rows.length) { const c = t.insertRow().insertCell(); c.colSpan = cols.length; c.className = 'muted'; c.textContent = vacio; return; }
-  rows.forEach((r) => { const tr = t.insertRow(); cols.forEach(([k, , n]) => { const c = tr.insertCell(); c.textContent = typeof k === 'function' ? k(r) : r[k]; if (n) c.className = 'n'; }); });
+  rows.forEach((r) => { const tr = t.insertRow(); cols.forEach(([k, , n]) => {
+    const c = tr.insertCell(), v = typeof k === 'function' ? k(r) : r[k];
+    if (v && v.href) { const a = document.createElement('a'); a.href = v.href; a.target = '_blank'; a.rel = 'noopener'; a.className = 'plink'; a.textContent = v.text; a.dataset.tip = 'Abrir en Falabella|' + v.text; c.append(a); }
+    else c.textContent = v;
+    if (n) c.className = 'n';
+  }); });
 }
 
 function tablaTop(a, b) {
   const por = {};
   for (const r of filas(a, b)) {
-    const o = (por[r.m] ||= { modelo: nombre[r.m] || r.m, marca: r.b, u: 0, v: 0, ult: '' });
+    const o = (por[r.m] ||= { modelo: nombre[r.m] || r.m, url: url[r.m], marca: r.b, u: 0, v: 0, ult: '' });
     o.u++; o.v += valor(r); if (r.f > o.ult) o.ult = r.f;
   }
   const rows = Object.values(por).sort((x, z) => z.v - x.v || z.u - x.u).slice(0, 10);
-  tabla($('t-top'), [['modelo', 'Modelo'], ['marca', 'Marca'], ['u', 'Unid.', 1], [(r) => fmt(r.v), est.m === 'unid' ? 'Unidades' : 'Venta', 1], [(r) => fecha(r.ult), 'Última venta', 1]], rows, 'Sin ventas en el periodo');
+  tabla($('t-top'), [[(r) => r.url ? { text: r.modelo, href: r.url } : r.modelo, 'Modelo'], ['marca', 'Marca'], ['u', 'Unid.', 1], [(r) => fmt(r.v), est.m === 'unid' ? 'Unidades' : 'Venta', 1], [(r) => fecha(r.ult), 'Última venta', 1]], rows, 'Sin ventas en el periodo');
 }
 
 function tablaDias(s) {
@@ -263,7 +271,7 @@ function grupo(id, key, attr) {
     if (!r.ok) throw new Error(j.error || 'error ' + r.status);
     D = j.data; HOY = j.hoy;
     PRIMERO = D.ventas.length ? D.ventas[0].f : HOY;
-    D.modelos.forEach((m) => { nombre[m.m] = m.n; });
+    D.modelos.forEach((m) => { nombre[m.m] = m.n; url[m.m] = m.u; });
     st.textContent = 'Datos de Falabella al ' + new Date(j.generado).toLocaleString('es-PE', { dateStyle: 'medium', timeStyle: 'short' });
     ['desde', 'hasta'].forEach((id) => { $(id).min = PRIMERO; $(id).max = HOY; $(id).addEventListener('change', () => { document.querySelectorAll('#presets button').forEach((x) => x.setAttribute('aria-pressed', false)); pintar(); }); });
     document.querySelectorAll('#presets button').forEach((b) => b.addEventListener('click', () => preset(b.dataset.p)));

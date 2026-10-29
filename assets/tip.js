@@ -31,7 +31,7 @@
     for (; el && el !== document; el = el.parentNode) {
       if (!el.getAttribute) continue;
       if (el.hasAttribute('title') && el.tagName !== 'svg') { el.dataset.tip = el.getAttribute('title'); el.removeAttribute('title'); }
-      const t = el.querySelector?.(':scope > title');
+      const t = el instanceof SVGElement ? el.querySelector(':scope > title') : null;
       if (t && el.tagName !== 'svg') { el.dataset.tip = t.textContent; t.remove(); }
       if (el.dataset?.tip) return el;
     }

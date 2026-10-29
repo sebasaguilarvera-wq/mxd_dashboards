@@ -14,6 +14,11 @@
 .sub-tabs a{padding:6px 14px;border-radius:99px;border:1px solid var(--line,#e2ded6);color:var(--fg,#1d1b17);text-decoration:none;background:var(--panel,#fff);transition:border-color .15s}
 .sub-tabs a:hover{border-color:var(--acc,#0f6b55)}
 .sub-tabs a[aria-current]{background:var(--acc,#0f6b55);border-color:var(--acc,#0f6b55);color:#fff;font-weight:600}
+</style><style>
+.vista-g{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-left:auto}
+.vista-g button{font:inherit;font-size:13px;background:var(--panel);color:var(--fg);border:0;padding:5px 14px;cursor:pointer}
+.vista-g button+button{border-left:1px solid var(--line)}
+.vista-g button[aria-pressed=true]{background:var(--acc-soft);color:var(--acc);font-weight:600}
 </style></head><body style="margin:0"><nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex" aria-current=page>Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta">Meta</a></div><span id="saga-st" class="nav-st">Cargando datos de Falabella…</span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav><div class="sub-tabs"><a href="/saga-angeltex" aria-current=page>Decisiones por modelo</a><a href="/saga-angeltex/diario">Ventas diarias</a></div>
 <title>Dashboard_ECOM_SAGA_Angeltex</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -277,7 +282,7 @@ details.desp>*+*{margin-top:12px}
   </section>
 
   <section>
-    <div class="head"><h2 id="g-tit">Neto por semana</h2></div>
+    <div class="head"><h2 id="g-tit">Neto por semana</h2><div class="vista-g" id="vista-g"><button type="button" data-v="sem" aria-pressed="true">Semana</button><button type="button" data-v="dia" aria-pressed="false">Día</button></div></div>
     <p class="note" id="g-note">—</p>
     <div class="panel">
       <div class="leyenda" id="leg"></div>
@@ -353,6 +358,7 @@ function pintar(){
   $('lede').textContent = (B || 'Angeltex') + ' lleva ' + Math.round(sem) + ' semanas en Falabella: ' + nf0.format(vs.length) + ' unidades, ' +
     soles(neto) + ' netos después de comisión. ' + ms.filter(m => m.q).length + ' de sus ' + ms.length + ' modelos vendieron al menos una vez.';
   alertas(ms); cascada(vs); decidir(); grafico(); campana();
+  if (!window.__vistaG){ window.__vistaG = 1; document.querySelectorAll('#vista-g button').forEach(b => b.addEventListener('click', () => { vistaG.v = b.dataset.v; document.querySelectorAll('#vista-g button').forEach(x => x.setAttribute('aria-pressed', x === b)); grafico(); })); }
 }
 
 function alertas(ms){
@@ -433,39 +439,52 @@ function decidir(){
   tb.append(frag);
 }
 
+const vistaG = {v: 'sem'};
 function grafico(){
   const box = $('chart'); box.innerHTML = '';
+  const dia = vistaG.v === 'dia';
+  $('g-tit').textContent = dia ? 'Neto por día' : 'Neto por semana';
   const marcas = estado.b ? [estado.b] : ['Samsara','Cocoon'];
   const col = {Samsara:'var(--now)', Cocoon:'var(--prev)'};
-  const datos = marcas.map(b => SEM.map((_, i) => todas.filter(r => VALID(r.e) && r.b === b && semDe(r.f) === i).reduce((t,r) => t + r.p, 0)*(1-COM)));
-  const tot = SEM.map((_, i) => datos.reduce((t,d) => t + d[i], 0));
+  // cubetas: semanas (lunes) o días desde que vende
+  const B = dia ? (() => { const o = []; for (let t = Date.parse('2026-08-12'); t <= Date.parse(HOY); t += 864e5) o.push(new Date(t).toISOString().slice(0,10)); return o; })() : SEM;
+  const idx = f => dia ? B.indexOf(f) : semDe(f);
+  const camp = i => dia ? (B[i] >= C0 && B[i] <= C1) : enCamp(i);
+  const datos = marcas.map(() => B.map(() => 0)), unid = B.map(() => 0);
+  todas.forEach(r => { if (!VALID(r.e)) return; const j = marcas.indexOf(r.b), i = idx(r.f); if (j < 0 || i < 0) return; datos[j][i] += r.p*(1-COM); unid[i]++; });
+  const tot = B.map((_, i) => datos.reduce((t,d) => t + d[i], 0));
   const max = Math.max(1, ...tot);
   const leg = $('leg'); leg.innerHTML = '';
   marcas.forEach((b, j) => { const s = document.createElement('span'); const i = document.createElement('i'); i.style.background = col[b]; s.append(i, b + ': ' + soles(datos[j].reduce((t,v)=>t+v,0))); leg.append(s); });
-  const sc = document.createElement('span'); const ic = document.createElement('i'); ic.style.background = 'var(--acc-soft)'; ic.style.border = '1px solid var(--line)'; sc.append(ic, 'Semanas de campaña'); leg.append(sc);
-  const W = Math.max(480, SEM.length*64), H = 260, T = 22, Bm = 30, L = 10, R = 10;
+  const sc = document.createElement('span'); const ic = document.createElement('i'); ic.style.background = 'var(--acc-soft)'; ic.style.border = '1px solid var(--line)'; sc.append(ic, dia ? 'Días de campaña' : 'Semanas de campaña'); leg.append(sc);
+  const W = Math.max(box.clientWidth || 480, 480), H = 260, T = 22, Bm = 30, L = 10, R = 10;
   const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
   svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('role','img');
   const add = (tag, at, txt) => { const e = document.createElementNS('http://www.w3.org/2000/svg', tag); for (const k in at) e.setAttribute(k, at[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; };
   const alto = H - T - Bm, base = T + alto, y = v => (v / max) * alto;
-  const ancho = (W - L - R) / SEM.length, bw = Math.min(30, ancho*0.6);
-  SEM.forEach((s, i) => {
+  const ancho = (W - L - R) / B.length, bw = Math.max(2, Math.min(30, ancho*0.65));
+  const paso = Math.ceil(B.length / Math.max(1, Math.floor((W - L - R) / 52)));
+  B.forEach((s, i) => {
     const cx = L + ancho*i + ancho/2;
-    if (enCamp(i)) add('rect', {x: L + ancho*i, y: T - 8, width: ancho, height: alto + 8, fill: 'var(--acc-soft)', opacity: .7});
+    if (camp(i)) add('rect', {x: L + ancho*i, y: T - 8, width: ancho, height: alto + 8, fill: 'var(--acc-soft)', opacity: .7});
     let acc = 0;
     marcas.forEach((b, j) => { const v = datos[j][i]; if (!v) return; add('rect', {x: cx-bw/2, y: base - acc - y(v), width: bw, height: Math.max(1, y(v) - 1), rx: 2, fill: col[b]}); acc += y(v); });
-    if (tot[i]) add('text', {x: cx, y: base - acc - 5, 'text-anchor': 'middle', class: 'gv'}, nf0.format(Math.round(tot[i])));
-    add('text', {x: cx, y: base + 18, 'text-anchor': 'middle', class: 'gx'}, corta(s));
-  });
-  SEM.forEach((s, i) => {
-    const lin = marcas.map((b, j) => b + ': ' + soles(datos[j][i]));
-    if (marcas.length > 1) lin.push('Total: ' + soles(tot[i]));
-    if (enCamp(i)) lin.push('Semana de campaña');
-    add('rect', {x: L + ancho*i, y: T - 8, width: ancho, height: alto + 8, class: 'mxd-hit', 'data-tip': 'Semana del ' + corta(s) + '|' + lin.join('\n')});
+    if (tot[i] && (!dia || ancho >= 22)) add('text', {x: cx, y: base - acc - 5, 'text-anchor': 'middle', class: 'gv'}, nf0.format(Math.round(tot[i])));
+    if (i % paso === 0) add('text', {x: cx, y: base + 18, 'text-anchor': 'middle', class: 'gx'}, corta(s));
   });
   add('line', {x1: L, x2: W-R, y1: base, y2: base, class: 'gl'});
+  B.forEach((s, i) => {
+    const lin = marcas.map((b, j) => b + ': ' + soles(datos[j][i]));
+    if (marcas.length > 1) lin.push('Total: ' + soles(tot[i]));
+    lin.push(unid[i] + (unid[i] === 1 ? ' unidad' : ' unidades'));
+    if (camp(i)) lin.push(dia ? 'Día de campaña' : 'Semana de campaña');
+    const tit = dia ? new Date(s + 'T12:00:00Z').toLocaleDateString('es-PE', {timeZone:'UTC', weekday:'long', day:'numeric', month:'long'}) : 'Semana del ' + corta(s);
+    add('rect', {x: L + ancho*i, y: T - 8, width: ancho, height: alto + 8, class: 'mxd-hit', 'data-tip': tit + '|' + lin.join('\n')});
+  });
   box.appendChild(svg);
-  $('g-note').textContent = 'Soles netos de comisión por semana (de lunes a domingo; cada etiqueta es el lunes). El fondo marca las semanas de la campaña del 16 de setiembre al 16 de octubre.';
+  $('g-note').textContent = dia
+    ? 'Soles netos de comisión por día desde el 12 de agosto. El fondo marca los días de la campaña del 16 de setiembre al 16 de octubre.'
+    : 'Soles netos de comisión por semana (de lunes a domingo; cada etiqueta es el lunes). El fondo marca las semanas de la campaña del 16 de setiembre al 16 de octubre.';
 }
 
 // --- costo: precio mayorista por SKU de la lista de Angeltex [mayorista, pvp lista]

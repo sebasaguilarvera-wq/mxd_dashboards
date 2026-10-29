@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ventas diarias Angeltex · MXD</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><style>
+.mxd-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.mxd-nav .nav-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.mxd-nav .nav-tabs a{color:#cfcac0;text-decoration:none;padding:5px 11px;border-radius:7px;white-space:nowrap;transition:background .15s,color .15s}
+.mxd-nav .nav-tabs a:hover{background:rgba(255,255,255,.1);color:#fff}
+.mxd-nav .nav-tabs a[aria-current]{background:#fff;color:#1d1b17;font-weight:600}
+.mxd-nav .nav-st{margin-left:auto;opacity:.7;font-size:12px}
+.mxd-nav .nav-btn{font:inherit;font-weight:600;background:#eb6834;color:#fff;border:0;border-radius:7px;padding:5px 12px;cursor:pointer;transition:filter .15s}
+.mxd-nav .nav-btn:hover{filter:brightness(1.1)}
+@keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wrap>*{animation:mxdIn .35s ease both}
+</style><style>
+.ctrl{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:flex-end}
+.grupo{display:grid;gap:5px}
+.fechas{display:flex;gap:10px}
+.fechas label{display:grid;gap:5px}
+.lbl{font-size:12px;color:var(--muted)}
+input[type=date]{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--fg)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13px;background:var(--panel);color:var(--fg);border:0;border-right:1px solid var(--line);padding:6px 12px;cursor:pointer;transition:background .12s}
+.seg button:last-child{border-right:0}
+.seg button:hover{background:var(--acc-soft)}
+.seg button[aria-pressed=true]{background:var(--acc-soft);color:var(--acc);font-weight:600}
+.leg{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:8px}
+.leg span{display:inline-flex;align-items:center;gap:6px}
+.leg i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.leg i.dash{height:0;border-top:2px dashed var(--muted);background:none!important;border-radius:0}
+.nota{font-size:12px;margin:8px 0 0}
+.kpi .d{font-weight:500}
+</style><style>
+.sub-tabs{display:flex;gap:6px;padding:10px 16px 0;max-width:1080px;margin:0 auto;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;flex-wrap:wrap}
+.sub-tabs a{padding:6px 14px;border-radius:99px;border:1px solid var(--line,#e2ded6);color:var(--fg,#1d1b17);text-decoration:none;background:var(--panel,#fff);transition:border-color .15s}
+.sub-tabs a:hover{border-color:var(--acc,#0f6b55)}
+.sub-tabs a[aria-current]{background:var(--acc,#0f6b55);border-color:var(--acc,#0f6b55);color:#fff;font-weight:600}
+</style></head>
+<body>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex" aria-current=page>Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta">Meta</a></div><span id="saga-st" class="nav-st">Cargando datos de Falabella…</span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
+<div class="sub-tabs"><a href="/saga-angeltex">Decisiones por modelo</a><a href="/saga-angeltex/diario" aria-current=page>Ventas diarias</a></div>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Saga Falabella · Angeltex (Samsara y Cocoon)</div>
+    <h1>Ventas diarias</h1>
+    <p class="lede" id="lede">Cómo se mueven las ventas día a día en el periodo que elijas.</p>
+  </header>
+
+  <section class="panel ctrl">
+    <div class="grupo">
+      <span class="lbl">Periodo</span>
+      <div class="seg" id="presets">
+        <button type="button" data-p="mes">Este mes</button>
+        <button type="button" data-p="mesant">Mes anterior</button>
+        <button type="button" data-p="7">Últimos 7 días</button>
+        <button type="button" data-p="30">Últimos 30 días</button>
+        <button type="button" data-p="todo">Desde que vende</button>
+      </div>
+    </div>
+    <div class="grupo fechas">
+      <label><span class="lbl">Desde</span><input type="date" id="desde"></label>
+      <label><span class="lbl">Hasta</span><input type="date" id="hasta"></label>
+    </div>
+    <div class="grupo">
+      <span class="lbl">Marca</span>
+      <div class="seg" id="marca">
+        <button type="button" data-b="" aria-pressed="true">Angeltex</button>
+        <button type="button" data-b="Samsara">Samsara</button>
+        <button type="button" data-b="Cocoon">Cocoon</button>
+      </div>
+    </div>
+    <div class="grupo">
+      <span class="lbl">Medida</span>
+      <div class="seg" id="medida">
+        <button type="button" data-m="neto" aria-pressed="true">Soles netos</button>
+        <button type="button" data-m="bruto">Venta bruta</button>
+        <button type="button" data-m="unid">Unidades</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="kpis">
+    <div class="kpi"><div class="l" id="l-total" data-tip="Total del periodo|Suma de los días elegidos. Solo pedidos entregados o enviados; sin cancelados ni devueltos.">Total del periodo</div><div class="v" id="k-total">—</div><div class="d" id="d-total"></div></div>
+    <div class="kpi"><div class="l" data-tip="Promedio por día|Total dividido entre todos los días del periodo, vendan o no.">Promedio por día</div><div class="v" id="k-prom">—</div><div class="d" id="d-prom"></div></div>
+    <div class="kpi"><div class="l" data-tip="Mejor día|El día con más ventas del periodo.">Mejor día</div><div class="v" id="k-mejor">—</div><div class="d" id="d-mejor"></div></div>
+    <div class="kpi"><div class="l" data-tip="Días con venta|Cuántos días del periodo tuvieron al menos una venta.">Días con venta</div><div class="v" id="k-dias">—</div><div class="d" id="d-dias"></div></div>
+  </section>
+
+  <section class="panel">
+    <h2 id="g-tit">Evolución diaria</h2>
+    <div class="leg" id="leg"></div>
+    <div id="chart"></div>
+    <p class="muted nota" id="g-note">Barras: venta de cada día por marca · Línea: acumulado del periodo · Línea punteada: acumulado del periodo anterior del mismo largo. Pasa el mouse por un día para ver el detalle.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Lo más vendido en el periodo</h2>
+    <table id="t-top"></table>
+  </section>
+
+  <section class="panel">
+    <h2>Día por día</h2>
+    <table id="t-dias"></table>
+  </section>
+</div>
+<script>
+const COM = 0.25;
+const VALID = (e) => e === 'Entregado' || e === 'Enviado';
+const COL = { Samsara: '#eb6834', Cocoon: '#2a78d6' };
+const $ = (id) => document.getElementById(id);
+const DIA = 864e5;
+const iso = (t) => new Date(t).toISOString().slice(0, 10);
+const sumar = (f, n) => iso(Date.parse(f) + n * DIA);
+const nDias = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / DIA) + 1;
+const fecha = (f, o = { day: 'numeric', month: 'short' }) => new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', ...o });
+const nf0 = new Intl.NumberFormat('es-PE', { maximumFractionDigits: 0 });
+const est = { b: '', m: 'neto' };
+let D, HOY, PRIMERO, nombre = {};
+
+const fmt = (v) => est.m === 'unid' ? nf0.format(v) + ' u.' : 'S/ ' + nf0.format(Math.round(v));
+const valor = (r) => est.m === 'unid' ? 1 : est.m === 'bruto' ? r.p : r.p * (1 - COM);
+const marcas = () => est.b ? [est.b] : ['Samsara', 'Cocoon'];
+
+function filas(a, b) {
+  return D.ventas.filter((r) => VALID(r.e) && r.f >= a && r.f <= b && (!est.b || r.b === est.b));
+}
+
+function serie(a, b) {
+  const dias = [];
+  for (let f = a; f <= b; f = sumar(f, 1)) dias.push({ f, tot: 0, n: 0, por: { Samsara: 0, Cocoon: 0 } });
+  const idx = Object.fromEntries(dias.map((d, i) => [d.f, i]));
+  for (const r of filas(a, b)) { const d = dias[idx[r.f]]; const v = valor(r); d.tot += v; d.n++; d.por[r.b] += v; }
+  let acc = 0;
+  dias.forEach((d) => { acc += d.tot; d.acc = acc; });
+  return dias;
+}
+
+function delta(el, a, b, txt) {
+  if (!b) { el.textContent = 'sin ventas en ' + txt; return; }
+  const p = Math.round((a / b - 1) * 100);
+  el.textContent = (p >= 0 ? '+' : '') + p + '% contra ' + txt;
+  el.style.color = p >= 0 ? 'var(--acc)' : 'var(--bad)';
+}
+
+function pintar() {
+  const a = $('desde').value, b = $('hasta').value;
+  if (!a || !b || a > b) return;
+  const largo = nDias(a, b);
+  const pa = sumar(a, -largo), pb = sumar(a, -1);
+  const s = serie(a, b), sp = serie(pa, pb);
+  const total = s.at(-1).acc, totalAnt = sp.at(-1).acc;
+  const txtAnt = fecha(pa) + ' al ' + fecha(pb);
+  const unidades = filas(a, b).length;
+
+  $('lede').textContent = (est.b || 'Angeltex') + ' del ' + fecha(a, { day: 'numeric', month: 'long' }) + ' al ' + fecha(b, { day: 'numeric', month: 'long', year: 'numeric' }) +
+    ': ' + nf0.format(unidades) + ' unidades en ' + largo + ' días.';
+  $('k-total').textContent = fmt(total); delta($('d-total'), total, totalAnt, txtAnt);
+  $('k-prom').textContent = fmt(total / largo); $('d-prom').textContent = 'antes: ' + fmt(totalAnt / largo) + ' por día';
+  const mejor = s.reduce((m, d) => (d.tot > m.tot ? d : m), s[0]);
+  $('k-mejor').textContent = mejor.tot ? fmt(mejor.tot) : '—';
+  $('d-mejor').textContent = mejor.tot ? fecha(mejor.f, { weekday: 'long', day: 'numeric', month: 'short' }) : 'sin ventas';
+  const conV = s.filter((d) => d.n).length;
+  $('k-dias').textContent = conV + ' de ' + largo;
+  $('d-dias').textContent = Math.round(conV / largo * 100) + '% de los días';
+  $('g-tit').textContent = (est.m === 'unid' ? 'Unidades' : est.m === 'bruto' ? 'Venta bruta' : 'Soles netos') + ' día a día';
+
+  grafico(s, sp);
+  tablaTop(a, b);
+  tablaDias(s);
+}
+
+function grafico(s, sp) {
+  const el = $('chart');
+  const W = Math.max(el.clientWidth, 320), H = 300, P = { l: 8, r: 56, t: 16, b: 34 };
+  const ms = marcas();
+  const maxB = Math.max(1, ...s.map((d) => d.tot));
+  const maxA = Math.max(1, s.at(-1).acc, sp.at(-1).acc);
+  const bw = (W - P.l - P.r) / s.length, alto = H - P.t - P.b, base = P.t + alto;
+  const y = (v) => base - (v / maxB) * alto, ya = (v) => base - (v / maxA) * alto;
+  const cx = (i) => P.l + i * bw + bw / 2;
+  let g = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Ventas diarias">`;
+  [0.5, 1].forEach((k) => { g += `<line x1="${P.l}" x2="${W - P.r}" y1="${ya(maxA * k)}" y2="${ya(maxA * k)}" stroke="var(--line)" stroke-dasharray="2 4"/>`; g += `<text x="${W - P.r + 6}" y="${ya(maxA * k) + 4}">${fmt(maxA * k)}</text>`; });
+  const paso = Math.ceil(s.length / Math.floor((W - P.l - P.r) / 46));
+  s.forEach((d, i) => {
+    let acc = 0;
+    const w = Math.max(2, Math.min(26, bw * 0.7));
+    ms.forEach((m) => {
+      const v = d.por[m]; if (!v) return;
+      const h = (v / maxB) * alto;
+      g += `<rect x="${cx(i) - w / 2}" y="${base - acc - h}" width="${w}" height="${Math.max(1, h - 1)}" rx="2" fill="${COL[m]}"/>`;
+      acc += h;
+    });
+    const finde = [0, 6].includes(new Date(d.f + 'T12:00:00Z').getUTCDay());
+    if (i % paso === 0) g += `<text x="${cx(i)}" y="${base + 16}" text-anchor="middle"${finde ? ' font-weight="600"' : ''}>${fecha(d.f)}</text>`;
+  });
+  const linea = (arr, col, dash) => `<polyline fill="none" stroke="${col}" stroke-width="2.2" stroke-linejoin="round"${dash ? ' stroke-dasharray="5 4" opacity=".6"' : ''} points="${arr.map((d, i) => cx(i) + ',' + ya(d.acc)).join(' ')}"/>`;
+  g += linea(sp, 'var(--muted)', true);
+  g += linea(s, 'var(--acc)');
+  g += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+  s.forEach((d, i) => {
+    const lin = (ms.length > 1 ? ms.map((m) => m + ': ' + fmt(d.por[m])).concat('Total: ' + fmt(d.tot)) : ['Venta: ' + fmt(d.tot)]);
+    lin.push(d.n + (d.n === 1 ? ' unidad' : ' unidades'), 'Acumulado: ' + fmt(d.acc), 'Mismo día del periodo anterior: acumulado ' + fmt(sp[i].acc));
+    const t = fecha(d.f, { weekday: 'long', day: 'numeric', month: 'long' }) + '|' + lin.join('\n');
+    g += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${alto}" data-tip="${t.replace(/"/g, '&quot;')}"/>`;
+  });
+  el.innerHTML = g + '</svg>';
+  const leg = $('leg'); leg.textContent = '';
+  const item = (col, txt, dash) => { const sp_ = document.createElement('span'); const i = document.createElement('i'); i.style.background = col; if (dash) i.className = 'dash'; sp_.append(i, txt); leg.append(sp_); };
+  ms.forEach((m) => item(COL[m], m));
+  item('var(--acc)', 'Acumulado');
+  item('var(--muted)', 'Acumulado periodo anterior', true);
+}
+
+function tabla(t, cols, rows, vacio) {
+  t.textContent = '';
+  const hr = t.insertRow();
+  cols.forEach(([, label, n]) => { const th = document.createElement('th'); th.textContent = label; if (n) th.className = 'n'; hr.append(th); });
+  if (!rows.length) { const c = t.insertRow().insertCell(); c.colSpan = cols.length; c.className = 'muted'; c.textContent = vacio; return; }
+  rows.forEach((r) => { const tr = t.insertRow(); cols.forEach(([k, , n]) => { const c = tr.insertCell(); c.textContent = typeof k === 'function' ? k(r) : r[k]; if (n) c.className = 'n'; }); });
+}
+
+function tablaTop(a, b) {
+  const por = {};
+  for (const r of filas(a, b)) {
+    const o = (por[r.m] ||= { modelo: nombre[r.m] || r.m, marca: r.b, u: 0, v: 0, ult: '' });
+    o.u++; o.v += valor(r); if (r.f > o.ult) o.ult = r.f;
+  }
+  const rows = Object.values(por).sort((x, z) => z.v - x.v || z.u - x.u).slice(0, 10);
+  tabla($('t-top'), [['modelo', 'Modelo'], ['marca', 'Marca'], ['u', 'Unid.', 1], [(r) => fmt(r.v), est.m === 'unid' ? 'Unidades' : 'Venta', 1], [(r) => fecha(r.ult), 'Última venta', 1]], rows, 'Sin ventas en el periodo');
+}
+
+function tablaDias(s) {
+  const ms = marcas();
+  const cols = [[(d) => fecha(d.f, { weekday: 'short', day: 'numeric', month: 'short' }), 'Día']];
+  if (ms.length > 1) ms.forEach((m) => cols.push([(d) => d.por[m] ? fmt(d.por[m]) : '—', m, 1]));
+  cols.push([(d) => fmt(d.tot), 'Total', 1], ['n', 'Unid.', 1], [(d) => fmt(d.acc), 'Acumulado', 1]);
+  tabla($('t-dias'), cols, s.filter((d) => d.n).reverse(), 'Sin ventas en el periodo');
+}
+
+function preset(p) {
+  const desde = $('desde'), hasta = $('hasta');
+  if (p === 'mes') { desde.value = HOY.slice(0, 8) + '01'; hasta.value = HOY; }
+  else if (p === 'mesant') { const f = new Date(HOY.slice(0, 8) + '01T12:00:00Z'); f.setUTCMonth(f.getUTCMonth() - 1); desde.value = iso(f); hasta.value = sumar(HOY.slice(0, 8) + '01', -1); }
+  else if (p === 'todo') { desde.value = PRIMERO; hasta.value = HOY; }
+  else { desde.value = sumar(HOY, -(+p - 1)); hasta.value = HOY; }
+  document.querySelectorAll('#presets button').forEach((x) => x.setAttribute('aria-pressed', x.dataset.p === p));
+  pintar();
+}
+
+function grupo(id, key, attr) {
+  document.querySelectorAll('#' + id + ' button').forEach((btn) => btn.addEventListener('click', () => {
+    est[key] = btn.dataset[attr];
+    document.querySelectorAll('#' + id + ' button').forEach((x) => x.setAttribute('aria-pressed', x === btn));
+    pintar();
+  }));
+}
+
+(async () => {
+  const st = document.getElementById('saga-st');
+  const t = new URLSearchParams(location.search).get('t');
+  try {
+    const r = await fetch('/api/saga?m=angeltex' + (t ? '&t=' + t : ''));
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || 'error ' + r.status);
+    D = j.data; HOY = j.hoy;
+    PRIMERO = D.ventas.length ? D.ventas[0].f : HOY;
+    D.modelos.forEach((m) => { nombre[m.m] = m.n; });
+    st.textContent = 'Datos de Falabella al ' + new Date(j.generado).toLocaleString('es-PE', { dateStyle: 'medium', timeStyle: 'short' });
+    ['desde', 'hasta'].forEach((id) => { $(id).min = PRIMERO; $(id).max = HOY; $(id).addEventListener('change', () => { document.querySelectorAll('#presets button').forEach((x) => x.setAttribute('aria-pressed', false)); pintar(); }); });
+    document.querySelectorAll('#presets button').forEach((b) => b.addEventListener('click', () => preset(b.dataset.p)));
+    grupo('marca', 'b', 'b');
+    grupo('medida', 'm', 'm');
+    preset('mes');
+    let w = innerWidth;
+    addEventListener('resize', () => { if (innerWidth !== w) { w = innerWidth; pintar(); } });
+  } catch (e) {
+    st.textContent = 'No cargaron los datos de Falabella: ' + e.message;
+  }
+})();
+</script>
+</body></html>

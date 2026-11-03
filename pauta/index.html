@@ -1,0 +1,225 @@
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pauta en prueba · MXD</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><script src="/assets/pauta_config.js"></script><script src="/assets/costos_angeltex.js"></script><style>
+.mxd-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.mxd-nav .nav-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.mxd-nav .nav-tabs a{color:#cfcac0;text-decoration:none;padding:5px 11px;border-radius:7px;white-space:nowrap;transition:background .15s,color .15s}
+.mxd-nav .nav-tabs a:hover{background:rgba(255,255,255,.1);color:#fff}
+.mxd-nav .nav-tabs a[aria-current]{background:#fff;color:#1d1b17;font-weight:600}
+.mxd-nav .nav-st{margin-left:auto;opacity:.7;font-size:12px}
+.mxd-nav .nav-btn{font:inherit;font-weight:600;background:#eb6834;color:#fff;border:0;border-radius:7px;padding:5px 12px;cursor:pointer;transition:filter .15s}
+.mxd-nav .nav-btn:hover{filter:brightness(1.1)}
+@keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wrap>*{animation:mxdIn .35s ease both}
+</style><style>.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}</style><style>
+.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:4px 0 6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.camp{display:grid;gap:14px;border-top:5px solid var(--c);padding:18px}
+.camp-h{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.camp-h h2{margin:0}
+.sem{display:inline-block;padding:4px 12px;border-radius:99px;color:#fff;font-weight:700;font-size:13px}
+.hoy{font-size:18px;line-height:1.45;padding:12px 14px;border-radius:8px;background:color-mix(in srgb,var(--sc) 12%,transparent);border-left:4px solid var(--sc)}
+.hoy small{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+.kpis .kpi .v{font-size:24px}
+.gauge{position:relative;height:16px;border-radius:99px;overflow:hidden;display:flex}
+.gauge div{height:100%}
+.gwrap{position:relative;padding-top:20px}
+.gmark{position:absolute;top:0;transform:translateX(-50%);font-size:12px;font-weight:700;white-space:nowrap}
+.gmark:after{content:"";display:block;width:3px;height:26px;background:var(--fg);margin:2px auto 0;border-radius:2px}
+.gscale{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:4px}
+.ctrl{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:end;font-size:13px;padding:12px;border:1px dashed var(--line);border-radius:8px}
+.ctrl label{display:grid;gap:3px;color:var(--muted)}
+.ctrl input{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:140px}
+.ctrl .nota{flex-basis:100%;font-size:12px;color:var(--muted)}
+.fuente{font-size:12px;color:var(--muted);margin:0}
+.tagm{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;border-radius:99px;background:#8a5cd6;color:#fff}
+@media (max-width:560px){.hoy{font-size:16px}.ctrl input{width:120px}}
+</style></head><body>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/pauta" aria-current=page>Pauta en prueba</a><a href="/meta">Meta</a></div><span class="nav-st" id="nav-st">Cargando…</span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Pauta · semáforo</div>
+    <h1>Pauta en prueba</h1>
+    <p class="lede">Cada campaña con su regla: qué hacer hoy, cuánto se gastó, qué se vendió y cuánto queda para MXD. Ventas en vivo desde Falabella y Shopify. <span id="gen" class="muted"></span></p>
+    <p id="err" class="err"></p>
+  </header>
+  <section class="panel camp" id="ang" style="--c:#2a78d6"></section>
+  <section class="panel camp" id="cw" style="--c:#eb6834"></section>
+</div>
+<script>
+const S = (n, d = 0) => (n < 0 ? '−S/ ' : 'S/ ') + Math.abs(n).toLocaleString('es-PE', { minimumFractionDigits: d, maximumFractionDigits: d });
+const N = (n, d = 0) => n.toLocaleString('es-PE', { maximumFractionDigits: d });
+const $ = (id) => document.getElementById(id);
+const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const DIA = 864e5;
+const suma = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * DIA).toISOString().slice(0, 10);
+const entre = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / DIA);
+const corta = (f) => new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
+const larga = (f) => new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' });
+const COL = { verde: '#2c8a63', ambar: '#c98a1e', rojo: '#c4523f', azul: '#5d82b0', gris: '#8a96a0' };
+const T = new URLSearchParams(location.search).get('t'), Q = T ? '&t=' + T : '';
+
+// Configuración: archivo assets/pauta_config.js + lo escrito en esta página (se guarda en este navegador)
+const leer = (id) => { try { return JSON.parse(localStorage.getItem('pauta-' + id) || '{}'); } catch (e) { return {}; } };
+const conf = (id) => { const c = { ...window.PAUTA_CFG[id] }, l = leer(id); for (const k in l) if (l[k] !== '' && l[k] != null) c[k] = l[k]; return c; };
+const guardar = (id, k, v) => { const l = leer(id); l[k] = v === '' ? null : (k === 'inicio' ? v : Number(v)); try { localStorage.setItem('pauta-' + id, JSON.stringify(l)); } catch (e) {} };
+
+function controles(id, campos) {
+  const c = conf(id);
+  return `<div class="ctrl">${campos.map(([k, lab, tipo, tip]) => `<label data-tip="${esc(tip)}">${lab}<input type="${tipo}" ${tipo === 'number' ? 'step="any" min="0"' : ''} data-c="${id}" data-k="${k}" value="${c[k] ?? ''}"></label>`).join('')}
+  <span class="nota">Se guarda en este navegador. Si me dices la fecha de inicio y el gasto real, los dejo fijos para que salgan igual en el celular y la compu.</span></div>`;
+}
+document.addEventListener('change', (e) => { const i = e.target; if (i.dataset?.c) { guardar(i.dataset.c, i.dataset.k, i.value); pintar(); } });
+
+function gauge(valor, escala, zonas, etiqueta) {
+  // zonas: [[hasta, color], ...] en orden creciente
+  let prev = 0, segs = '';
+  zonas.forEach(([h, c]) => { segs += `<div style="flex:${Math.min(h, escala) - prev};background:${c}"></div>`; prev = Math.min(h, escala); });
+  const pos = valor == null ? null : Math.max(1, Math.min(99, (valor / escala) * 100));
+  return `<div class="gwrap">${pos == null ? '' : `<span class="gmark" style="left:${pos}%">${etiqueta}</span>`}<div class="gauge">${segs}</div>
+  <div class="gscale">${[0, ...zonas.slice(0, -1).map((z) => z[0]), escala].map((v) => `<span>${v}</span>`).join('')}</div></div>`;
+}
+
+// Gráfico de barras por día; series = [{v: d => número, color, nombre}], marca = d => bool (punto arriba)
+function barras(dias, series, inicio, fin, tipFila, marca) {
+  const W = 1000, H = 200, P = { l: 6, r: 40, t: 20, b: 24 };
+  const tot = (d) => series.reduce((t, s) => t + s.v(d), 0);
+  const max = Math.max(1, ...dias.map(tot));
+  const bw = (W - P.l - P.r) / dias.length, alto = H - P.t - P.b, base = P.t + alto, y = (v) => base - (v / max) * alto;
+  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="height:220px">`;
+  if (inicio) {
+    const i0 = dias.findIndex((d) => d.f >= inicio), i1 = fin ? dias.findIndex((d) => d.f > fin) : -1;
+    if (i0 >= 0) { const x1 = i1 < 0 ? W - P.r : P.l + i1 * bw; svg += `<rect x="${P.l + i0 * bw}" y="${P.t - 14}" width="${x1 - P.l - i0 * bw}" height="${alto + 14}" fill="var(--c)" opacity=".08"/><text x="${P.l + i0 * bw + 4}" y="${P.t - 4}" style="font-weight:600">campaña</text>`; }
+  }
+  [0.5, 1].forEach((k) => { svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(max * k)}" y2="${y(max * k)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${y(max * k) + 4}">${N(max * k, max < 4 ? 1 : 0)}</text>`; });
+  const paso = Math.ceil(dias.length / 14);
+  dias.forEach((d, i) => {
+    let acc = 0; const w = Math.max(3, bw * 0.7), x = P.l + i * bw + (bw - w) / 2;
+    series.forEach((s) => { const v = s.v(d); if (v) { svg += `<rect x="${x}" y="${y(acc + v)}" width="${w}" height="${y(acc) - y(acc + v)}" fill="${s.color}"/>`; acc += v; } });
+    if (marca && marca(d)) svg += `<circle cx="${x + w / 2}" cy="${P.t - 6}" r="5" fill="#8a5cd6"/>`;
+    const ult = i === dias.length - 1;
+    if ((i % paso === 0 && dias.length - 1 - i >= paso) || ult) svg += `<text x="${x + w / 2}" y="${H - 6}" text-anchor="${ult ? 'end' : 'middle'}">${ult ? 'hoy' : corta(d.f)}</text>`;
+  });
+  svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+  dias.forEach((d, i) => { svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t - 14}" width="${bw}" height="${alto + 14}" data-tip="${esc(larga(d.f) + '|' + tipFila(d))}"/>`; });
+  return svg + '</svg>';
+}
+
+const semaforo = (txt, color) => `<span class="sem" style="background:${color}">${txt}</span>`;
+const kpi = (l, v, d, tip) => `<div class="kpi"><div class="l" data-tip="${esc(tip)}">${l}</div><div class="v">${v}</div><div class="d">${d}</div></div>`;
+
+let SAGA = null, PAUTA = null;
+
+// ---------- Angeltex · Saga · Falabella Media ----------
+const MOD = { 'SAM.05VAR.NGR.U': ['Compresión x4', '#eb6834'], 'SAM.05NYL.ZAR.U': ['Nylon x4', '#2a78d6'] };
+const DELIV_PACK = 4.9; // cofinanciamiento logístico de Falabella por pack x4
+const costoItem = (r) => { const c = (window.COSTO_ANG || {})[r.k]; return c ? Math.max(1, Math.round(r.p / c[1])) * c[0] : null; };
+const dejaPack = (r) => r.p * 0.75 - (costoItem(r) ?? r.p * 0.6) - DELIV_PACK;
+
+function angeltex() {
+  const el = $('ang'), c = conf('ang'), hoy = SAGA.hoy;
+  const filas = SAGA.data.ventas.filter((r) => MOD[r.m] && !['Cancelado', 'Devuelto'].includes(r.e));
+  const ini = c.inicio, dias = ini ? Math.max(0, entre(ini, hoy) + 1) : 0;
+  const en = ini ? filas.filter((r) => r.f >= ini) : [];
+  const packs = en.length, venta = en.reduce((t, r) => t + r.p, 0), deja = en.reduce((t, r) => t + dejaPack(r), 0);
+  const gastoEst = c.diario * dias, gasto = c.gasto != null ? c.gasto : gastoEst, real = c.gasto != null;
+  const roasTot = gasto ? venta / gasto : null, roas = c.roasFM ?? roasTot;
+  // Antes de la campaña: últimos 30 días previos
+  const finAntes = ini ? suma(ini, -1) : hoy, iniAntes = suma(finAntes, -29);
+  const antes = filas.filter((r) => r.f >= iniAntes && r.f <= finAntes);
+  const ritmoAntes = antes.length; // packs en 30 días
+  const dejaProm = en.length ? deja / en.length : 4;
+  const equilibrio = gasto ? Math.ceil(gasto / dejaProm) : 0;
+  let st, hacer, sub;
+  if (!ini) { st = ['Sin prender', COL.gris]; hacer = 'Todavía no hay fecha de inicio. El día que la prendas, escríbela abajo (o dímela) y el semáforo arranca solo.'; sub = 'Plan: S/ 5 al día en Falabella Media, solo medias compresión x4 y nylon x4.'; }
+  else if (dias < 7) { st = ['En prueba', COL.azul]; hacer = `Va el día ${dias} de 7. Todavía no decidas: el ${larga(suma(ini, 6))} miras el ROAS en Falabella Media y aplicas la regla.`; sub = roas ? `Por ahora el ROAS ${c.roasFM != null ? 'de Falabella Media' : 'calculado'} va en ${N(roas, 1)}x.` : 'Aún sin ventas de los packs desde el inicio.'; }
+  else if (roas >= 18) { st = ['Subir', COL.verde]; hacer = `ROAS de ${N(roas, 1)}x: sube el presupuesto a S/ 10 al día.`; sub = 'La regla: 18x o más, subir a S/ 10.'; }
+  else if (roas >= 13) { st = ['Mantener', COL.ambar]; hacer = `ROAS de ${N(roas, 1)}x: déjala igual a S/ ${c.diario} al día.`; sub = 'La regla: entre 13x y 18x, mantener.'; }
+  else { st = ['Cortar', COL.rojo]; hacer = `ROAS de ${N(roas ?? 0, 1)}x: está perdiendo, apágala.`; sub = 'La regla: menos de 13x, cortar. Con menos de 13x cada pack deja menos de lo que cuesta el anuncio.'; }
+
+  const d0 = ini ? suma(ini, -14) : suma(hoy, -29), serie = [];
+  for (let f = d0; f <= hoy; f = suma(f, 1)) serie.push({ f, r: filas.filter((r) => r.f === f) });
+  const tip = (d) => { const l = ['## Packs vendidos']; Object.entries(MOD).forEach(([m, [n, col]]) => { const x = d.r.filter((r) => r.m === m); l.push(`{${col}}${n}\t${x.length} · ${S(x.reduce((t, r) => t + r.p, 0))}`); }); if (ini && d.f >= ini) l.push(`~ Día de campaña: S/ ${c.diario} de anuncio`); return l.join('\n'); };
+
+  el.innerHTML = `<div class="camp-h"><h2>Angeltex · Saga Falabella · Falabella Media</h2>${semaforo(st[0], st[1])}</div>
+  <div class="hoy" style="--sc:${st[1]}"><b>Qué hacer hoy:</b> ${hacer}<small>${sub}</small></div>
+  <div class="kpis">
+    ${kpi('Días corriendo', ini ? dias : '—', ini ? 'desde el ' + corta(ini) : 'sin fecha de inicio', 'Días de campaña|Desde la fecha de inicio hasta hoy, contando los dos.')}
+    ${kpi('Gasto', ini ? S(gasto) : '—', real ? 'escrito por ti' : ini ? `estimado: S/ ${c.diario} × ${dias} días` : 'plan: S/ 5 al día', 'Gasto en Falabella Media|Si no escribes el gasto real abajo, se estima con el presupuesto diario por los días corridos.')}
+    ${kpi('Packs vendidos', ini ? N(packs) : '—', ini ? `${S(venta)} en ventas · para recuperar: ${equilibrio}` : `antes: ${ritmoAntes} en 30 días`, 'Packs vendidos|Todos los packs x4 de compresión y nylon vendidos en Falabella desde el inicio (sin cancelados ni devueltos), vengan o no del anuncio.\n~ Para recuperar = gasto ÷ lo que deja cada pack.')}
+    ${kpi('ROAS', roas != null ? N(roas, 1) + 'x' : '—', c.roasFM != null ? 'de Falabella Media' : 'ventas de los packs ÷ gasto', 'ROAS|Soles vendidos por cada S/ 1 de anuncio.\n## Regla\n{' + COL.verde + '}Subir a S/ 10 al día\t18x o más\n{' + COL.ambar + '}Mantener\t13x a 18x\n{' + COL.rojo + '}Cortar\tmenos de 13x\n~ Si escribes el ROAS de Falabella Media abajo, manda ese.')}
+    ${kpi('Resultado para MXD', ini ? S(deja - gasto) : '—', ini ? `los packs dejaron ${S(deja)} − gasto` : '~S/ 4 por pack', 'Resultado|Lo que dejan los packs vendidos (venta − 25% comisión − costo mayorista − S/ 4.90 de delivery por pack) menos el gasto en anuncios.')}
+  </div>
+  <div><p class="fuente" style="margin-bottom:2px">ROAS frente a la regla</p>${gauge(roas, 30, [[13, COL.rojo], [18, COL.ambar], [30, COL.verde]], roas != null ? N(roas, 1) + 'x' : '')}</div>
+  <div><div class="leg-w">${Object.values(MOD).map(([n, col]) => `<span><i style="background:${col}"></i>${n}</span>`).join('')}<span>Packs por día${ini ? ' · zona sombreada = campaña' : ' · últimos 30 días'}</span></div>
+  ${barras(serie, Object.entries(MOD).map(([m, [n, col]]) => ({ v: (d) => d.r.filter((r) => r.m === m).length, color: col, nombre: n })), ini, null, tip)}</div>
+  <p class="fuente">Antes de la campaña: ${ritmoAntes} packs en 30 días (${N(ritmoAntes / 30, 1)} al día). Equilibrio del plan: 38 packs al mes con S/ 150 de anuncio. Ventas: API de Falabella. Gasto y ROAS de Falabella Media: no salen por API, se escriben abajo.</p>
+  ${controles('ang', [['inicio', 'Fecha de inicio', 'date', 'Inicio|El día que prendiste la campaña.'], ['diario', 'Presupuesto al día (S/)', 'number', 'Presupuesto diario|Lo que tiene la campaña por día. Cambia si la subes a S/ 10.'], ['gasto', 'Gasto real a la fecha (S/)', 'number', 'Gasto real|El gasto total que muestra Falabella Media. Si lo dejas vacío, se estima.'], ['roasFM', 'ROAS de Falabella Media', 'number', 'ROAS de Falabella Media|El ROAS que muestra Falabella Media. Si lo dejas vacío, se usa ventas de los packs ÷ gasto.']])}`;
+}
+
+// ---------- Classic World · web MXD · Meta ----------
+const dejaCW = (venta) => venta * 0.589 - 10; // IGV, costo 23.75%, Mercado Pago ~2% y S/ 10 de envío (S/ 120 → ~S/ 61)
+
+function classic() {
+  const el = $('cw'), c = conf('cw'), hoy = PAUTA.hoy;
+  const ini = c.inicio, dias = ini ? Math.max(0, entre(ini, hoy) + 1) : 0, fin = ini ? suma(ini, c.dias - 1) : null;
+  const ped = PAUTA.pedidos.filter((p) => p.cw > 0);
+  const en = ini ? ped.filter((p) => p.f >= ini) : [];
+  const ventas = en.length, venta = en.reduce((t, p) => t + p.cw, 0), deja = en.reduce((t, p) => t + dejaCW(p.cw), 0), deMeta = en.filter((p) => p.meta).length;
+  const metaApi = PAUTA.meta && ini ? PAUTA.meta.filter((d) => d.f >= ini) : null;
+  const gastoApi = metaApi ? metaApi.reduce((t, d) => t + d.gasto, 0) : null;
+  const diasGasto = Math.min(dias, c.dias);
+  const gasto = gastoApi ?? (c.gasto != null ? c.gasto : c.diario * diasGasto);
+  const fuenteGasto = gastoApi != null ? 'de Meta, en vivo' : c.gasto != null ? 'escrito por ti' : ini ? `estimado: S/ ${c.diario} × ${diasGasto} días` : 'plan: S/ 30 al día × 10';
+  const cpv = ventas ? gasto / ventas : null;
+  const prox = ini ? suma(ini, Math.max(1, Math.ceil(dias / 3)) * 3 - 1) : null; // revisiones los días 3, 6 y 9
+  let st, hacer, sub;
+  if (!ini) { st = ['Sin prender', COL.gris]; hacer = 'Todavía no hay fecha de inicio. El día que la prendas, escríbela abajo (o dímela) y el semáforo arranca solo.'; sub = 'Plan: S/ 30 al día por 10 días, solo juguetes Classic World de S/ 100 o más.'; }
+  else if (dias > c.dias) { st = ['Prueba terminada', COL.azul]; hacer = `Terminaron los ${c.dias} días: ${ventas} ventas con ${S(gasto)} de anuncio${cpv ? ` (${S(cpv)} por venta)` : ''}. Toca decidir si sigue.`; sub = ventas >= 5 ? 'Llegó a las 5 ventas de equilibrio: recuperó lo invertido.' : 'No llegó a las 5 ventas de equilibrio.'; }
+  else if (!ventas && gasto >= 120) { st = ['Apagar', COL.rojo]; hacer = `${S(gasto)} gastados sin ninguna venta: apaga ese anuncio y prueba otro.`; sub = 'La regla: S/ 120 sin venta, apagar.'; }
+  else if (dias < 3) { st = ['En prueba', COL.azul]; hacer = `Va el día ${dias}. Primera revisión el ${larga(suma(ini, 2))}: gasto ÷ ventas.`; sub = ventas ? `Ya hay ${ventas} venta${ventas > 1 ? 's' : ''}: ${S(cpv)} por venta.` : 'Aún sin ventas; es normal los primeros días.'; }
+  else if (!ventas) { st = ['Esperar', COL.ambar]; hacer = `Aún sin ventas con ${S(gasto)} gastados. Si llega a S/ 120 sin venta, apaga el anuncio.`; sub = `Próxima revisión: ${larga(prox)}.`; }
+  else if (cpv <= 45) { st = ['Subir 20%', COL.verde]; hacer = `Cada venta cuesta ${S(cpv)}: sube el presupuesto a S/ ${Math.round(c.diario * 1.2)} al día.`; sub = `La regla: S/ 45 o menos por venta, subir 20% cada 3 días. Próxima revisión: ${larga(prox)}.`; }
+  else if (cpv <= 61) { st = ['Cambiar anuncio', COL.ambar]; hacer = `Cada venta cuesta ${S(cpv)}: deja el monto igual y cambia el anuncio o el juguete.`; sub = `La regla: entre S/ 45 y S/ 61, cambiar el anuncio. Próxima revisión: ${larga(prox)}.`; }
+  else { st = ['Apagar', COL.rojo]; hacer = `Cada venta cuesta ${S(cpv)}, más de lo que deja (~S/ 61): apaga ese anuncio.`; sub = 'La regla: más de S/ 61 por venta, apagar.'; }
+
+  const d0 = ini ? suma(ini, -14) : suma(hoy, -29), serie = [];
+  const vis = Object.fromEntries(PAUTA.visitas.map((v) => [v.f, v]));
+  for (let f = d0; f <= hoy; f = suma(f, 1)) serie.push({ f, v: vis[f] || { total: 0, meta: 0 }, p: ped.filter((p) => p.f === f), m: (PAUTA.meta || []).find((x) => x.f === f) });
+  const tip = (d) => { const l = ['## Visitas a la web', `{#8a5cd6}Desde Meta (Facebook/Instagram)\t${d.v.meta}`, `{#b7c0c5}Otras\t${d.v.total - d.v.meta}`, '## Ventas Classic World', `Pedidos\t${d.p.length}`, `Venta\t${S(d.p.reduce((t, p) => t + p.cw, 0))}`]; if (d.m) l.push('## Meta', `Gasto\t${S(d.m.gasto, 2)}`, `Compras según Meta\t${d.m.compras}`); else if (ini && d.f >= ini && d.f <= fin) l.push(`~ Día de campaña: S/ ${c.diario} de anuncio (estimado)`); return l.join('\n'); };
+
+  const filasT = (ini ? en : ped).slice().sort((a, b) => b.f.localeCompare(a.f));
+  el.innerHTML = `<div class="camp-h"><h2>Classic World · Web MXD · Meta</h2>${semaforo(st[0], st[1])}</div>
+  <div class="hoy" style="--sc:${st[1]}"><b>Qué hacer hoy:</b> ${hacer}<small>${sub}</small></div>
+  <div class="kpis">
+    ${kpi('Días corriendo', ini ? `${Math.min(dias, c.dias)} de ${c.dias}` : '—', ini ? 'desde el ' + corta(ini) : 'sin fecha de inicio', 'Días de campaña|La prueba dura ' + c.dias + ' días. Se revisa cada 3 días.')}
+    ${kpi('Gasto en Meta', ini ? S(gasto) : '—', fuenteGasto, 'Gasto en Meta|Sale de Meta en vivo si está conectado; si no, lo que escribas abajo; si no, el presupuesto diario por los días corridos.')}
+    ${kpi('Ventas de juguetes', ini ? N(ventas) : '—', ini ? `${S(venta)} · ${deMeta} con marca de Meta · equilibrio: 5` : `${ped.length} en 60 días`, 'Ventas|Pedidos de la web con juguetes Classic World desde el inicio (sin cancelados ni pruebas). Hoy la web casi no vende sola, así que se cuentan todas.\n~ "Con marca de Meta" = el pedido llegó con UTM o referente de Facebook/Instagram.')}
+    ${kpi('Costo por venta', cpv != null ? S(cpv) : '—', 'gasto ÷ ventas', 'Costo por venta|Gasto en Meta dividido entre las ventas.\n## Regla cada 3 días\n{' + COL.verde + '}Subir 20%\tS/ 45 o menos\n{' + COL.ambar + '}Cambiar anuncio\tS/ 45 a S/ 61\n{' + COL.rojo + '}Apagar\tmás de S/ 61\n~ También apagar si van S/ 120 sin ninguna venta.')}
+    ${kpi('Resultado para MXD', ini ? S(deja - gasto) : '—', ini ? `las ventas dejaron ${S(deja)} − gasto` : '~S/ 61 por juguete de S/ 120', 'Resultado|Lo que dejan las ventas (venta − IGV − costo del juguete − Mercado Pago − S/ 10 de envío) menos el gasto en Meta.')}
+  </div>
+  <div><p class="fuente" style="margin-bottom:2px">Costo por venta frente a la regla (S/)</p>${gauge(cpv, 90, [[45, COL.verde], [61, COL.ambar], [90, COL.rojo]], cpv != null ? S(cpv) : '')}</div>
+  <div><div class="leg-w"><span><i style="background:#8a5cd6"></i>Visitas desde Meta</span><span><i style="background:#b7c0c5"></i>Otras visitas</span><span><i style="background:#8a5cd6;border-radius:50%"></i>Día con venta de juguetes</span><span>${ini ? 'zona sombreada = campaña' : 'últimos 30 días'}</span></div>
+  ${barras(serie, [{ v: (d) => d.v.meta, color: '#8a5cd6' }, { v: (d) => d.v.total - d.v.meta, color: '#b7c0c5' }], ini, fin, tip, (d) => d.p.length > 0)}</div>
+  <div style="overflow-x:auto"><table><tr><th>Fecha</th><th>Pedido</th><th>Juguetes</th><th class="n">Venta CW</th><th>Llegó desde</th></tr>
+  ${filasT.length ? filasT.map((p) => `<tr><td>${corta(p.f)}</td><td>${esc(p.n)}</td><td>${esc(p.productos.join(', '))}</td><td class="n">${S(p.cw)}</td><td>${p.meta ? '<span class="tagm">Meta</span> ' : ''}${esc(p.origen || '—')}${p.campana ? ' · ' + esc(p.campana) : ''}</td></tr>`).join('') : `<tr><td colspan="5" class="muted">${ini ? 'Todavía sin ventas de juguetes desde el inicio.' : 'Sin ventas de juguetes en la web en los últimos 60 días.'}</td></tr>`}</table></div>
+  <p class="fuente">Ventas: Shopify (lo más fiel). Visitas desde Meta: Google Analytics. Gasto: ${PAUTA.meta ? 'API de Meta' : 'Meta todavía no está conectado a esta app; se estima o se escribe abajo'}. Las "compras" que muestra Meta son solo referencia. Para que cada venta diga que vino de Meta, el anuncio tiene que llevar UTM (utm_source=facebook).</p>
+  ${controles('cw', [['inicio', 'Fecha de inicio', 'date', 'Inicio|El día que prendiste la campaña.'], ['diario', 'Presupuesto al día (S/)', 'number', 'Presupuesto diario|Cambia si subes 20% (S/ 30 → 36 → 43).'], ['gasto', 'Gasto real a la fecha (S/)', 'number', 'Gasto real|El gasto total que muestra el Administrador de anuncios. Si lo dejas vacío, se estima.']])}`;
+}
+
+function pintar() {
+  if (SAGA) try { angeltex(); } catch (e) { $('ang').innerHTML = '<p class="err">No se pudo armar: ' + esc(e.message) + '</p>'; }
+  if (PAUTA) try { classic(); } catch (e) { $('cw').innerHTML = '<p class="err">No se pudo armar: ' + esc(e.message) + '</p>'; }
+}
+$('ang').innerHTML = $('cw').innerHTML = '<p class="muted">Cargando…</p>';
+const errores = [];
+Promise.allSettled([
+  fetch('/api/saga?m=angeltex' + Q).then((r) => r.json()).then((j) => { SAGA = j; }),
+  fetch('/api/pauta' + (T ? '?t=' + T : '')).then((r) => r.json()).then((j) => { PAUTA = j; errores.push(...j.errores); }),
+]).then((rs) => {
+  rs.forEach((r, i) => { if (r.status === 'rejected') errores.push((i ? 'Web' : 'Falabella') + ': no cargó'); });
+  if (errores.length) $('err').textContent = 'No cargó: ' + errores.join(' · ');
+  const g = PAUTA?.generado || SAGA?.generado;
+  if (g) { const t = new Date(g).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }); $('gen').textContent = 'Actualizado ' + t; $('nav-st').textContent = 'Datos de ' + t; }
+  pintar();
+});
+</script>
+</body></html>

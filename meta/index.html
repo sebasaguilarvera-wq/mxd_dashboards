@@ -12,167 +12,305 @@
 @keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .wrap>*{animation:mxdIn .35s ease both}
 </style><style>
-.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:4px 0 6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.bar-f{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;font-size:13px}
+.bar-f label{display:grid;gap:3px;color:var(--muted)}
+.bar-f input,.bar-f select{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:5px 8px}
+.bar-f button{font:inherit;font-weight:600;background:#1877f2;color:#fff;border:0;border-radius:5px;padding:6px 14px;cursor:pointer}
+.bar-f .rango{margin-left:auto;color:var(--muted)}
 .aviso{border-left:5px solid #c98a1e;background:color-mix(in srgb,#c98a1e 10%,var(--panel));padding:14px 16px;border-radius:8px}
 .aviso b{display:block;font-size:16px;margin-bottom:4px}
-.aviso ol{margin:6px 0 0;padding-left:20px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:12px}
+.kp .kpi{border-top:4px solid var(--c,var(--line))}
+.kp .kpi .v{font-size:26px}
+.kp .kpi .e{float:right;font-size:18px}
+.kpi.pos .v{color:var(--acc)} .kpi.neg .v{color:var(--bad)}
+.grupo{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px}
+.dos{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+@media (max-width:760px){.dos{grid-template-columns:1fr}}
+.hb{display:grid;grid-template-columns:minmax(120px,38%) 1fr auto;gap:6px 10px;align-items:center;font-size:13px}
+.hb .n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .b{height:16px;border-radius:3px;background:#1877f2;position:relative}
+.hb .b i{position:absolute;top:-3px;width:4px;height:22px;border-radius:2px;background:var(--acc)}
+.fun{display:grid;gap:6px}
+.fun .st{display:grid;grid-template-columns:150px 1fr 170px;gap:10px;align-items:center;font-size:13px}
+.fun .st .b{height:26px;border-radius:4px;display:flex;align-items:center;padding:0 8px;color:#fff;font-weight:700;font-size:12px;min-width:40px;white-space:nowrap}
+.fun .st .p{color:var(--muted);font-size:12px;text-align:right}
+.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:4px 0 6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}
 .sem{display:inline-block;padding:2px 9px;border-radius:99px;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
-.reglas{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin:0 0 10px}
-.reglas span{display:inline-flex;align-items:center;gap:6px}
-.kpi.mx .v{color:var(--acc)}
-.kpi.neg .v{color:var(--bad)}
+.reglas{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin:0 0 10px}.reglas span{display:inline-flex;align-items:center;gap:6px}
+#t-camp th{cursor:pointer;user-select:none;white-space:nowrap}
+#t-camp td.n,#t-mes td.n{white-space:nowrap}
+#t-camp tr.cp td:first-child{font-weight:600}
+#t-camp tr.cp td:first-child button{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0 6px 0 0}
+#t-camp tr.ad td{font-size:13px;background:color-mix(in srgb,var(--line) 25%,transparent)}
+#t-camp tr.ad td:first-child{padding-left:30px}
+#t-camp tr.tot td{font-weight:700;border-top:2px solid var(--line)}
+.obj{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:4px;color:#fff}
+.meta-vs{font-size:11px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.ad-c{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--panel);display:grid}
+.ad-c .img{aspect-ratio:1.6;background:var(--acc-soft) center/cover no-repeat;position:relative}
+.ad-c .img b{position:absolute;top:8px;left:8px;background:#1d1b17;color:#fff;border-radius:99px;width:26px;height:26px;display:grid;place-items:center;font-size:13px}
+.ad-c .img span{position:absolute;bottom:6px;left:8px;background:rgba(0,0,0,.65);color:#fff;font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px}
+.ad-c .tx{padding:10px 12px;display:grid;gap:6px}
+.ad-c .nm{font-weight:600;font-size:14px;line-height:1.3}
+.ad-c .cp{font-size:11px;color:var(--muted)}
+.ad-c dl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0}
+.ad-c dt{font-size:10px;color:var(--muted);text-transform:uppercase}
+.ad-c dd{margin:0;font-weight:700;font-size:14px}
+.sin h3,.con h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin:0 0 10px}
+.con h3{color:var(--acc)} .sin h3{color:var(--bad)}
+.minis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:12px}
+.minis h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 4px}
 .sub{font-size:12px;color:var(--muted)}
+.nota{font-size:13px;color:var(--muted);padding-left:18px;margin:8px 0 0}
 code{font-size:12px;background:var(--acc-soft);padding:2px 5px;border-radius:4px;word-break:break-all}
 </style></head>
 <body>
-<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta" aria-current=page>Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta" aria-current=page>Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="cargar(true)" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
 <div class="wrap">
   <header>
-    <div class="eyebrow">Meta Ads · Web Pasillo</div>
+    <div class="eyebrow">Meta Ads · Ventas en Pasillo</div>
     <h1>Meta</h1>
-    <p class="lede">Lo que se gastó en Meta, lo que se vendió en la web por esos anuncios (según Shopify, no según Meta) y cuánto le queda a MXD. Últimos 28 días. <span id="gen" class="muted"></span></p>
+    <p class="lede">Qué pasa con las campañas de venta: lo que dice Meta y lo que de verdad se vendió en Shopify, anuncio por anuncio. <span id="gen" class="muted"></span></p>
     <p id="err" class="err"></p>
   </header>
 
+  <section class="panel bar-f">
+    <label>Desde<input type="date" id="f-desde"></label>
+    <label>Hasta<input type="date" id="f-hasta"></label>
+    <label>Objetivo<select id="f-obj"><option value="">Todos</option></select></label>
+    <button type="button" onclick="cargar()">Consultar</button>
+    <span class="rango" id="rango"></span>
+  </section>
+
   <section class="aviso" id="sin-token" hidden>
     <b>Falta conectar la cuenta de Meta</b>
-    Ya se ven las ventas y visitas que llegan por Meta. El gasto, los clics y el semáforo por anuncio aparecen cuando estén en Vercel las dos variables:
-    <ol><li><code>META_ACCESS_TOKEN</code>: token del usuario del sistema con permiso <code>ads_read</code>.</li><li><code>META_AD_ACCOUNT_ID</code>: <code>1411544431156016</code> (MXD_CUENTA_1).</li></ol>
+    Las ventas que llegan por Meta ya se ven. El gasto, el embudo y los anuncios aparecen cuando estén en Vercel <code>META_ACCESS_TOKEN</code> (token de usuario del sistema con <code>ads_read</code>) y <code>META_AD_ACCOUNT_ID</code> = <code>1411544431156016</code>.
   </section>
 
   <section>
-    <h2>Últimos 28 días</h2>
-    <div class="kpis">
-      <div class="kpi"><div class="l" data-tip="Gasto|Lo invertido en Meta Ads en los últimos 28 días.">Gasto en Meta</div><div class="v" id="k-gasto">—</div><div class="d" id="d-gasto"></div></div>
-      <div class="kpi"><div class="l" data-tip="Ventas por Meta|Pedidos de Shopify cuya visita vino de Facebook o Instagram (UTM o clic de anuncio). Sin envío.">Ventas web por Meta</div><div class="v" id="k-venta">—</div><div class="d" id="d-venta"></div></div>
-      <div class="kpi"><div class="l" data-tip="Costo por venta|Gasto dividido entre pedidos por Meta. Es el número del semáforo.">Costo por venta</div><div class="v" id="k-cpv">—</div><div class="d" id="d-cpv"></div></div>
-      <div class="kpi"><div class="l" data-tip="ROAS real|Ventas por Meta según Shopify dividido entre el gasto. Meta suele reportar un ROAS más alto porque se atribuye ventas que no fueron suyas.">ROAS real</div><div class="v" id="k-roas">—</div><div class="d" id="d-roas"></div></div>
-      <div class="kpi mx" id="kk-mx"><div class="l" data-tip="Queda para MXD|Venta sin IGV − costo del producto − Mercado Pago 2% − envío gratis − gasto en Meta.">Queda para MXD</div><div class="v" id="k-mx">—</div><div class="d" id="d-mx"></div></div>
-    </div>
+    <div class="grupo">Plata: lo que entra y lo que sale</div>
+    <div class="kp" id="k1"></div>
+    <div class="grupo">Meta: cómo se mueven los anuncios</div>
+    <div class="kp" id="k2"></div>
+  </section>
+
+  <section class="dos">
+    <div class="panel"><h2>Inversión por campaña</h2><p class="sub" style="margin:-4px 0 10px">Top 10 por gasto. La raya verde marca lo vendido en Shopify por esa campaña.</p><div class="hb" id="g-camp"></div></div>
+    <div class="panel"><h2>Distribución por objetivo</h2><p class="sub" style="margin:-4px 0 10px">% de la inversión por tipo de campaña</p><div id="g-obj"></div></div>
   </section>
 
   <section class="panel">
-    <h2>Gasto, visitas y ventas por día</h2>
-    <div class="leg-w"><span><i style="background:#1877f2"></i>Gasto en Meta</span><span><i style="background:var(--now);height:3px"></i>Visitas desde Meta (Google Analytics)</span><span><i style="background:#8a5cd6;border-radius:50%"></i>Venta por Meta</span></div>
-    <div id="chart"></div>
+    <h2>Embudo: del anuncio a la venta</h2>
+    <p class="sub" style="margin:-4px 0 12px">Cada paso con el % que pasa al siguiente. Los pasos azules los cuenta Meta (píxel); el verde es la venta real en Shopify.</p>
+    <div class="fun" id="g-fun"></div>
   </section>
 
   <section class="panel">
-    <h2>Semáforo por anuncio</h2>
+    <h2>Campañas del período</h2>
     <div class="reglas" id="reglas"></div>
-    <table id="t-ads"></table>
-    <p class="sub" style="margin:8px 0 0">Las ventas se cruzan por los UTM del anuncio. Para que cada venta caiga en su anuncio, en Meta pon en <b>Parámetros de URL</b>: <code>utm_source={{site_source_name}}&amp;utm_medium=paid_social&amp;utm_campaign={{campaign.name}}&amp;utm_term={{adset.name}}&amp;utm_content={{ad.name}}</code></p>
+    <table id="t-camp"></table>
+    <p class="sub" style="margin:8px 0 0">Toca ▸ para ver los anuncios de cada campaña. Toca un título para ordenar. <b>Ventas</b> = pedidos reales de Shopify con el UTM del anuncio; debajo, en gris, lo que dice Meta.</p>
   </section>
 
-  <section class="panel"><h2>Pedidos que llegaron por Meta</h2><table id="t-ped"></table></section>
-  <section class="panel"><h2>Visitas desde Meta por campaña (Google Analytics)</h2><table id="t-ga"></table></section>
+  <section class="panel">
+    <h2>Evolución diaria: ventas vs inversión</h2>
+    <div class="leg-w"><span><i style="background:var(--acc)"></i>Ventas Shopify (pedidos)</span><span><i style="background:transparent;border:2px solid #1877f2"></i>Compras según Meta</span><span><i style="background:var(--now);height:3px"></i>Inversión del día (S/)</span></div>
+    <div id="g-dia"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Top anuncios por ventas</h2>
+    <p class="sub" style="margin:-4px 0 12px">Para decidir qué creativo replicar y cuál pausar.</p>
+    <div class="con"><h3 id="h-con">Anuncios con ventas</h3><div class="cards" id="c-con"></div></div>
+    <div class="sin" style="margin-top:18px"><h3 id="h-sin">Anuncios sin ventas · candidatos a pausar o reemplazar</h3><div class="cards" id="c-sin"></div></div>
+  </section>
+
+  <section class="panel">
+    <h2>Evolutivo mensual</h2>
+    <p class="sub" style="margin:-4px 0 12px">Últimos 6 meses, sin importar las fechas del filtro.</p>
+    <div class="minis" id="g-mes"></div>
+    <table id="t-mes"></table>
+  </section>
+
+  <section class="panel">
+    <h2>Pedidos que llegaron por Meta</h2>
+    <table id="t-ped"></table>
+    <ul class="nota">
+      <li><b>Meta dice vs Shopify dice:</b> Meta cuenta una compra si la persona vio o hizo clic en el anuncio en los últimos días, aunque después haya entrado por Google. Shopify solo la cuenta si la visita trae el UTM del anuncio. Por eso Meta casi siempre dice más. Para decidir usamos Shopify.</li>
+      <li>Para que cada venta caiga en su anuncio, cada anuncio lleva en <b>Parámetros de URL</b>: <code>utm_source={{site_source_name}}&amp;utm_medium=paid_social&amp;utm_campaign={{campaign.name}}&amp;utm_term={{adset.name}}&amp;utm_content={{ad.name}}</code></li>
+      <li>Margen de contribución = venta sin IGV − costo del producto − Mercado Pago 2% − envío gratis (S/ 10 desde S/ 150) − inversión en Meta.</li>
+    </ul>
+  </section>
 </div>
 <script>
 const S = (n, d = 0) => (n < 0 ? '−S/ ' : 'S/ ') + Math.abs(n).toLocaleString('es-PE', { minimumFractionDigits: d, maximumFractionDigits: d });
-const N = (n, d = 0) => n.toLocaleString('es-PE', { maximumFractionDigits: d });
+const N = (n, d = 0) => (n || 0).toLocaleString('es-PE', { maximumFractionDigits: d });
+const P = (n, d = 2) => (isFinite(n) ? (n * 100).toFixed(d) + '%' : '—');
 const $ = (id) => document.getElementById(id);
-const fecha = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
 const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-const R = window.META_REGLAS;
-const SEM = {
-  subir: ['#2c8a63', 'Subir 20%'], mantener: ['#c98a1e', 'Mantener y cambiar anuncio'], apagar: ['#c4523f', 'Apagar'],
-  aprende: ['#5d82b0', 'Aprendiendo'], pausado: ['#8a96a0', 'Pausado'],
-};
-const pill = (k) => `<span class="sem" style="background:${SEM[k][0]}">${SEM[k][1]}</span>`;
+const fecha = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
 const norm = (t) => String(t || '').trim().toLowerCase();
-
-function semaforo(gasto, pedidos, estado) {
+const R = window.META_REGLAS;
+const OBJ = { OUTCOME_SALES: ['Ventas', '#2f9e57'], OUTCOME_TRAFFIC: ['Tráfico', '#5d82b0'], OUTCOME_ENGAGEMENT: ['Interacción', '#8a5cd6'], OUTCOME_AWARENESS: ['Reconocimiento', '#c98a1e'], OUTCOME_LEADS: ['Leads', '#d6336c'], OUTCOME_APP_PROMOTION: ['App', '#9a958c'] };
+const obj = (o) => OBJ[o] || [o ? o.replace(/^OUTCOME_/, '').toLowerCase() : 'Sin objetivo', '#9a958c'];
+const SEM = { subir: ['#2c8a63', 'Subir 20%'], mantener: ['#c98a1e', 'Cambiar anuncio'], apagar: ['#c4523f', 'Apagar'], aprende: ['#5d82b0', 'Aprendiendo'], pausado: ['#8a96a0', 'Pausado'] };
+const pill = (k) => k ? `<span class="sem" style="background:${SEM[k][0]}">${SEM[k][1]}</span>` : '';
+function semaforo(g, v, estado) {
   if (estado && estado !== 'ACTIVE') return 'pausado';
-  if (!pedidos) return gasto >= R.sinVenta ? 'apagar' : 'aprende';
-  const cpv = gasto / pedidos;
-  return cpv <= R.subir ? 'subir' : cpv <= R.cambiar ? 'mantener' : 'apagar';
+  if (!v) return g >= R.sinVenta ? 'apagar' : g > 0 ? 'aprende' : '';
+  const c = g / v; return c <= R.subir ? 'subir' : c <= R.cambiar ? 'mantener' : 'apagar';
 }
+const hoyLima = new Date(Date.now() - 5 * 36e5).toISOString().slice(0, 10);
+$('f-hasta').value = hoyLima; $('f-desde').value = new Date(Date.parse(hoyLima) - 27 * 864e5).toISOString().slice(0, 10);
+let D = null;
 
-function tabla(id, cols, rows, vacio = 'Sin datos todavía') {
-  const t = $(id); t.textContent = '';
-  const hr = t.insertRow();
-  cols.forEach(([, label, f]) => { const th = document.createElement('th'); th.textContent = label; if (f) th.className = 'n'; hr.appendChild(th); });
-  if (!rows.length) { const c = t.insertRow().insertCell(); c.colSpan = cols.length; c.className = 'muted'; c.textContent = vacio; return; }
-  rows.forEach((r) => { const tr = t.insertRow(); cols.forEach(([k, , f, html]) => { const c = tr.insertCell(); if (html) c.innerHTML = r[k]; else c.textContent = f ? f(r[k]) : r[k]; if (f) c.className = 'n'; }); });
+function cargar(fresco) {
+  const q = new URLSearchParams({ desde: $('f-desde').value, hasta: $('f-hasta').value });
+  if (fresco) q.set('t', Date.now());
+  $('err').textContent = ''; $('gen').textContent = 'Cargando…';
+  fetch('/api/meta_panel?' + q).then((r) => r.json()).then((d) => { D = d; pintar(); }).catch((e) => { $('err').textContent = 'No se pudieron cargar los datos: ' + e.message; });
 }
+$('f-obj').onchange = () => D && pintar();
 
-function grafico(d, dias) {
-  const el = $('chart'), W = Math.max(el.clientWidth, 300), H = 220, P = { l: 8, r: 54, t: 18, b: 26 };
-  const gasto = Object.fromEntries((d.meta?.dias || []).map((x) => [x.f, x.gasto]));
-  const vis = Object.fromEntries((d.visitas?.dias || []).map((x) => [x.f, x.meta]));
-  const ventas = {}; d.pedidos.filter((o) => o.canal === 'Meta').forEach((o) => { ventas[o.f] = (ventas[o.f] || 0) + o.venta; });
-  const maxG = Math.max(1, ...dias.map((f) => gasto[f] || 0)), maxV = Math.max(1, ...dias.map((f) => vis[f] || 0));
-  const bw = (W - P.l - P.r) / dias.length, alto = H - P.t - P.b, base = P.t + alto, cx = (i) => P.l + i * bw + bw / 2;
-  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gasto, visitas y ventas de Meta por día">`;
-  [0.5, 1].forEach((k) => { const y = base - alto * k; svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${y + 4}">${d.meta ? S(maxG * k) : N(maxV * k)}</text>`; });
-  const paso = Math.ceil(dias.length / Math.max(1, Math.floor((W - P.l - P.r) / 48)));
-  dias.forEach((f, i) => {
-    const w = Math.max(2, Math.min(18, bw * 0.7)), g = gasto[f] || 0;
-    if (g) svg += `<rect x="${cx(i) - w / 2}" y="${base - g / maxG * alto}" width="${w}" height="${g / maxG * alto}" rx="2" fill="#1877f2" opacity=".85"/>`;
-    if (ventas[f]) svg += `<circle cx="${cx(i)}" cy="${P.t - 8}" r="5" fill="#8a5cd6"/>`;
-    if ((i % paso === 0 && dias.length - 1 - i >= paso) || i === dias.length - 1) svg += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${i === dias.length - 1 ? 'end' : 'middle'}">${fecha(f)}</text>`;
-  });
-  svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2.2" points="${dias.map((f, i) => cx(i) + ',' + (base - (vis[f] || 0) / maxV * alto)).join(' ')}"/>`;
-  svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
-  dias.forEach((f, i) => {
-    const t = new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }) + '|' +
-      ['Gasto en Meta\t' + (d.meta ? S(gasto[f] || 0, 2) : 'sin conectar'), 'Visitas desde Meta\t' + (vis[f] || 0), 'Ventas por Meta\t' + S(ventas[f] || 0)].join('\n');
-    svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t - 14}" width="${bw}" height="${alto + 14}" data-tip="${esc(t)}"/>`;
-  });
-  el.innerHTML = svg + '</svg>';
-}
-
-const T = new URLSearchParams(location.search).get('t');
-fetch('/api/meta' + (T ? '?t=' + T : '')).then((r) => r.json()).then((d) => {
+function pintar() {
+  const d = D, m = d.meta, fo = $('f-obj').value;
   $('gen').textContent = 'Actualizado ' + new Date(d.generado).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) + '.';
+  $('rango').textContent = `Del ${fecha(d.desde)} al ${fecha(d.hasta)}`;
   if (d.errores.length) $('err').textContent = 'No cargó: ' + d.errores.join(' · ');
   $('sin-token').hidden = d.conToken;
-  const dias = Array.from({ length: 28 }, (_, i) => new Date(Date.parse(d.desde28) + i * 864e5).toISOString().slice(0, 10));
-  const ped = d.pedidos.filter((o) => o.canal === 'Meta' && o.f >= d.desde28).map((o) => ({ ...o, m: MARGEN.web(o) }));
-  const gasto = d.meta ? d.meta.dias.filter((x) => x.f >= d.desde28).reduce((t, x) => t + x.gasto, 0) : null;
-  const venta = ped.reduce((t, o) => t + o.venta, 0), antesPauta = ped.reduce((t, o) => t + o.m.queda, 0);
-  $('k-gasto').textContent = gasto == null ? '—' : S(gasto); $('d-gasto').textContent = gasto == null ? 'falta conectar Meta' : 'en 28 días';
-  $('k-venta').textContent = S(venta); $('d-venta').textContent = ped.length + (ped.length === 1 ? ' pedido' : ' pedidos');
-  $('k-cpv').textContent = gasto == null || !ped.length ? '—' : S(gasto / ped.length);
-  $('d-cpv').textContent = gasto == null ? 'falta el gasto' : !ped.length ? 'sin ventas todavía' : `meta: hasta ${S(R.subir)}`;
-  $('k-roas').textContent = gasto ? (venta / gasto).toFixed(1) + 'x' : '—';
-  $('d-roas').textContent = d.meta ? 'Meta dice ' + (gasto ? (d.meta.dias.filter((x) => x.f >= d.desde28).reduce((t, x) => t + x.valorMeta, 0) / gasto).toFixed(1) + 'x' : '—') : '';
-  const mx = antesPauta - (gasto || 0);
-  $('k-mx').textContent = S(mx); $('d-mx').textContent = `ventas dejan ${S(antesPauta)}` + (gasto != null ? ` − gasto ${S(gasto)}` : '');
-  if (mx < 0) $('kk-mx').className = 'kpi neg';
-  grafico(d, dias); addEventListener('resize', () => grafico(d, dias));
+  // Objetivos disponibles
+  const objs = [...new Set((m?.campanas || []).map((c) => c.objetivo))];
+  if ($('f-obj').options.length !== objs.length + 1) $('f-obj').innerHTML = '<option value="">Todos</option>' + objs.map((o) => `<option value="${esc(o)}">${obj(o)[0]}</option>`).join('');
+  $('f-obj').value = fo && objs.includes(fo) ? fo : '';
 
-  // Semáforo por anuncio: ventas de Shopify cruzadas por UTM (nombre o id de campaña y anuncio)
-  $('reglas').innerHTML = [['subir', `costo por venta hasta ${S(R.subir)}`], ['mantener', `${S(R.subir)} a ${S(R.cambiar)}`], ['apagar', `más de ${S(R.cambiar)}, o ${S(R.sinVenta)} gastados sin venta`], ['aprende', `menos de ${S(R.sinVenta)} gastados y sin venta`]]
-    .map(([k, t]) => `<span>${pill(k)} ${t}</span>`).join('');
+  // Pedidos del rango con su margen y cruce con anuncios / campañas (por UTM: nombre o id)
+  const ped = d.pedidos.filter((o) => o.f >= d.desde && o.f <= d.hasta).map((o) => ({ ...o, m: MARGEN.web(o) }));
+  const camps = (m?.campanas || []).filter((c) => !$('f-obj').value || c.objetivo === $('f-obj').value).map((c) => ({ ...c, ped: [], ads: [] }));
+  const ads = (m?.anuncios || []).map((a) => ({ ...a, ped: [] }));
   const usados = new Set();
-  const ads = (d.meta?.anuncios || []).map((a) => {
-    const suyos = ped.filter((o) => (norm(o.anuncio) === norm(a.anuncio) || o.anuncio === a.anuncioId) && (!o.campana || norm(o.campana) === norm(a.campana) || o.campana === a.campanaId));
-    suyos.forEach((o) => usados.add(o.n));
-    const v = suyos.reduce((t, o) => t + o.venta, 0), q = suyos.reduce((t, o) => t + o.m.queda, 0);
-    return { ...a, pedidos: suyos.length, venta: v, queda: q - a.gasto };
-  });
-  // Ventas por Meta que no calzan con un anuncio: se cruzan por campaña
-  ped.filter((o) => !usados.has(o.n)).forEach((o) => {
-    const c = ads.find((a) => norm(a.campana) === norm(o.campana) || a.campanaId === o.campana);
-    if (c) { c.pedidos++; c.venta += o.venta; c.queda += o.m.queda; usados.add(o.n); }
-  });
-  const sueltas = ped.filter((o) => !usados.has(o.n));
-  const filas = ads.filter((a) => a.gasto > 0 || a.pedidos).sort((a, b) => b.gasto - a.gasto).map((a) => ({
-    nombre: `<b>${esc(a.anuncio)}</b><div class="sub">${esc(a.campana)} · ${esc(a.conjunto)}</div>`,
-    gasto: a.gasto, clics: a.clics, cpc: a.clics ? a.gasto / a.clics : 0, pedidos: a.pedidos, venta: a.venta,
-    cpv: a.pedidos ? S(a.gasto / a.pedidos) : '—', roas: a.gasto ? (a.venta / a.gasto).toFixed(1) + 'x' : '—', queda: a.queda,
-    que: pill(semaforo(a.gasto, a.pedidos, a.estado)),
-  }));
-  if (sueltas.length) filas.push({ nombre: '<b>Sin anuncio identificado</b><div class="sub">llegaron por Facebook/Instagram sin UTM de anuncio</div>', gasto: 0, clics: 0, cpc: 0,
-    pedidos: sueltas.length, venta: sueltas.reduce((t, o) => t + o.venta, 0), cpv: '—', roas: '—', queda: sueltas.reduce((t, o) => t + o.m.queda, 0), que: '' });
-  tabla('t-ads', [['nombre', 'Anuncio', null, 1], ['gasto', 'Gasto', S], ['clics', 'Clics', N], ['cpc', 'CPC', (v) => S(v, 2)], ['pedidos', 'Ventas', N], ['venta', 'Venta', S], ['cpv', 'Costo por venta', (v) => v], ['roas', 'ROAS real', (v) => v], ['queda', 'Queda MXD', S], ['que', 'Qué hacer', null, 1]],
-    filas, d.conToken ? 'Ningún anuncio con gasto en 28 días' : 'Aparece cuando Meta esté conectado');
+  for (const o of ped) {
+    const a = ads.find((x) => (norm(x.nombre) === norm(o.anuncio) || x.id === o.anuncio) && (!o.campana || norm(x.campana) === norm(o.campana) || x.campanaId === o.campana));
+    if (a) { a.ped.push(o); usados.add(o.n); }
+    const c = (m?.campanas || []).find((x) => norm(x.nombre) === norm(o.campana) || x.id === o.campana || (a && x.id === a.campanaId));
+    if (c) { usados.add(o.n); const cc = camps.find((x) => x.id === c.id); if (cc) cc.ped.push(o); }
+  }
+  camps.forEach((c) => { c.ads = ads.filter((a) => a.campanaId === c.id); });
+  const enFiltro = $('f-obj').value ? camps.flatMap((c) => c.ped) : ped;
+  const sueltos = ped.filter((o) => !usados.has(o.n));
+  const sum = (arr, k) => arr.reduce((t, x) => t + (x[k] || 0), 0);
+  const T = m ? Object.fromEntries(['gasto', 'impresiones', 'clics', 'visitas', 'vioProducto', 'carrito', 'pago', 'compras', 'valorMeta'].map((k) => [k, $('f-obj').value ? sum(camps, k) : m.total[k]])) : null;
+  if (T) { T.alcance = $('f-obj').value ? sum(camps, 'alcance') : m.total.alcance; }
+  const venta = sum(enFiltro, 'venta'), pedidos = enFiltro.length, aporte = enFiltro.reduce((t, o) => t + o.m.queda, 0);
+  const gasto = T ? T.gasto : null, margen = aporte - (gasto || 0);
 
-  tabla('t-ped', [['n', 'Pedido'], ['f', 'Fecha'], ['campana', 'Campaña'], ['anuncio', 'Anuncio'], ['productos', 'Productos'], ['venta', 'Venta', S], ['queda', 'Queda (antes de pauta)', S]],
-    ped.map((o) => ({ ...o, f: fecha(o.f), campana: o.campana || '—', anuncio: o.anuncio || '—', productos: o.lineas.map((l) => `${l.q}× ${l.t}`).join(' · '), queda: o.m.queda })),
-    'Todavía no hay ventas que lleguen por Meta');
-  tabla('t-ga', [['campana', 'Campaña'], ['sesiones', 'Visitas', N], ['compras', 'Compras', N]], d.visitas?.campanas || [], 'Sin visitas desde Meta en el periodo');
-}).catch((e) => { $('err').textContent = 'No se pudieron cargar los datos: ' + e.message; });
+  // KPIs
+  const kpi = (c, l, v, sub, tip, cls = '') => `<div class="kpi ${cls}" style="--c:${c}"><div class="l" data-tip="${esc(l + '|' + tip)}">${l}</div><div class="v">${v}</div><div class="d">${sub}</div></div>`;
+  $('k1').innerHTML = [
+    kpi('#1877f2', 'Inversión', gasto == null ? '—' : S(gasto, 2), T ? `${camps.length} campañas` : 'falta conectar Meta', 'Lo gastado en Meta en el rango.'),
+    kpi('var(--acc)', 'Venta en Shopify', S(venta), `${pedidos} ${pedidos === 1 ? 'pedido' : 'pedidos'} por Meta`, 'Pedidos reales cuya visita vino de un anuncio de Meta. Sin envío.'),
+    kpi('#8a5cd6', 'Costo por venta', gasto == null || !pedidos ? '—' : S(gasto / pedidos), `meta: hasta ${S(R.subir)}`, 'Inversión ÷ pedidos de Shopify. Es el número del semáforo.'),
+    kpi('#c98a1e', 'ROAS real', gasto ? (venta / gasto).toFixed(1) + 'x' : '—', T ? `Meta dice ${(T.valorMeta / (gasto || 1)).toFixed(1)}x` : '', 'Venta Shopify ÷ inversión. Meta suele decir más porque se atribuye ventas que llegaron por otro lado.'),
+    kpi(margen < 0 ? 'var(--bad)' : 'var(--acc)', margen < 0 ? 'Perdemos' : 'Margen de contribución', S(margen), `ventas dejan ${S(aporte)}${gasto != null ? ' − inversión ' + S(gasto) : ''}`, 'Venta sin IGV − costo − Mercado Pago − envío gratis − inversión en Meta.', margen < 0 ? 'neg' : 'pos'),
+  ].join('');
+  $('k2').innerHTML = !T ? '<p class="sub">Aparece cuando Meta esté conectado.</p>' : [
+    kpi('#1877f2', 'Compras según Meta', N(T.compras), `Shopify: ${pedidos}`, 'Compras que cuenta el píxel (clic 7 días / vista 1 día). Comparar con Shopify.'),
+    kpi('#1877f2', 'CTR', P(T.clics / T.impresiones), 'clics al enlace ÷ impresiones', 'De cada 100 que ven el anuncio, cuántos hacen clic para ir a la web.'),
+    kpi('#1877f2', 'CPC', T.clics ? S(T.gasto / T.clics, 2) : '—', 'costo por clic', 'Inversión ÷ clics al enlace.'),
+    kpi('#1877f2', 'CPM', T.impresiones ? S(T.gasto / T.impresiones * 1000, 2) : '—', 'costo por 1,000 impresiones', 'Cuánto cuesta mostrar el anuncio 1,000 veces.'),
+    kpi('#1877f2', 'Alcance', N(T.alcance), `${N(T.impresiones)} impresiones`, 'Personas únicas que vieron algún anuncio.'),
+    kpi('#1877f2', 'Frecuencia', T.alcance ? (T.impresiones / T.alcance).toFixed(2) : '—', 'impresiones ÷ alcance', 'Cuántas veces vio cada persona el anuncio. Más de 4 en ventas suele cansar.'),
+    kpi('#1877f2', 'Conversión', T.clics ? P(pedidos / T.clics) : '—', 'pedidos Shopify ÷ clics', 'De cada 100 clics, cuántos terminan en pedido real.'),
+  ].join('');
+
+  // Inversión por campaña + objetivo
+  const top = [...camps].sort((a, b) => b.gasto - a.gasto).slice(0, 10), mx = Math.max(1, ...top.map((c) => Math.max(c.gasto, sum(c.ped, 'venta'))));
+  $('g-camp').innerHTML = top.length ? top.map((c) => { const v = sum(c.ped, 'venta'); return `<span class="n" title="${esc(c.nombre)}">${esc(c.nombre)}</span><div><div class="b" style="width:${c.gasto / mx * 100}%">${v ? `<i style="left:calc(${Math.min(100, v / Math.max(c.gasto, 0.01) * 100)}% - 2px)"></i>` : ''}</div></div><span class="sub">${S(c.gasto)}${v ? ' · vende ' + S(v) : ''}</span>`; }).join('') : '<span class="sub">Sin campañas con gasto</span>';
+  const porObj = {}; camps.forEach((c) => { porObj[c.objetivo] = (porObj[c.objetivo] || 0) + c.gasto; });
+  const totObj = Object.values(porObj).reduce((a, b) => a + b, 0);
+  if (totObj) {
+    let a0 = -Math.PI / 2, svg = '<svg viewBox="0 0 200 200" width="170" style="display:block;margin:0 auto">';
+    Object.entries(porObj).forEach(([o, g]) => { const a1 = a0 + g / totObj * 2 * Math.PI, big = a1 - a0 > Math.PI ? 1 : 0; const p = (a) => [100 + 80 * Math.cos(a), 100 + 80 * Math.sin(a)]; const [x0, y0] = p(a0), [x1, y1] = p(a1 - 0.0001);
+      svg += `<path d="M${x0} ${y0} A80 80 0 ${big} 1 ${x1} ${y1}" fill="none" stroke="${obj(o)[1]}" stroke-width="34"/>`; a0 = a1; });
+    $('g-obj').innerHTML = svg + '</svg>' + Object.entries(porObj).sort((a, b) => b[1] - a[1]).map(([o, g]) => `<div style="display:flex;justify-content:space-between;font-size:13px;margin-top:6px"><span class="obj" style="background:${obj(o)[1]}">${obj(o)[0]}</span><span>${S(g)} · ${Math.round(g / totObj * 100)}%</span></div>`).join('');
+  } else $('g-obj').innerHTML = '<span class="sub">Sin datos de Meta</span>';
+
+  // Embudo
+  const pasos = T ? [['Impresiones', T.impresiones], ['Clics al enlace', T.clics], ['Visitas a la web', T.visitas], ['Vio un producto', T.vioProducto], ['Agregó al carrito', T.carrito], ['Inició el pago', T.pago], ['Compró (Meta)', T.compras], ['Pedido real (Shopify)', pedidos]] : [['Visitas desde Meta (Google Analytics)', d.visitasGA || 0], ['Pedido real (Shopify)', pedidos]];
+  const mf = Math.max(1, pasos[0][1]);
+  $('g-fun').innerHTML = pasos.map(([n, v], i) => `<div class="st"><span>${n}</span><div class="b" style="width:${Math.max(4, Math.sqrt(v / mf) * 100)}%;background:${i === pasos.length - 1 ? 'var(--acc)' : '#1877f2'}">${N(v)}</div><span class="p">${i ? (pasos[i - 1][1] ? P(v / pasos[i - 1][1], 1) + ' del paso anterior' : '—') : ''}</span></div>`).join('');
+
+  // Tabla de campañas (expandible y ordenable)
+  $('reglas').innerHTML = [['subir', `costo por venta hasta ${S(R.subir)}`], ['mantener', `${S(R.subir)} a ${S(R.cambiar)}`], ['apagar', `más de ${S(R.cambiar)} o ${S(R.sinVenta)} sin venta`], ['aprende', `menos de ${S(R.sinVenta)} y sin venta`]].map(([k, t]) => `<span>${pill(k)} ${t}</span>`).join('');
+  const met = (x) => { const v = sum(x.ped, 'venta'), q = x.ped.length, ap = x.ped.reduce((t, o) => t + o.m.queda, 0); return { v, q, cpv: q ? x.gasto / q : null, roas: x.gasto ? v / x.gasto : null, ctr: x.impresiones ? x.clics / x.impresiones : null, cpm: x.impresiones ? x.gasto / x.impresiones * 1000 : null, frec: x.alcance ? x.impresiones / x.alcance : null, mg: ap - x.gasto }; };
+  const COLS = [['nombre', 'Campaña'], ['objetivo', 'Objetivo'], ['gasto', 'Inversión'], ['q', 'Ventas'], ['v', 'Venta'], ['cpv', 'Costo x venta'], ['roas', 'ROAS real'], ['ctr', 'CTR'], ['cpm', 'CPM'], ['frec', 'Frec.'], ['mg', 'Margen'], ['sem', 'Qué hacer']];
+  const orden = pintar.orden ||= { k: 'gasto', dir: -1 }, abiertos = pintar.abiertos ||= new Set();
+  const filas = camps.map((c) => ({ c, ...met(c), gasto: c.gasto, nombre: c.nombre, objetivo: obj(c.objetivo)[0] })).sort((a, b) => { const x = a[orden.k] ?? -1e9, y = b[orden.k] ?? -1e9; return (typeof x === 'string' ? x.localeCompare(y) : x - y) * orden.dir; });
+  const celdas = (x, r, nombre) => `<td>${nombre}</td><td>${r.objetivo != null ? `<span class="obj" style="background:${obj(x.objetivo)[1]}">${obj(x.objetivo)[0]}</span>` : ''}</td><td class="n">${S(x.gasto)}</td><td class="n">${r.q}<div class="meta-vs">Meta: ${N(x.compras)}</div></td><td class="n">${S(r.v)}</td><td class="n">${r.cpv == null ? '—' : S(r.cpv)}</td><td class="n">${r.roas == null ? '—' : r.roas.toFixed(1) + 'x'}</td><td class="n">${P(r.ctr)}</td><td class="n">${r.cpm == null ? '—' : S(r.cpm, 2)}</td><td class="n">${r.frec == null ? '—' : r.frec.toFixed(2)}</td><td class="n" style="color:${r.mg < 0 ? 'var(--bad)' : 'var(--acc)'}">${S(r.mg)}</td><td>${pill(semaforo(x.gasto, r.q, x.estado))}</td>`;
+  let h = '<tr>' + COLS.map(([k, l]) => `<th data-k="${k}" class="${['nombre', 'objetivo', 'sem'].includes(k) ? '' : 'n'}">${l}${orden.k === k ? (orden.dir < 0 ? ' ↓' : ' ↑') : ''}</th>`).join('') + '</tr>';
+  if (!filas.length) h += `<tr><td colspan="12" class="muted">${d.conToken ? 'Ninguna campaña con gasto en el rango' : 'Aparece cuando Meta esté conectado'}</td></tr>`;
+  filas.forEach((r) => {
+    const ab = abiertos.has(r.c.id);
+    h += `<tr class="cp">${celdas(r.c, { ...r, objetivo: 1 }, `<button data-id="${esc(r.c.id)}">${ab ? '▾' : '▸'}</button>${esc(r.c.nombre)}`)}</tr>`;
+    if (ab) [...r.c.ads].sort((a, b) => b.gasto - a.gasto).forEach((a) => { h += `<tr class="ad">${celdas(a, { ...met(a), objetivo: null }, esc(a.nombre) + `<div class="sub">${esc(a.conjunto)}</div>`)}</tr>`; });
+  });
+  if (sueltos.length) h += `<tr><td colspan="3">Ventas por Meta sin campaña identificada <div class="sub">llegaron por Facebook o Instagram sin UTM</div></td><td class="n">${sueltos.length}</td><td class="n">${S(sum(sueltos, 'venta'))}</td><td colspan="7"></td></tr>`;
+  if (filas.length) { const t = { gasto: T.gasto, impresiones: T.impresiones, clics: T.clics, alcance: T.alcance, compras: T.compras, ped: enFiltro }; h += `<tr class="tot">${celdas(t, { ...met(t), objetivo: null }, 'Totales')}</tr>`; }
+  $('t-camp').innerHTML = h;
+  $('t-camp').querySelectorAll('th').forEach((th) => th.onclick = () => { const k = th.dataset.k; if (k === 'sem') return; orden.dir = orden.k === k ? -orden.dir : (k === 'nombre' || k === 'objetivo' ? 1 : -1); orden.k = k; pintar(); });
+  $('t-camp').querySelectorAll('button[data-id]').forEach((b) => b.onclick = () => { abiertos.has(b.dataset.id) ? abiertos.delete(b.dataset.id) : abiertos.add(b.dataset.id); pintar(); });
+
+  // Evolución diaria
+  const dias = []; for (let f = d.desde; f <= d.hasta; f = new Date(Date.parse(f) + 864e5).toISOString().slice(0, 10)) dias.push(f);
+  const gd = Object.fromEntries((m?.dias || []).map((x) => [x.f, x])), vd = {};
+  ped.forEach((o) => { vd[o.f] = (vd[o.f] || 0) + 1; });
+  (function () {
+    const el = $('g-dia'), W = Math.max(el.clientWidth, 300), H = 230, Pd = { l: 34, r: 54, t: 12, b: 26 }, alto = H - Pd.t - Pd.b, base = Pd.t + alto;
+    const mv = Math.max(1, ...dias.map((f) => Math.max(vd[f] || 0, gd[f]?.compras || 0))), mg = Math.max(1, ...dias.map((f) => gd[f]?.gasto || 0));
+    const bw = (W - Pd.l - Pd.r) / dias.length, cx = (i) => Pd.l + i * bw + bw / 2;
+    let s = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Ventas e inversión por día">`;
+    [0.5, 1].forEach((k) => { const y = base - alto * k; s += `<line x1="${Pd.l}" x2="${W - Pd.r}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${Pd.l - 6}" y="${y + 4}" text-anchor="end">${N(mv * k, 1)}</text><text x="${W - Pd.r + 6}" y="${y + 4}">${S(mg * k)}</text>`; });
+    const paso = Math.ceil(dias.length / Math.max(1, Math.floor((W - Pd.l - Pd.r) / 48)));
+    dias.forEach((f, i) => {
+      const w = Math.max(3, Math.min(20, bw * 0.7)), v = vd[f] || 0, c = gd[f]?.compras || 0;
+      if (v) s += `<rect x="${cx(i) - w / 2}" y="${base - v / mv * alto}" width="${w}" height="${v / mv * alto}" rx="2" fill="var(--acc)"/>`;
+      if (c) s += `<rect x="${cx(i) - w / 2}" y="${base - c / mv * alto}" width="${w}" height="${c / mv * alto}" rx="2" fill="none" stroke="#1877f2" stroke-width="1.5"/>`;
+      if ((i % paso === 0 && dias.length - 1 - i >= paso) || i === dias.length - 1) s += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${i === dias.length - 1 ? 'end' : 'middle'}">${fecha(f)}</text>`;
+    });
+    if (m) s += `<polyline fill="none" stroke="var(--now)" stroke-width="2.2" points="${dias.map((f, i) => cx(i) + ',' + (base - (gd[f]?.gasto || 0) / mg * alto)).join(' ')}"/>`;
+    s += `<line x1="${Pd.l}" x2="${W - Pd.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+    dias.forEach((f, i) => { const g = gd[f]?.gasto || 0, v = vd[f] || 0; s += `<rect class="mxd-hit" x="${Pd.l + i * bw}" y="${Pd.t}" width="${bw}" height="${alto}" data-tip="${esc(new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }) + '|Inversión\t' + (m ? S(g, 2) : 'sin conectar') + '\nVentas Shopify\t' + v + '\nCompras según Meta\t' + (gd[f]?.compras || 0) + '\nCosto por venta\t' + (v && m ? S(g / v) : '—'))}"/>`; });
+    el.innerHTML = s + '</svg>';
+  })();
+
+  // Top anuncios
+  const tarj = (a, i) => { const r = met(a); return `<div class="ad-c"><div class="img" style="${a.foto ? `background-image:url('${esc(a.foto)}')` : ''}">${i != null ? `<b>${i + 1}</b>` : ''}${a.formato ? `<span>${esc(a.formato)}</span>` : ''}</div><div class="tx"><div class="nm">${esc(a.nombre)}</div><div class="cp">${esc(a.campana)}</div>
+    <dl><div><dt>Ventas</dt><dd>${r.q}</dd></div><div><dt>Inversión</dt><dd>${S(a.gasto)}</dd></div><div><dt>Costo x venta</dt><dd>${r.cpv == null ? '—' : S(r.cpv)}</dd></div><div><dt>ROAS</dt><dd>${r.roas == null ? '—' : r.roas.toFixed(1) + 'x'}</dd></div><div><dt>CTR</dt><dd>${P(r.ctr)}</dd></div><div><dt>Meta dice</dt><dd>${N(a.compras)}</dd></div></dl>${pill(semaforo(a.gasto, r.q, a.estado))}</div></div>`; };
+  const enCamps = new Set(camps.map((c) => c.id)), adsF = ads.filter((a) => enCamps.has(a.campanaId) && (a.gasto > 0 || a.ped.length));
+  const con = adsF.filter((a) => a.ped.length).sort((a, b) => b.ped.length - a.ped.length || (a.gasto / a.ped.length) - (b.gasto / b.ped.length));
+  const sin = adsF.filter((a) => !a.ped.length).sort((a, b) => b.gasto - a.gasto);
+  $('h-con').textContent = `Anuncios con ventas (${con.length})`; $('h-sin').textContent = `Anuncios sin ventas (${sin.length}) · candidatos a pausar o reemplazar`;
+  $('c-con').innerHTML = con.map(tarj).join('') || `<p class="sub">${d.conToken ? 'Ningún anuncio con ventas en el rango todavía.' : 'Aparece cuando Meta esté conectado.'}</p>`;
+  $('c-sin').innerHTML = sin.map((a) => tarj(a)).join('') || '<p class="sub">Ninguno.</p>';
+
+  // Evolutivo mensual (toda la cuenta)
+  const meses = []; for (let x = d.desdeMes.slice(0, 7); x <= d.hasta.slice(0, 7);) { meses.push(x); const [y, mm] = x.split('-').map(Number); x = mm === 12 ? `${y + 1}-01` : `${y}-${String(mm + 1).padStart(2, '0')}`; }
+  const mm = Object.fromEntries((m?.meses || []).map((x) => [x.mes, x])), pm = {};
+  d.pedidos.forEach((o) => { const k = o.f.slice(0, 7); (pm[k] ||= []).push(o); });
+  const fm = meses.map((k) => { const x = mm[k] || {}, ps = (pm[k] || []).map((o) => ({ ...o, m: MARGEN.web(o) })), v = sum(ps, 'venta'), g = x.gasto || 0; return { k, g, q: ps.length, v, cpv: ps.length && m ? g / ps.length : null, roas: g ? v / g : null, ctr: x.impresiones ? x.clics / x.impresiones : null, cpm: x.impresiones ? g / x.impresiones * 1000 : null, frec: x.alcance ? x.impresiones / x.alcance : null, imp: x.impresiones || 0, alc: x.alcance || 0, mg: ps.reduce((t, o) => t + o.m.queda, 0) - g }; });
+  const nomMes = (k) => new Date(k + '-15T12:00:00Z').toLocaleDateString('es-PE', { month: 'short', year: '2-digit', timeZone: 'UTC' }).toUpperCase();
+  const corto = (k) => new Date(k + '-15T12:00:00Z').toLocaleDateString('es-PE', { month: 'short', timeZone: 'UTC' }).replace('.', '').toUpperCase();
+  const mini = (tit, key, fmt, col) => { const vals = fm.map((x) => x[key] || 0), mx2 = Math.max(1e-9, ...vals.map(Math.abs)), W = 300, H = 110, bw = W / fm.length; let s = `<svg width="100%" viewBox="0 0 ${W} ${H}">`; fm.forEach((x, i) => { const v = x[key] || 0, h = Math.abs(v) / mx2 * 70; s += `<rect x="${i * bw + bw * 0.2}" y="${86 - h}" width="${bw * 0.6}" height="${h}" rx="2" fill="${v < 0 ? 'var(--bad)' : col}"/><text x="${i * bw + bw / 2}" y="${H - 6}" text-anchor="middle">${corto(x.k)}</text>${v ? `<text x="${i * bw + bw / 2}" y="${82 - h}" text-anchor="middle">${fmt(v)}</text>` : ''}`; }); return `<div><h3>${tit}</h3>${s}</svg></div>`; };
+  $('g-mes').innerHTML = mini('Inversión', 'g', (v) => S(v), '#1877f2') + mini('Ventas Shopify', 'q', (v) => N(v), 'var(--acc)') + mini('Costo por venta', 'cpv', (v) => S(v), '#8a5cd6') + mini('Margen de contribución', 'mg', (v) => S(v), 'var(--acc)');
+  $('t-mes').innerHTML = '<tr><th>Mes</th><th class="n">Inversión</th><th class="n">Ventas</th><th class="n">Venta</th><th class="n">Costo x venta</th><th class="n">ROAS real</th><th class="n">CTR</th><th class="n">CPM</th><th class="n">Frec.</th><th class="n">Impresiones</th><th class="n">Alcance</th><th class="n">Margen</th></tr>' +
+    fm.map((x) => `<tr><td>${nomMes(x.k)}</td><td class="n">${S(x.g)}</td><td class="n">${x.q}</td><td class="n">${S(x.v)}</td><td class="n">${x.cpv == null ? '—' : S(x.cpv)}</td><td class="n">${x.roas == null ? '—' : x.roas.toFixed(1) + 'x'}</td><td class="n">${P(x.ctr)}</td><td class="n">${x.cpm == null ? '—' : S(x.cpm, 2)}</td><td class="n">${x.frec == null ? '—' : x.frec.toFixed(2)}</td><td class="n">${N(x.imp)}</td><td class="n">${N(x.alc)}</td><td class="n" style="color:${x.mg < 0 ? 'var(--bad)' : 'var(--acc)'}">${S(x.mg)}</td></tr>`).join('');
+
+  // Pedidos
+  $('t-ped').innerHTML = '<tr><th>Pedido</th><th>Fecha</th><th>Campaña</th><th>Anuncio</th><th>Productos</th><th class="n">Venta</th><th class="n">Deja (antes de pauta)</th></tr>' +
+    (ped.length ? ped.map((o) => `<tr><td>${esc(o.n)}</td><td>${fecha(o.f)}</td><td>${esc(o.campana || '—')}</td><td>${esc(o.anuncio || '—')}</td><td>${esc(o.lineas.map((l) => `${l.q}× ${l.t}`).join(' · '))}</td><td class="n">${S(o.venta)}</td><td class="n">${S(o.m.queda)}</td></tr>`).join('') : '<tr><td colspan="7" class="muted">Todavía no hay ventas que lleguen por Meta en el rango</td></tr>');
+}
+addEventListener('resize', () => D && pintar());
+cargar(new URLSearchParams(location.search).has('t'));
 </script>
 </body></html>

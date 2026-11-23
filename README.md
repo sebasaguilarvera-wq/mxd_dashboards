@@ -9,7 +9,7 @@ Tableros de MXD en un solo sitio, desplegado en Vercel.
 | `/saga-angeltex` | Saga Falabella · Angeltex | En vivo vía `/api/saga?m=angeltex`; costos y campaña fijos en la página |
 | `/web` | Web y Google (Shopify + GA4) | En vivo vía `/api/web` (caché 15 min); ventas por canal según el recorrido del pedido en Shopify (`api/_pedidos.js`) |
 | `/pauta` | Pauta en prueba (semáforo por campaña) | `/api/saga?m=angeltex` + `/api/pauta` (Shopify con origen, visitas de Meta en GA4, gasto de Meta si hay token); fechas y presupuestos en `assets/pauta_config.js` |
-| `/meta` | Meta Ads: gasto, ventas web por anuncio (UTM), costo por venta y semáforo | `/api/meta` (Graph API si hay token + Shopify + GA4); reglas en `assets/pauta_config.js` |
+| `/meta` | Meta Ads para ventas (orden del tablero de leads): KPIs de plata y de Meta, inversión por campaña y objetivo, embudo píxel → Shopify, campañas con anuncios, evolución diaria, top anuncios, evolutivo mensual | `/api/meta_panel?desde=| `/meta` | Meta Ads: gasto, ventas web por anuncio (UTM), costo por venta y semáforo | `/api/meta` (Graph API si hay token + Shopify + GA4); reglas en `assets/pauta_config.js` |hasta=` (Graph API si hay token + Shopify + GA4); reglas en `assets/pauta_config.js` |
 
 ## Variables de entorno en Vercel
 

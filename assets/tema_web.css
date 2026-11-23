@@ -1,0 +1,42 @@
+/* Tema Web — referencia 6 (Ecommerce Analytics Dashboard, Faris): todo oscuro, acento azul, tarjetas gris carbón. */
+html:root:not(.t){
+  --bg:#0e0e10; --panel:#1b1b1e; --line:#2b2b30; --fg:#f4f4f5; --muted:#9a9aa2;
+  --acc:#2f6bff; --acc-soft:#1a2648; --now:#f5c84c; --prev:#2f6bff; --bad:#ff6b6b; --ok:#3ccf7a;
+  --serif:'DM Sans',system-ui,-apple-system,sans-serif; --sans:'DM Sans',system-ui,-apple-system,sans-serif;
+  color-scheme:dark;
+}
+body{font-family:var(--sans);background:var(--bg)}
+.mxd-nav{background:#151517;box-shadow:none;border-right:1px solid var(--line);font-family:var(--sans)}
+.mxd-nav .nav-brand{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:18px;white-space:nowrap}
+.mxd-nav .nav-brand b{font-size:20px;line-height:1}
+.mxd-nav .nav-tabs a{color:#b4b4bb}
+.mxd-nav .nav-tabs a[aria-current]{background:#2a2a2f;color:#fff}
+.mxd-nav .nav-btn{background:var(--acc);color:#fff}
+@media (min-width:960px){
+  body{padding-left:236px}
+  .mxd-nav{position:fixed;inset:0 auto 0 0;width:236px;flex-direction:column;align-items:stretch;flex-wrap:nowrap;gap:4px;padding:24px 14px}
+  .mxd-nav .nav-brand{padding:0 8px 22px}
+  .mxd-nav .nav-tabs{flex-direction:column;gap:2px;overflow:visible}
+  .mxd-nav .nav-tabs a{padding:10px 14px;border-radius:10px;font-size:14px}
+  .mxd-nav .nav-st{margin:auto 8px 8px}
+  .mxd-nav .nav-btn{padding:10px 12px;border-radius:10px}
+  .wrap{max-width:1120px}
+}
+.eyebrow{text-transform:none;letter-spacing:0;color:var(--muted);font-weight:500;font-size:13px}
+h1{font-family:var(--sans);font-weight:700;letter-spacing:-.02em}
+h2{font-family:var(--sans);font-weight:600;font-size:19px}
+.panel,.kpi{background:var(--panel);border:1px solid var(--line);border-radius:12px}
+.panel{padding:20px}
+.kp .kpi{border-top:1px solid var(--line);padding:18px}
+.kpi .l{font-size:13px;color:var(--muted)}
+.kpi .v{font-family:var(--sans);font-weight:500;letter-spacing:-.02em;font-size:30px;color:#fff}
+.kpi .u{border-top-color:var(--line)}
+.kpi .u b{color:var(--ok)}
+.bar-f input{border-radius:8px;padding:7px 10px;background:#232327}
+.bar-f .rap button{border-radius:8px;padding:6px 12px;background:#232327}
+.bar-f .rap button:hover{border-color:var(--acc)}
+.bar-f .ir{background:var(--acc);border-color:var(--acc);border-radius:8px}
+th{color:var(--muted);font-weight:500;background:#202024}
+td{border-bottom-color:var(--line)}
+a{color:#8fb0ff}
+.err{color:var(--bad)}

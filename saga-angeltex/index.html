@@ -44,9 +44,9 @@
 table td.n{white-space:nowrap}
 .minibar{display:inline-block;height:8px;border-radius:2px;vertical-align:middle;margin-right:6px}
 td.pos{color:var(--acc);font-weight:700} td.neg{color:var(--bad);font-weight:700}
-</style></head>
+</style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"><link rel="stylesheet" href="/assets/tema_saga.css"></head>
 <body>
-<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex" aria-current=page>Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st" id="nav-st">Cargando…</span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
+<nav class="mxd-nav"><span class="nav-brand"><b>✳</b>MXD</span><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex" aria-current=page>Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st" id="nav-st">Cargando…</span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
 <div class="sub-tabs"><a href="/saga-angeltex" aria-current=page>Resumen</a><a href="/saga-angeltex/diario">Ventas diarias</a><a href="/saga-angeltex/anterior">Decisiones por modelo</a></div>
 <div class="wrap">
   <header>
@@ -81,7 +81,7 @@ td.pos{color:var(--acc);font-weight:700} td.neg{color:var(--bad);font-weight:700
     <div class="panel">
       <h2 style="font-size:18px">De cada S/ 100 vendidos</h2>
       <div class="cas" id="cas-rep"></div>
-      <div class="leg-w"><span><i style="background:#d9a43b"></i>Comisión</span><span><i style="background:#9a958c"></i>Delivery</span><span><i style="background:#2a78d6"></i>Depósito a MXD</span></div>
+      <div class="leg-w"><span><i style="background:#f0913a"></i>Comisión</span><span><i style="background:#a3ada6"></i>Delivery</span><span><i style="background:#1d5c44"></i>Depósito a MXD</span></div>
     </div>
     <div class="panel"><h2 style="font-size:18px">Delivery por producto</h2><table id="t-del"></table></div>
   </section>
@@ -146,10 +146,10 @@ function pintar() {
   const kpi = (c, l, v, sub, tip, cls = '') => `<div class="kpi ${cls}" style="--c:${c}"><div class="l" data-tip="${esc(l + '|' + tip)}">${l}</div><div class="v">${v}</div><div class="d">${sub}</div></div>`;
   $('gen').textContent = `Del ${fecha(a)} al ${fecha(b)}.`;
   $('k-api').innerHTML = [
-    kpi('#1877f2', 'Venta bruta', S(K.venta), dl(K.venta, Kp.venta), 'Lo que pagaron los clientes, con IGV y sin envío. Sin cancelados ni devueltos.', 'big'),
-    kpi('#1877f2', 'Unidades', N(K.uni), dl(K.uni, Kp.uni), 'Ítems vendidos (un pack cuenta como 1).'),
-    kpi('#1877f2', 'Pedidos', N(K.ped), dl(K.ped, Kp.ped), 'Órdenes distintas.'),
-    kpi('#1877f2', 'Ticket promedio', S(K.tk), dl(K.tk, Kp.tk), 'Venta bruta ÷ pedidos.'),
+    kpi('#123d2c', 'Venta bruta', S(K.venta), dl(K.venta, Kp.venta), 'Lo que pagaron los clientes, con IGV y sin envío. Sin cancelados ni devueltos.', 'big'),
+    kpi('#123d2c', 'Unidades', N(K.uni), dl(K.uni, Kp.uni), 'Ítems vendidos (un pack cuenta como 1).'),
+    kpi('#123d2c', 'Pedidos', N(K.ped), dl(K.ped, Kp.ped), 'Órdenes distintas.'),
+    kpi('#123d2c', 'Ticket promedio', S(K.tk), dl(K.tk, Kp.tk), 'Venta bruta ÷ pedidos.'),
   ].join('');
 
   // Progreso diario (o semanal si el rango es largo)
@@ -157,7 +157,7 @@ function pintar() {
   $('agrupa').textContent = sem ? 'Rango largo: se agrupa por semana.' : '';
   const ejes = []; for (let f = clave(a); f <= b; f = suma(f, sem ? 7 : 1)) ejes.push(f);
   const g = Object.fromEntries(ejes.map((f) => [f, []])); vs.forEach((v) => g[clave(v.f)]?.push(v));
-  const SER = [['uni', 'Unidades', '#2a78d6', 'q'], ['ped', 'Pedidos', '#8a5cd6', 'q'], ['venta', 'Venta bruta', '#0f6b55', 's'], ['tk', 'Ticket promedio', '#eb6834', 's']];
+  const SER = [['uni', 'Unidades', '#1d5c44', 'q'], ['ped', 'Pedidos', '#9fd13a', 'q'], ['venta', 'Venta bruta', '#3f9b6e', 's'], ['tk', 'Ticket promedio', '#f0913a', 's']];
   const sel = pintar.sel ||= (() => { try { return new Set(JSON.parse(localStorage.getItem('sagaSel')) || ['uni', 'tk']); } catch { return new Set(['uni', 'tk']); } })();
   $('chips').innerHTML = SER.map(([k, n, c]) => `<button type="button" data-k="${k}" style="--c:${c}" aria-pressed="${sel.has(k)}"><i></i>${n}</button>`).join('');
   $('chips').querySelectorAll('button').forEach((x) => x.onclick = () => { sel.has(x.dataset.k) ? sel.delete(x.dataset.k) : sel.add(x.dataset.k); try { localStorage.setItem('sagaSel', JSON.stringify([...sel])); } catch {} pintar(); });
@@ -187,17 +187,17 @@ function pintar() {
     `El último reporte cubre ventas hasta el <b>${fecha(hastaRep)}</b>. ${sinRep ? `<b>${sinRep} de ${vs.length}</b> unidades del rango son posteriores y aún no salen en el reporte: se completan cuando subas el del próximo lunes.` : 'Cubre todo el rango elegido.'}`;
   const R = tr.reduce((t, [, , , , pr, co, de, dp]) => ({ pr: t.pr + pr, co: t.co + co, de: t.de + de, dp: t.dp + dp }), { pr: 0, co: 0, de: 0, dp: 0 });
   $('k-rep').innerHTML = [
-    kpi('#d9a43b', 'Comisión real cobrada', S(R.co, 2), R.pr ? `${Math.round(R.co / R.pr * 100)}% de lo vendido` : 'sin datos en el rango', 'Lo que Falabella descontó de comisión, según el reporte (con IGV).'),
-    kpi('#9a958c', 'Delivery cobrado', S(R.de, 2), R.pr ? `${Math.round(R.de / R.pr * 100)}% de lo vendido` : '', 'Cofinanciamiento logístico y promos de envío que paga MXD.'),
-    kpi('#2a78d6', 'Depósito real a MXD', S(R.dp, 2), R.pr ? `de ${S(R.pr, 2)} vendidos en el reporte` : '', 'Lo que Falabella deposita: precio − comisión − delivery.'),
+    kpi('#f0913a', 'Comisión real cobrada', S(R.co, 2), R.pr ? `${Math.round(R.co / R.pr * 100)}% de lo vendido` : 'sin datos en el rango', 'Lo que Falabella descontó de comisión, según el reporte (con IGV).'),
+    kpi('#a3ada6', 'Delivery cobrado', S(R.de, 2), R.pr ? `${Math.round(R.de / R.pr * 100)}% de lo vendido` : '', 'Cofinanciamiento logístico y promos de envío que paga MXD.'),
+    kpi('#1d5c44', 'Depósito real a MXD', S(R.dp, 2), R.pr ? `de ${S(R.pr, 2)} vendidos en el reporte` : '', 'Lo que Falabella deposita: precio − comisión − delivery.'),
   ].join('');
   const casa = (id, segs) => { const t = segs.reduce((x, [, v]) => x + Math.max(0, v), 0) || 1; $(id).innerHTML = segs.filter(([, v]) => v > 0).map(([n, v, c]) => `<div style="flex:${v / t};background:${c}" title="${esc(n + ': ' + S(v, 2))}">${v / t > 0.07 ? Math.round(v / t * 100) + '%' : ''}</div>`).join('') || '<div style="flex:1;background:var(--line);color:var(--muted)">sin datos</div>'; };
-  casa('cas-rep', [['Comisión', R.co, '#d9a43b'], ['Delivery', R.de, '#9a958c'], ['Depósito', R.dp, '#2a78d6']]);
+  casa('cas-rep', [['Comisión', R.co, '#f0913a'], ['Delivery', R.de, '#a3ada6'], ['Depósito', R.dp, '#1d5c44']]);
   const nom = (k) => { const v = D.data.ventas.find((x) => x.k === k); return v ? nombreDe(v) : k; };
   const porSku = {}; tr.forEach(([, , k, , , , de]) => { const n = nom(k), x = (porSku[n] ||= { k: n, u: 0, de: 0 }); x.u++; x.de += de; });
   const dRows = Object.values(porSku).sort((x, y) => y.de - x.de), mxd = Math.max(1, ...dRows.map((x) => x.de));
   $('t-del').innerHTML = '<tr><th>Producto</th><th class="n">Unidades</th><th class="n">Delivery por unidad</th><th class="n">Delivery total</th></tr>' +
-    (dRows.length ? dRows.map((x) => `<tr><td>${esc(x.k)}</td><td class="n">${x.u}</td><td class="n">${S(x.de / x.u, 2)}</td><td class="n"><span class="minibar" style="width:${x.de / mxd * 60}px;background:#9a958c"></span>${S(x.de, 2)}</td></tr>`).join('') : '<tr><td colspan="4" class="muted">Sin ventas del rango en el reporte</td></tr>');
+    (dRows.length ? dRows.map((x) => `<tr><td>${esc(x.k)}</td><td class="n">${x.u}</td><td class="n">${S(x.de / x.u, 2)}</td><td class="n"><span class="minibar" style="width:${x.de / mxd * 60}px;background:#a3ada6"></span>${S(x.de, 2)}</td></tr>`).join('') : '<tr><td colspan="4" class="muted">Sin ventas del rango en el reporte</td></tr>');
 
   // Margen de contribución
   const mg = vs.map((v) => ({ v, x: MARCA === 'cw' ? MARGEN.sagaCW(v) : MARGEN.sagaAng(v) }));
@@ -206,10 +206,10 @@ function pintar() {
   const util = M.q - pauta;
   $('k-mg').innerHTML = [
     kpi(util < 0 ? 'var(--bad)' : 'var(--acc)', util < 0 ? 'Perdemos' : 'Utilidad (margen de contribución)', S(util), K.venta ? `${Math.round(util / K.venta * 100)}% de la venta bruta` : '', 'Venta − costo del producto − comisión − delivery' + (MARCA === 'cw' ? ' − IGV' : '') + ' − pauta Falabella Media.', 'big ' + (util < 0 ? 'neg' : 'pos')),
-    kpi('#8a5cd6', 'Costo del producto', S(M.costo), MARCA === 'cw' ? 'FOB + importación' : 'precio mayorista', 'Costo de lo vendido en el rango.'),
-    kpi('#1877f2', 'Pauta Falabella Media', S(pauta), pauta ? 'del reporte de campaña' : 'sin campaña en el rango', 'Gasto de Falabella Media repartido en los días de cada campaña.'),
+    kpi('#2c3e36', 'Costo del producto', S(M.costo), MARCA === 'cw' ? 'FOB + importación' : 'precio mayorista', 'Costo de lo vendido en el rango.'),
+    kpi('#f2c94c', 'Pauta Falabella Media', S(pauta), pauta ? 'del reporte de campaña' : 'sin campaña en el rango', 'Gasto de Falabella Media repartido en los días de cada campaña.'),
   ].join('');
-  const segs = [['Costo', M.costo, '#8a5cd6'], ['Comisión', M.com, '#d9a43b'], ['Delivery', M.del, '#9a958c'], ...(MARCA === 'cw' ? [['IGV', M.igv, '#c7c2b8']] : []), ['Pauta', pauta, '#1877f2'], ['Utilidad', Math.max(0, util), '#0f6b55']];
+  const segs = [['Costo', M.costo, '#2c3e36'], ['Comisión', M.com, '#f0913a'], ['Delivery', M.del, '#a3ada6'], ...(MARCA === 'cw' ? [['IGV', M.igv, '#d3dad4']] : []), ['Pauta', pauta, '#f2c94c'], ['Utilidad', Math.max(0, util), '#9fd13a']];
   casa('cas-mg', segs);
   $('leg-mg').innerHTML = segs.map(([n, v, c]) => `<span><i style="background:${c}"></i>${n} ${S(v)}</span>`).join('');
   const pr = {}; mg.forEach(({ v, x }) => { const n = nombreDe(v); const y = (pr[n] ||= { n, u: 0, venta: 0, q: 0, est: false }); y.u++; y.venta += v.p; y.q += x.queda; y.est ||= x.estimado; });

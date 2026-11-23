@@ -1,0 +1,51 @@
+/* Tema Saga — referencia 13 (Siohioma Sales Admin, Fireart Studio): barra lateral verde oscuro, acento lima, tarjetas blancas redondeadas. */
+html:root:not(.t){
+  --bg:#f3f5f1; --panel:#fff; --line:#e3e8e2; --fg:#13231b; --muted:#68756d;
+  --acc:#1f6b4a; --acc-soft:#eaf5d8; --now:#f0913a; --prev:#1d5c44; --bad:#d64535;
+  --verde:#123d2c; --lima:#b8e34a;
+  --serif:'DM Sans',system-ui,-apple-system,sans-serif; --sans:'DM Sans',system-ui,-apple-system,sans-serif;
+  color-scheme:light;
+}
+body{font-family:var(--sans);background:var(--bg)}
+.mxd-nav{background:var(--verde);box-shadow:none;font-family:var(--sans)}
+.mxd-nav .nav-brand{display:flex;align-items:center;gap:8px;color:#fff;font-weight:700;font-size:18px;white-space:nowrap}
+.mxd-nav .nav-brand b{color:var(--lima);font-size:22px;line-height:1}
+.mxd-nav .nav-tabs a{color:#cfe0d6}
+.mxd-nav .nav-tabs a[aria-current]{background:var(--lima);color:var(--verde)}
+.mxd-nav .nav-btn{background:var(--lima);color:var(--verde)}
+@media (min-width:960px){
+  body{padding-left:236px}
+  .mxd-nav{position:fixed;inset:0 auto 0 0;width:236px;flex-direction:column;align-items:stretch;flex-wrap:nowrap;gap:4px;padding:24px 14px}
+  .mxd-nav .nav-brand{padding:0 8px 22px}
+  .mxd-nav .nav-tabs{flex-direction:column;gap:2px;overflow:visible}
+  .mxd-nav .nav-tabs a{padding:10px 14px;border-radius:10px;font-size:14px}
+  .mxd-nav .nav-tabs a[aria-current]{background:rgba(184,227,74,.14);color:var(--lima);box-shadow:inset 3px 0 0 var(--lima)}
+  .mxd-nav .nav-st{margin:auto 8px 8px;color:#cfe0d6}
+  .mxd-nav .nav-btn{padding:10px 12px;border-radius:10px}
+  .sub-tabs,.wrap{max-width:1120px}
+}
+.eyebrow{text-transform:none;letter-spacing:0;color:var(--muted);font-weight:500;font-size:13px}
+h1{font-family:var(--sans);font-weight:700;letter-spacing:-.02em}
+h2{font-family:var(--sans);font-weight:600;font-size:19px}
+.panel,.kpi{border:1px solid var(--line);border-radius:16px}
+.panel{padding:20px}
+.kp .kpi{border-top:1px solid var(--line);padding:18px}
+.kpi .l{font-size:13px;font-weight:500;color:var(--fg)}
+.kpi .v{font-family:var(--sans);font-weight:500;letter-spacing:-.02em;font-size:32px}
+.kp .kpi.big{background:var(--verde);border-color:var(--verde);color:#fff}
+.kp .kpi.big .l{color:#cfe0d6}
+.kp .kpi.big .d{color:var(--lima)}
+.kp .kpi.big.pos .v{color:var(--lima)}
+.kp .kpi.big.neg .v{color:#ffb4a8}
+.fuente{font:600 11px var(--sans);letter-spacing:0;text-transform:none;padding:3px 10px;border-radius:99px;background:var(--acc-soft)!important;color:var(--verde)!important}
+.sub-tabs a{border-radius:10px}
+.sub-tabs a[aria-current]{background:var(--verde);border-color:var(--verde);color:var(--lima)}
+.bar-f input,.bar-f select{border-radius:10px;padding:7px 10px}
+.bar-f .rap button{border-radius:10px;padding:6px 12px}
+.bar-f .rap button:hover{border-color:var(--verde)}
+.chips button{border-radius:10px}
+.cas{border-radius:10px;height:34px}
+.cob{border-radius:12px;border-left:0;background:#fff6e6}
+th{color:var(--muted);font-weight:500}
+td.pos{color:var(--acc)}
+.mxd-tip{background:rgba(18,61,44,.97)!important}

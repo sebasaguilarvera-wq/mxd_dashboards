@@ -24,9 +24,9 @@
 .kpi .u{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:13px}
 .kpi .u b{color:var(--acc)} .kpi .u b.neg{color:var(--bad)}
 .sub{font-size:12px;color:var(--muted)}
-</style></head>
+</style><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap"><link rel="stylesheet" href="/assets/tema_web.css"></head>
 <body>
-<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web" aria-current=page>Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="cargar(true)" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
+<nav class="mxd-nav"><span class="nav-brand"><b>◼</b>MXD</span><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web" aria-current=page>Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="cargar(true)" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
 <div class="wrap">
   <header>
     <div class="eyebrow">Google · Web Pasillo</div>
@@ -56,7 +56,7 @@
 
   <section class="panel">
     <h2>Visitas y ventas por día</h2>
-    <div class="leg-w"><span><i style="background:var(--acc)"></i>Sesiones (Shopify)</span><span><i style="background:var(--now);height:3px"></i>Sesiones (Google Analytics)</span><span><i style="background:#8a5cd6;border-radius:50%"></i>Día con pedido</span></div>
+    <div class="leg-w"><span><i style="background:var(--acc)"></i>Sesiones (Shopify)</span><span><i style="background:var(--now);height:3px"></i>Sesiones (Google Analytics)</span><span><i style="background:#3ccf7a;border-radius:50%"></i>Día con pedido</span></div>
     <div id="chart"></div>
     <p class="muted" style="font-size:12px;margin:6px 0 0">Pasa el mouse por un día para ver el detalle.</p>
   </section>
@@ -73,7 +73,7 @@ const $ = (id) => document.getElementById(id);
 const DIA = 864e5, suma = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * DIA).toISOString().slice(0, 10);
 const fecha = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
 const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
-const COL = { 'Meta': '#1877f2', 'Google pagado': '#e8a400', 'Google orgánico': '#2f9e57', 'Influencer': '#d6336c', 'Directo y otros': '#9a958c' };
+const COL = { 'Meta': '#2f6bff', 'Google pagado': '#f5c84c', 'Google orgánico': '#3ccf7a', 'Influencer': '#ff5d8f', 'Directo y otros': '#8e8e96' };
 const pastilla = (c) => `<span style="display:inline-block;padding:2px 8px;border-radius:5px;background:${COL[c] || '#9a958c'};color:#fff;font-size:12px;white-space:nowrap">${c}</span>`;
 const DEF = {
     'Direct': ['Directo', 'Escribieron la dirección o entraron sin rastro (WhatsApp, favoritos, nuestro equipo probando).'],
@@ -133,7 +133,7 @@ function pintar() {
     kpi('#0f6b55', 'Pedidos', N(k.n), dl(k.n, kp.n), 'Compras completadas en la web.'),
     kpi('#0f6b55', 'Ticket promedio', S(k.tk), dl(k.tk, kp.tk), 'Venta ÷ pedidos.'),
     kpi('#eb6834', 'Sesiones', N(k.s), dl(k.s, kp.s), 'Visitas a la tienda según Shopify. Una persona puede hacer varias.'),
-    kpi('#8a5cd6', 'Conversión', k.s ? (k.cv * 100).toFixed(2) + '%' : '—', kp.s ? `antes ${(kp.cv * 100).toFixed(2)}%` : 'pedidos ÷ sesiones', 'De cada 100 visitas, cuántas terminan en pedido.'),
+    kpi('#3ccf7a', 'Conversión', k.s ? (k.cv * 100).toFixed(2) + '%' : '—', kp.s ? `antes ${(kp.cv * 100).toFixed(2)}%` : 'pedidos ÷ sesiones', 'De cada 100 visitas, cuántas terminan en pedido.'),
   ].join('');
 
   // ¿De dónde vienen las ventas? Por día si el rango es corto, por semana si es largo
@@ -178,7 +178,7 @@ function pintar() {
     dias.forEach((x, i) => {
       const w = Math.max(2, Math.min(18, bw * 0.7)), v = sv(x);
       if (v) svg += `<rect x="${cx(i) - w / 2}" y="${y(v)}" width="${w}" height="${base - y(v)}" rx="2" fill="var(--acc)" opacity=".85"/>`;
-      if (vd[x.dia]) svg += `<circle cx="${cx(i)}" cy="${P.t - 8}" r="5" fill="#8a5cd6"/>`;
+      if (vd[x.dia]) svg += `<circle cx="${cx(i)}" cy="${P.t - 8}" r="5" fill="#3ccf7a"/>`;
       if ((i % paso === 0 && dias.length - 1 - i >= paso) || i === dias.length - 1) svg += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${i === dias.length - 1 ? 'end' : 'middle'}">${fecha(x.dia)}</text>`;
     });
     svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2.2" points="${dias.map((x, i) => cx(i) + ',' + y(x.sesionesGA)).join(' ')}"/>`;

@@ -162,8 +162,6 @@ fetch('/api/web' + (new URLSearchParams(location.search).get('t') ? '?t=' + new 
     (d.pedidos || []).map((o) => ({ ...o, f: fecha(o.f), detalle: o.campana || o.entrada || '—' })));
   [...$('t-pedidos').rows].slice(1).forEach((r) => { const c = r.cells[2]; if (c && COL[c.textContent]) c.innerHTML = pastilla(c.textContent); });
   tabla('t-canales', [['canal', 'Canal'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.canales);
-  const CAMP = { '(direct)': 'Sin campaña · directo', '(organic)': 'Sin campaña · búsqueda gratis', '(referral)': 'Sin campaña · enlace de otra web o red', '(ai-assistant)': 'Sin campaña · asistente de IA', '(not set)': 'Sin dato', 'MXD_PRUEBA_COMPRA': 'MXD_PRUEBA_COMPRA · nuestras pruebas (no es venta real)' };
-  [...$('t-campanas').rows].slice(1).forEach((r) => { const c = r.cells[0]; if (CAMP[c.textContent]) c.textContent = CAMP[c.textContent]; });
   // Nombre en español y qué significa cada canal de Google Analytics
   const DEF = {
     'Direct': ['Directo', 'Escribieron la dirección o entraron sin rastro (WhatsApp, favoritos, nuestro equipo probando).'],
@@ -184,6 +182,8 @@ fetch('/api/web' + (new URLSearchParams(location.search).get('t') ? '?t=' + new 
     if (x) c.innerHTML = `<b>${x[0]}</b> <span class="muted" style="font-size:12px">(${c.textContent})</span><div class="muted" style="font-size:12px">${x[1]}</div>`;
   });
   tabla('t-campanas', [['campana', 'Campaña'], ['fuenteMedio', 'Fuente / medio'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.campanas);
+  const CAMP = { '(direct)': 'Sin campaña · directo', '(organic)': 'Sin campaña · búsqueda gratis', '(referral)': 'Sin campaña · enlace de otra web o red', '(ai-assistant)': 'Sin campaña · asistente de IA', '(not set)': 'Sin dato', 'MXD_PRUEBA_COMPRA': 'MXD_PRUEBA_COMPRA · nuestras pruebas (no es venta real)' };
+  [...$('t-campanas').rows].slice(1).forEach((r) => { const c = r.cells[0]; if (CAMP[c.textContent]) c.textContent = CAMP[c.textContent]; });
   tabla('t-marcas', [['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.marcas);
   tabla('t-top', [['producto', 'Producto'], ['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.top);
   tabla('t-stock', [['producto', 'Producto'], ['marca', 'Marca'], ['stock', 'Stock', N]], d.stockBajo);

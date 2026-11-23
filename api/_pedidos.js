@@ -7,7 +7,7 @@ export const CANALES = ['Meta', 'Google pagado', 'Google orgánico', 'Influencer
 
 const lima = (d) => new Date(d.getTime() - 5 * 3600000).toISOString().slice(0, 10);
 const INTERNO = /(^|\.)(mxd\.pe|pasillo\.pe|myshopify\.com)/i;
-const META = /facebook|instagram|^fb$|^ig$|^meta$/i;
+const META = /facebook|instagram|^fb$|^ig$|^meta$|^msg$|^an$/i; // utm_source={{site_source_name}} da fb, ig, msg o an
 
 const host = (u) => { try { return new URL(u).hostname; } catch { return ''; } };
 
@@ -17,7 +17,7 @@ function canalVisita(v) {
   const u = v.utmParameters || {};
   const src = (u.source || '').trim(), med = (u.medium || '').trim();
   const ref = host(v.referrerUrl || ''), land = v.landingPage || '';
-  if (/[?&]fbclid=/.test(land) || META.test(src) || /facebook|instagram/i.test(ref)) return 'Meta';
+  if (/[?&]fbclid=/.test(land) || META.test(src) || /paid_social|paid-social/i.test(med) || /facebook|instagram/i.test(ref)) return 'Meta';
   if (/influencer/i.test(med)) return 'Influencer';
   if (/[?&](gclid|gbraid|wbraid)=/.test(land) || (/google/i.test(src) && /cpc|ppc|paid/i.test(med)) || /SEM/i.test(v.sourceType || '')) return 'Google pagado';
   if (src) return /google/i.test(src) ? 'Google orgánico' : 'Directo y otros';

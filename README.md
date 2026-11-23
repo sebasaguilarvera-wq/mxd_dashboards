@@ -36,4 +36,4 @@ Las claves nunca van en el código.
 ## UTM para Meta
 
 En cada anuncio, en **Parámetros de URL**:
-`utm_source=facebook&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.name}}`
+`utm_source={{site_source_name}}&utm_medium=paid_social&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.name}}`

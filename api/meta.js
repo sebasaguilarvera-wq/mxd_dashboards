@@ -6,7 +6,7 @@ import { ga4Cliente } from './_ga4.js';
 const DIA = 86400000;
 const lima = (d) => new Date(d.getTime() - 5 * 3600000).toISOString().slice(0, 10);
 const sumarDias = (iso, n) => new Date(new Date(iso + 'T00:00:00Z').getTime() + n * DIA).toISOString().slice(0, 10);
-const ES_META = /facebook|instagram|^fb$|^ig$|^meta$/i;
+const ES_META = /facebook|instagram|^fb$|^ig$|^meta$|^msg$|^an$/i;
 const VERSION = 'v21.0';
 
 async function graph(path, params) {

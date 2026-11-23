@@ -1,6 +1,7 @@
 // Datos del tablero /meta (ventas): Meta Ads cruzado con los pedidos de Shopify.
 // ?desde=AAAA-MM-DD&hasta=AAAA-MM-DD (por defecto, últimos 28 días). Variables: META_ACCESS_TOKEN y META_AD_ACCOUNT_ID.
 // "Meta dice" = compras que reporta el píxel. "Shopify dice" = pedidos reales cuya visita trae el UTM del anuncio.
+// Embudo mixto (decidido con Sebastian 23-nov): impresiones y clics de Meta; visitas, producto, carrito y pago de la web (GA4 con UTM de Meta); venta de Shopify.
 import { pedidosWeb } from './_pedidos.js';
 import { ga4Cliente } from './_ga4.js';
 
@@ -64,10 +65,22 @@ async function meta(desde, hasta, desdeMes) {
   };
 }
 
-async function visitasMeta(desde, hasta) {
+// Embudo de la web (Google Analytics) solo del tráfico de Meta: visitas, vio producto, carrito e inicio de pago, por día, campaña y anuncio (utm_content)
+const EVENTOS = { view_item: 'producto', add_to_cart: 'carrito', begin_checkout: 'pago', purchase: 'comprasGA' };
+const esMeta = (s, m) => /facebook|instagram|^fb$|^ig$|^msg$|^an$/i.test(s) || /paid_social|paid-social/i.test(m);
+async function webMeta(desde, hasta) {
   const rep = await ga4Cliente();
-  const filas = await rep(['sessionSource', 'sessionMedium'], desde, hasta, ['sessions']);
-  return filas.filter(({ d: [s, m] }) => /facebook|instagram|^fb$|^ig$|^msg$|^an$/i.test(s) || /paid_social|paid-social/i.test(m)).reduce((t, { m: [x] }) => t + x, 0);
+  const dims = ['date', 'sessionSource', 'sessionMedium', 'sessionCampaignName', 'sessionManualAdContent'];
+  const [ses, ev] = await Promise.all([rep(dims, desde, hasta, ['sessions']), rep([...dims, 'eventName'], desde, hasta, ['eventCount'])]);
+  const vacio = () => ({ visitas: 0, producto: 0, carrito: 0, pago: 0, comprasGA: 0 });
+  const out = { total: vacio(), dias: {}, campanas: {}, anuncios: {} };
+  const sumar = (d, k, v) => {
+    const f = `${d[0].slice(0, 4)}-${d[0].slice(4, 6)}-${d[0].slice(6)}`;
+    for (const b of [out.total, (out.dias[f] ||= vacio()), (out.campanas[d[3].toLowerCase()] ||= vacio()), (out.anuncios[d[4].toLowerCase()] ||= vacio())]) b[k] += v;
+  };
+  for (const { d, m } of ses) if (esMeta(d[1], d[2])) sumar(d, 'visitas', m[0]);
+  for (const { d, m } of ev) if (EVENTOS[d[5]] && esMeta(d[1], d[2])) sumar(d, EVENTOS[d[5]], m[0]);
+  return out;
 }
 
 export default async function handler(req, res) {
@@ -76,11 +89,11 @@ export default async function handler(req, res) {
   let desde = FECHA.test(req.query.desde || '') ? req.query.desde : sumarDias(hasta, -27);
   if (desde > hasta) desde = hasta;
   const desdeMes = sumarDias(hasta, -185).slice(0, 8) + '01'; // evolutivo: 6 meses, independiente del filtro
-  const out = { generado: new Date().toISOString(), hoy, desde, hasta, desdeMes, conToken: !!(process.env.META_ACCESS_TOKEN && process.env.META_AD_ACCOUNT_ID), meta: null, pedidos: [], visitasGA: null, errores: [] };
-  const [p, m, v] = await Promise.allSettled([pedidosWeb(desde < desdeMes ? desde : desdeMes), meta(desde, hasta, desdeMes), visitasMeta(desde, hasta)]);
+  const out = { generado: new Date().toISOString(), hoy, desde, hasta, desdeMes, conToken: !!(process.env.META_ACCESS_TOKEN && process.env.META_AD_ACCOUNT_ID), meta: null, pedidos: [], web: null, errores: [] };
+  const [p, m, v] = await Promise.allSettled([pedidosWeb(desde < desdeMes ? desde : desdeMes), meta(desde, hasta, desdeMes), webMeta(desde, hasta)]);
   if (p.status === 'fulfilled') out.pedidos = p.value.filter((o) => o.canal === 'Meta' && o.f <= hasta); else out.errores.push('Shopify: ' + p.reason.message);
   if (m.status === 'fulfilled') out.meta = m.value; else out.errores.push(m.reason.message);
-  if (v.status === 'fulfilled') out.visitasGA = v.value; else out.errores.push('Google Analytics: ' + v.reason.message);
+  if (v.status === 'fulfilled') out.web = v.value; else out.errores.push('Google Analytics: ' + v.reason.message);
   res.setHeader('Cache-Control', 's-maxage=900, stale-while-revalidate=3600');
   res.status(200).json(out);
 }

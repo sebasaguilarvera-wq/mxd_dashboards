@@ -63,6 +63,11 @@
 .minis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:12px}
 .minis h3{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 4px}
 .sub{font-size:12px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.chips button{font:inherit;font-size:13px;display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--c);color:var(--fg);background:transparent;border-radius:99px;padding:4px 12px;cursor:pointer}
+.chips button i{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.chips button[aria-pressed=true]{background:color-mix(in srgb,var(--c) 18%,transparent);font-weight:600}
+.chips button[aria-pressed=false]{opacity:.55}
 .nota{font-size:13px;color:var(--muted);padding-left:18px;margin:8px 0 0}
 code{font-size:12px;background:var(--acc-soft);padding:2px 5px;border-radius:4px;word-break:break-all}
 </style></head>
@@ -103,7 +108,8 @@ code{font-size:12px;background:var(--acc-soft);padding:2px 5px;border-radius:4px
 
   <section class="panel">
     <h2>Embudo: del anuncio a la venta</h2>
-    <p class="sub" style="margin:-4px 0 12px">Cada paso con el % que pasa al siguiente. Los pasos azules los cuenta Meta (píxel); el verde es la venta real en Shopify.</p>
+    <p class="sub" style="margin:-4px 0 6px">Embudo mixto: cada paso sale de quien lo mide mejor. Con el % que pasa al siguiente.</p>
+    <div class="leg-w"><span><i style="background:#1877f2"></i>Meta (impresiones y clics)</span><span><i style="background:#c98a1e"></i>Web: Google Analytics con el UTM de Meta</span><span><i style="background:var(--acc)"></i>Shopify (venta real)</span></div>
     <div class="fun" id="g-fun"></div>
   </section>
 
@@ -115,8 +121,9 @@ code{font-size:12px;background:var(--acc-soft);padding:2px 5px;border-radius:4px
   </section>
 
   <section class="panel">
-    <h2>Evolución diaria: ventas vs inversión</h2>
-    <div class="leg-w"><span><i style="background:var(--acc)"></i>Ventas Shopify (pedidos)</span><span><i style="background:transparent;border:2px solid #1877f2"></i>Compras según Meta</span><span><i style="background:var(--now);height:3px"></i>Inversión del día (S/)</span></div>
+    <h2>Evolución diaria</h2>
+    <p class="sub" style="margin:-4px 0 8px">Elige qué ver. Las cantidades van en el eje de la izquierda y la inversión (S/) en el de la derecha.</p>
+    <div class="chips" id="chips"></div>
     <div id="g-dia"></div>
   </section>
 
@@ -236,10 +243,14 @@ function pintar() {
     $('g-obj').innerHTML = svg + '</svg>' + Object.entries(porObj).sort((a, b) => b[1] - a[1]).map(([o, g]) => `<div style="display:flex;justify-content:space-between;font-size:13px;margin-top:6px"><span class="obj" style="background:${obj(o)[1]}">${obj(o)[0]}</span><span>${S(g)} · ${Math.round(g / totObj * 100)}%</span></div>`).join('');
   } else $('g-obj').innerHTML = '<span class="sub">Sin datos de Meta</span>';
 
-  // Embudo
-  const pasos = T ? [['Impresiones', T.impresiones], ['Clics al enlace', T.clics], ['Visitas a la web', T.visitas], ['Vio un producto', T.vioProducto], ['Agregó al carrito', T.carrito], ['Inició el pago', T.pago], ['Compró (Meta)', T.compras], ['Pedido real (Shopify)', pedidos]] : [['Visitas desde Meta (Google Analytics)', d.visitasGA || 0], ['Pedido real (Shopify)', pedidos]];
-  const mf = Math.max(1, pasos[0][1]);
-  $('g-fun').innerHTML = pasos.map(([n, v], i) => `<div class="st"><span>${n}</span><div class="b" style="width:${Math.max(4, Math.sqrt(v / mf) * 100)}%;background:${i === pasos.length - 1 ? 'var(--acc)' : '#1877f2'}">${N(v)}</div><span class="p">${i ? (pasos[i - 1][1] ? P(v / pasos[i - 1][1], 1) + ' del paso anterior' : '—') : ''}</span></div>`).join('');
+  // Embudo mixto: Meta arriba, web (GA4 con UTM de Meta) al medio, Shopify al final
+  const W0 = { visitas: 0, producto: 0, carrito: 0, pago: 0 };
+  const webF = !d.web ? W0 : !$('f-obj').value ? d.web.total : camps.reduce((t, c) => { const x = d.web.campanas[norm(c.nombre)] || W0; Object.keys(W0).forEach((k) => (t[k] += x[k] || 0)); return t; }, { ...W0 });
+  const AZ = '#1877f2', AM = '#c98a1e', VE = 'var(--acc)';
+  const pasos = [...(T ? [['Impresiones', T.impresiones, AZ], ['Clics al enlace', T.clics, AZ]] : []), ['Visitas a la web', webF.visitas, AM], ['Vio un producto', webF.producto, AM], ['Agregó al carrito', webF.carrito, AM], ['Inició el pago', webF.pago, AM], ['Venta (Shopify)', pedidos, VE]];
+  const mf = Math.max(1, ...pasos.map((x) => x[1]));
+  $('g-fun').innerHTML = pasos.map(([n, v, c], i) => `<div class="st"><span>${n}</span><div class="b" style="width:${Math.max(4, Math.sqrt(v / mf) * 100)}%;background:${c}">${N(v)}</div><span class="p">${i ? (pasos[i - 1][1] ? P(v / pasos[i - 1][1], 1) + ' del paso anterior' : '—') : ''}</span></div>`).join('') +
+    (T ? `<p class="sub" style="margin:6px 0 0">Meta dice ${N(T.compras)} compras; Shopify registra ${pedidos}. Usamos Shopify.</p>` : '');
 
   // Tabla de campañas (expandible y ordenable)
   $('reglas').innerHTML = [['subir', `costo por venta hasta ${S(R.subir)}`], ['mantener', `${S(R.subir)} a ${S(R.cambiar)}`], ['apagar', `más de ${S(R.cambiar)} o ${S(R.sinVenta)} sin venta`], ['aprende', `menos de ${S(R.sinVenta)} y sin venta`]].map(([k, t]) => `<span>${pill(k)} ${t}</span>`).join('');
@@ -261,26 +272,35 @@ function pintar() {
   $('t-camp').querySelectorAll('th').forEach((th) => th.onclick = () => { const k = th.dataset.k; if (k === 'sem') return; orden.dir = orden.k === k ? -orden.dir : (k === 'nombre' || k === 'objetivo' ? 1 : -1); orden.k = k; pintar(); });
   $('t-camp').querySelectorAll('button[data-id]').forEach((b) => b.onclick = () => { abiertos.has(b.dataset.id) ? abiertos.delete(b.dataset.id) : abiertos.add(b.dataset.id); pintar(); });
 
-  // Evolución diaria
+  // Evolución diaria: KPIs elegibles
   const dias = []; for (let f = d.desde; f <= d.hasta; f = new Date(Date.parse(f) + 864e5).toISOString().slice(0, 10)) dias.push(f);
-  const gd = Object.fromEntries((m?.dias || []).map((x) => [x.f, x])), vd = {};
+  const gd = Object.fromEntries((m?.dias || []).map((x) => [x.f, x])), wd = d.web?.dias || {}, vd = {};
   ped.forEach((o) => { vd[o.f] = (vd[o.f] || 0) + 1; });
+  const SER = [
+    ['producto', 'Product page', '#8a5cd6', (f) => wd[f]?.producto || 0, 'Vio la página de un producto (web, tráfico de Meta)'],
+    ['carrito', 'ATC', '#c98a1e', (f) => wd[f]?.carrito || 0, 'Agregó al carrito'],
+    ['pago', 'Start checkout', '#d6336c', (f) => wd[f]?.pago || 0, 'Inició el pago'],
+    ['venta', 'Venta', '#0f6b55', (f) => vd[f] || 0, 'Pedidos reales de Shopify por Meta'],
+    ['gasto', 'Inversión', '#1877f2', (f) => gd[f]?.gasto || 0, 'Inversión en Meta (S/)'],
+  ];
+  const sel = pintar.sel ||= (() => { try { return new Set(JSON.parse(localStorage.getItem('metaDiaSel')) || SER.map((x) => x[0])); } catch { return new Set(SER.map((x) => x[0])); } })();
+  $('chips').innerHTML = SER.map(([k, n, c, , t]) => `<button type="button" data-k="${k}" style="--c:${c}" aria-pressed="${sel.has(k)}" title="${esc(t)}"><i></i>${n}</button>`).join('');
+  $('chips').querySelectorAll('button').forEach((b) => b.onclick = () => { sel.has(b.dataset.k) ? sel.delete(b.dataset.k) : sel.add(b.dataset.k); try { localStorage.setItem('metaDiaSel', JSON.stringify([...sel])); } catch {} pintar(); });
   (function () {
-    const el = $('g-dia'), W = Math.max(el.clientWidth, 300), H = 230, Pd = { l: 34, r: 54, t: 12, b: 26 }, alto = H - Pd.t - Pd.b, base = Pd.t + alto;
-    const mv = Math.max(1, ...dias.map((f) => Math.max(vd[f] || 0, gd[f]?.compras || 0))), mg = Math.max(1, ...dias.map((f) => gd[f]?.gasto || 0));
+    const el = $('g-dia'), W = Math.max(el.clientWidth, 300), H = 250, Pd = { l: 34, r: 54, t: 12, b: 26 }, alto = H - Pd.t - Pd.b, base = Pd.t + alto;
+    const act = SER.filter(([k]) => sel.has(k)), cnt = act.filter(([k]) => k !== 'gasto'), conG = sel.has('gasto');
+    const mv = Math.max(1, ...cnt.flatMap(([, , , fn]) => dias.map(fn))), mg = Math.max(1, ...dias.map((f) => gd[f]?.gasto || 0));
     const bw = (W - Pd.l - Pd.r) / dias.length, cx = (i) => Pd.l + i * bw + bw / 2;
-    let s = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Ventas e inversión por día">`;
-    [0.5, 1].forEach((k) => { const y = base - alto * k; s += `<line x1="${Pd.l}" x2="${W - Pd.r}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${Pd.l - 6}" y="${y + 4}" text-anchor="end">${N(mv * k, 1)}</text><text x="${W - Pd.r + 6}" y="${y + 4}">${S(mg * k)}</text>`; });
+    let s = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Evolución diaria">`;
+    [0.5, 1].forEach((k) => { const y = base - alto * k; s += `<line x1="${Pd.l}" x2="${W - Pd.r}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/>${cnt.length ? `<text x="${Pd.l - 6}" y="${y + 4}" text-anchor="end">${N(mv * k, 1)}</text>` : ''}${conG ? `<text x="${W - Pd.r + 6}" y="${y + 4}">${S(mg * k)}</text>` : ''}`; });
     const paso = Math.ceil(dias.length / Math.max(1, Math.floor((W - Pd.l - Pd.r) / 48)));
-    dias.forEach((f, i) => {
-      const w = Math.max(3, Math.min(20, bw * 0.7)), v = vd[f] || 0, c = gd[f]?.compras || 0;
-      if (v) s += `<rect x="${cx(i) - w / 2}" y="${base - v / mv * alto}" width="${w}" height="${v / mv * alto}" rx="2" fill="var(--acc)"/>`;
-      if (c) s += `<rect x="${cx(i) - w / 2}" y="${base - c / mv * alto}" width="${w}" height="${c / mv * alto}" rx="2" fill="none" stroke="#1877f2" stroke-width="1.5"/>`;
-      if ((i % paso === 0 && dias.length - 1 - i >= paso) || i === dias.length - 1) s += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${i === dias.length - 1 ? 'end' : 'middle'}">${fecha(f)}</text>`;
-    });
-    if (m) s += `<polyline fill="none" stroke="var(--now)" stroke-width="2.2" points="${dias.map((f, i) => cx(i) + ',' + (base - (gd[f]?.gasto || 0) / mg * alto)).join(' ')}"/>`;
+    dias.forEach((f, i) => { if ((i % paso === 0 && dias.length - 1 - i >= paso) || i === dias.length - 1) s += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${i === dias.length - 1 ? 'end' : 'middle'}">${fecha(f)}</text>`; });
+    if (conG) s += `<polygon fill="#1877f2" opacity=".12" points="${cx(0)},${base} ${dias.map((f, i) => cx(i) + ',' + (base - (gd[f]?.gasto || 0) / mg * alto)).join(' ')} ${cx(dias.length - 1)},${base}"/><polyline fill="none" stroke="#1877f2" stroke-width="1.6" stroke-dasharray="4 3" points="${dias.map((f, i) => cx(i) + ',' + (base - (gd[f]?.gasto || 0) / mg * alto)).join(' ')}"/>`;
+    if (sel.has('venta')) dias.forEach((f, i) => { const v = vd[f] || 0, w = Math.max(3, Math.min(18, bw * 0.6)); if (v) s += `<rect x="${cx(i) - w / 2}" y="${base - v / mv * alto}" width="${w}" height="${v / mv * alto}" rx="2" fill="#0f6b55"/>`; });
+    cnt.filter(([k]) => k !== 'venta').forEach(([, , c, fn]) => { s += `<polyline fill="none" stroke="${c}" stroke-width="2.2" points="${dias.map((f, i) => cx(i) + ',' + (base - fn(f) / mv * alto)).join(' ')}"/>`; });
     s += `<line x1="${Pd.l}" x2="${W - Pd.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
-    dias.forEach((f, i) => { const g = gd[f]?.gasto || 0, v = vd[f] || 0; s += `<rect class="mxd-hit" x="${Pd.l + i * bw}" y="${Pd.t}" width="${bw}" height="${alto}" data-tip="${esc(new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }) + '|Inversión\t' + (m ? S(g, 2) : 'sin conectar') + '\nVentas Shopify\t' + v + '\nCompras según Meta\t' + (gd[f]?.compras || 0) + '\nCosto por venta\t' + (v && m ? S(g / v) : '—'))}"/>`; });
+    dias.forEach((f, i) => { const lin = SER.map(([k, n, , fn]) => n + '\t' + (k === 'gasto' ? (m ? S(fn(f), 2) : 'sin conectar') : fn(f))); const v = vd[f] || 0, g = gd[f]?.gasto || 0; if (v && m) lin.push('Costo por venta\t' + S(g / v));
+      s += `<rect class="mxd-hit" x="${Pd.l + i * bw}" y="${Pd.t}" width="${bw}" height="${alto}" data-tip="${esc(new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }) + '|' + lin.join('\n'))}"/>`; });
     el.innerHTML = s + '</svg>';
   })();
 

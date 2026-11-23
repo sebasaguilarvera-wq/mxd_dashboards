@@ -55,7 +55,7 @@
   </section>
 
   <section class="panel"><h2>Canales (últimos 28 días)</h2><table id="t-canales"></table></section>
-  <section class="panel"><h2>Campañas y fuentes (últimos 28 días)</h2><table id="t-campanas"></table></section>
+  <section class="panel"><h2>Campañas y fuentes (últimos 28 días)</h2><p class="muted" style="margin:0 0 8px;font-size:13px">Las mismas visitas del cuadro de canales, con más detalle. <b>Campaña</b> = el nombre que pusimos en el enlace (utm_campaign); si no hay, Google pone entre paréntesis el tipo de visita. <b>Fuente / medio</b> = el sitio exacto de donde vinieron (google, ig, chatgpt.com…) y el tipo de llegada (orgánico, enlace, pagado).</p><table id="t-campanas"></table></section>
   <section class="panel"><h2>Ventas por marca (últimos 28 días)</h2><table id="t-marcas"></table></section>
   <section class="panel"><h2>Productos más vendidos (últimos 28 días)</h2><table id="t-top"></table></section>
   <section class="panel"><h2>Stock bajo (1 a 5 unidades)</h2><table id="t-stock"></table></section>
@@ -162,6 +162,27 @@ fetch('/api/web' + (new URLSearchParams(location.search).get('t') ? '?t=' + new 
     (d.pedidos || []).map((o) => ({ ...o, f: fecha(o.f), detalle: o.campana || o.entrada || '—' })));
   [...$('t-pedidos').rows].slice(1).forEach((r) => { const c = r.cells[2]; if (c && COL[c.textContent]) c.innerHTML = pastilla(c.textContent); });
   tabla('t-canales', [['canal', 'Canal'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.canales);
+  const CAMP = { '(direct)': 'Sin campaña · directo', '(organic)': 'Sin campaña · búsqueda gratis', '(referral)': 'Sin campaña · enlace de otra web o red', '(ai-assistant)': 'Sin campaña · asistente de IA', '(not set)': 'Sin dato', 'MXD_PRUEBA_COMPRA': 'MXD_PRUEBA_COMPRA · nuestras pruebas (no es venta real)' };
+  [...$('t-campanas').rows].slice(1).forEach((r) => { const c = r.cells[0]; if (CAMP[c.textContent]) c.textContent = CAMP[c.textContent]; });
+  // Nombre en español y qué significa cada canal de Google Analytics
+  const DEF = {
+    'Direct': ['Directo', 'Escribieron la dirección o entraron sin rastro (WhatsApp, favoritos, nuestro equipo probando).'],
+    'Organic Search': ['Búsqueda en Google (gratis)', 'Llegaron buscando en Google o Bing, sin anuncio.'],
+    'Paid Search': ['Búsqueda en Google (pagada)', 'Llegaron por un anuncio de Google Ads.'],
+    'Unassigned': ['Sin clasificar', 'Google no supo ubicarlas. Hoy son nuestras pruebas con UTM "prueba" (la compra de S/ 13 fue la #1004, cancelada).'],
+    'Organic Social': ['Redes sociales (gratis)', 'Instagram, Facebook u otra red, sin anuncio.'],
+    'Paid Social': ['Redes sociales (pagada)', 'Anuncios de Meta (Facebook o Instagram).'],
+    'Referral': ['Otras webs', 'Un enlace desde otra página, por ejemplo el mxd.pe antiguo.'],
+    'AI Assistant': ['Asistentes de IA', 'Llegaron desde ChatGPT u otro asistente.'],
+    'Organic Shopping': ['Google Shopping (gratis)', 'La pestaña Shopping de Google, sin anuncio.'],
+    'Paid Shopping': ['Google Shopping (pagado)', 'Anuncios de Shopping en Google.'],
+    'Email': ['Correo', 'Enlaces desde un correo.'],
+    'Organic Video': ['Video (gratis)', 'YouTube u otro sitio de video.'],
+  };
+  [...$('t-canales').rows].slice(1).forEach((r) => {
+    const c = r.cells[0], x = DEF[c.textContent];
+    if (x) c.innerHTML = `<b>${x[0]}</b> <span class="muted" style="font-size:12px">(${c.textContent})</span><div class="muted" style="font-size:12px">${x[1]}</div>`;
+  });
   tabla('t-campanas', [['campana', 'Campaña'], ['fuenteMedio', 'Fuente / medio'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.campanas);
   tabla('t-marcas', [['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.marcas);
   tabla('t-top', [['producto', 'Producto'], ['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.top);

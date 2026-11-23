@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Meta Ads · MXD</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><style>
+<title>Meta Ads · MXD</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><script src="/assets/pauta_config.js"></script><script src="/assets/costos_cw.js"></script><script src="/assets/costos_angeltex.js"></script><script src="/assets/margen.js"></script><style>
 .mxd-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.15)}
 .mxd-nav .nav-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 .mxd-nav .nav-tabs a{color:#cfcac0;text-decoration:none;padding:5px 11px;border-radius:7px;white-space:nowrap;transition:background .15s,color .15s}
@@ -11,14 +11,168 @@
 .mxd-nav .nav-btn:hover{filter:brightness(1.1)}
 @keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .wrap>*{animation:mxdIn .35s ease both}
+</style><style>
+.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:4px 0 6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.aviso{border-left:5px solid #c98a1e;background:color-mix(in srgb,#c98a1e 10%,var(--panel));padding:14px 16px;border-radius:8px}
+.aviso b{display:block;font-size:16px;margin-bottom:4px}
+.aviso ol{margin:6px 0 0;padding-left:20px}
+.sem{display:inline-block;padding:2px 9px;border-radius:99px;color:#fff;font-size:12px;font-weight:700;white-space:nowrap}
+.reglas{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13px;color:var(--muted);margin:0 0 10px}
+.reglas span{display:inline-flex;align-items:center;gap:6px}
+.kpi.mx .v{color:var(--acc)}
+.kpi.neg .v{color:var(--bad)}
+.sub{font-size:12px;color:var(--muted)}
+code{font-size:12px;background:var(--acc-soft);padding:2px 5px;border-radius:4px;word-break:break-all}
 </style></head>
 <body>
-<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/pauta">Pauta en prueba</a><a href="/meta" aria-current=page>Meta</a></div><span class="nav-st"></span></nav>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta" aria-current=page>Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
 <div class="wrap">
   <header>
-    <div class="eyebrow">Meta Ads</div>
-    <h1>Próximamente</h1>
-    <p class="lede">Aquí irán el gasto, el alcance y el retorno de las campañas de Meta, cruzados con las ventas de la web.</p>
+    <div class="eyebrow">Meta Ads · Web Pasillo</div>
+    <h1>Meta</h1>
+    <p class="lede">Lo que se gastó en Meta, lo que se vendió en la web por esos anuncios (según Shopify, no según Meta) y cuánto le queda a MXD. Últimos 28 días. <span id="gen" class="muted"></span></p>
+    <p id="err" class="err"></p>
   </header>
+
+  <section class="aviso" id="sin-token" hidden>
+    <b>Falta conectar la cuenta de Meta</b>
+    Ya se ven las ventas y visitas que llegan por Meta. El gasto, los clics y el semáforo por anuncio aparecen cuando estén en Vercel las dos variables:
+    <ol><li><code>META_ACCESS_TOKEN</code>: token del usuario del sistema con permiso <code>ads_read</code>.</li><li><code>META_AD_ACCOUNT_ID</code>: <code>1411544431156016</code> (MXD_CUENTA_1).</li></ol>
+  </section>
+
+  <section>
+    <h2>Últimos 28 días</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="l" data-tip="Gasto|Lo invertido en Meta Ads en los últimos 28 días.">Gasto en Meta</div><div class="v" id="k-gasto">—</div><div class="d" id="d-gasto"></div></div>
+      <div class="kpi"><div class="l" data-tip="Ventas por Meta|Pedidos de Shopify cuya visita vino de Facebook o Instagram (UTM o clic de anuncio). Sin envío.">Ventas web por Meta</div><div class="v" id="k-venta">—</div><div class="d" id="d-venta"></div></div>
+      <div class="kpi"><div class="l" data-tip="Costo por venta|Gasto dividido entre pedidos por Meta. Es el número del semáforo.">Costo por venta</div><div class="v" id="k-cpv">—</div><div class="d" id="d-cpv"></div></div>
+      <div class="kpi"><div class="l" data-tip="ROAS real|Ventas por Meta según Shopify dividido entre el gasto. Meta suele reportar un ROAS más alto porque se atribuye ventas que no fueron suyas.">ROAS real</div><div class="v" id="k-roas">—</div><div class="d" id="d-roas"></div></div>
+      <div class="kpi mx" id="kk-mx"><div class="l" data-tip="Queda para MXD|Venta sin IGV − costo del producto − Mercado Pago 2% − envío gratis − gasto en Meta.">Queda para MXD</div><div class="v" id="k-mx">—</div><div class="d" id="d-mx"></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Gasto, visitas y ventas por día</h2>
+    <div class="leg-w"><span><i style="background:#1877f2"></i>Gasto en Meta</span><span><i style="background:var(--now);height:3px"></i>Visitas desde Meta (Google Analytics)</span><span><i style="background:#8a5cd6;border-radius:50%"></i>Venta por Meta</span></div>
+    <div id="chart"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Semáforo por anuncio</h2>
+    <div class="reglas" id="reglas"></div>
+    <table id="t-ads"></table>
+    <p class="sub" style="margin:8px 0 0">Las ventas se cruzan por los UTM del anuncio. Para que cada venta caiga en su anuncio, en Meta pon en <b>Parámetros de URL</b>: <code>utm_source=facebook&amp;utm_medium=paid_social&amp;utm_campaign={{campaign.name}}&amp;utm_term={{adset.name}}&amp;utm_content={{ad.name}}</code></p>
+  </section>
+
+  <section class="panel"><h2>Pedidos que llegaron por Meta</h2><table id="t-ped"></table></section>
+  <section class="panel"><h2>Visitas desde Meta por campaña (Google Analytics)</h2><table id="t-ga"></table></section>
 </div>
+<script>
+const S = (n, d = 0) => (n < 0 ? '−S/ ' : 'S/ ') + Math.abs(n).toLocaleString('es-PE', { minimumFractionDigits: d, maximumFractionDigits: d });
+const N = (n, d = 0) => n.toLocaleString('es-PE', { maximumFractionDigits: d });
+const $ = (id) => document.getElementById(id);
+const fecha = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
+const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const R = window.META_REGLAS;
+const SEM = {
+  subir: ['#2c8a63', 'Subir 20%'], mantener: ['#c98a1e', 'Mantener y cambiar anuncio'], apagar: ['#c4523f', 'Apagar'],
+  aprende: ['#5d82b0', 'Aprendiendo'], pausado: ['#8a96a0', 'Pausado'],
+};
+const pill = (k) => `<span class="sem" style="background:${SEM[k][0]}">${SEM[k][1]}</span>`;
+const norm = (t) => String(t || '').trim().toLowerCase();
+
+function semaforo(gasto, pedidos, estado) {
+  if (estado && estado !== 'ACTIVE') return 'pausado';
+  if (!pedidos) return gasto >= R.sinVenta ? 'apagar' : 'aprende';
+  const cpv = gasto / pedidos;
+  return cpv <= R.subir ? 'subir' : cpv <= R.cambiar ? 'mantener' : 'apagar';
+}
+
+function tabla(id, cols, rows, vacio = 'Sin datos todavía') {
+  const t = $(id); t.textContent = '';
+  const hr = t.insertRow();
+  cols.forEach(([, label, f]) => { const th = document.createElement('th'); th.textContent = label; if (f) th.className = 'n'; hr.appendChild(th); });
+  if (!rows.length) { const c = t.insertRow().insertCell(); c.colSpan = cols.length; c.className = 'muted'; c.textContent = vacio; return; }
+  rows.forEach((r) => { const tr = t.insertRow(); cols.forEach(([k, , f, html]) => { const c = tr.insertCell(); if (html) c.innerHTML = r[k]; else c.textContent = f ? f(r[k]) : r[k]; if (f) c.className = 'n'; }); });
+}
+
+function grafico(d, dias) {
+  const el = $('chart'), W = Math.max(el.clientWidth, 300), H = 220, P = { l: 8, r: 54, t: 18, b: 26 };
+  const gasto = Object.fromEntries((d.meta?.dias || []).map((x) => [x.f, x.gasto]));
+  const vis = Object.fromEntries((d.visitas?.dias || []).map((x) => [x.f, x.meta]));
+  const ventas = {}; d.pedidos.filter((o) => o.canal === 'Meta').forEach((o) => { ventas[o.f] = (ventas[o.f] || 0) + o.venta; });
+  const maxG = Math.max(1, ...dias.map((f) => gasto[f] || 0)), maxV = Math.max(1, ...dias.map((f) => vis[f] || 0));
+  const bw = (W - P.l - P.r) / dias.length, alto = H - P.t - P.b, base = P.t + alto, cx = (i) => P.l + i * bw + bw / 2;
+  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Gasto, visitas y ventas de Meta por día">`;
+  [0.5, 1].forEach((k) => { const y = base - alto * k; svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${y + 4}">${d.meta ? S(maxG * k) : N(maxV * k)}</text>`; });
+  const paso = Math.ceil(dias.length / Math.max(1, Math.floor((W - P.l - P.r) / 48)));
+  dias.forEach((f, i) => {
+    const w = Math.max(2, Math.min(18, bw * 0.7)), g = gasto[f] || 0;
+    if (g) svg += `<rect x="${cx(i) - w / 2}" y="${base - g / maxG * alto}" width="${w}" height="${g / maxG * alto}" rx="2" fill="#1877f2" opacity=".85"/>`;
+    if (ventas[f]) svg += `<circle cx="${cx(i)}" cy="${P.t - 8}" r="5" fill="#8a5cd6"/>`;
+    if ((i % paso === 0 && dias.length - 1 - i >= paso) || i === dias.length - 1) svg += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${i === dias.length - 1 ? 'end' : 'middle'}">${fecha(f)}</text>`;
+  });
+  svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2.2" points="${dias.map((f, i) => cx(i) + ',' + (base - (vis[f] || 0) / maxV * alto)).join(' ')}"/>`;
+  svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+  dias.forEach((f, i) => {
+    const t = new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }) + '|' +
+      ['Gasto en Meta\t' + (d.meta ? S(gasto[f] || 0, 2) : 'sin conectar'), 'Visitas desde Meta\t' + (vis[f] || 0), 'Ventas por Meta\t' + S(ventas[f] || 0)].join('\n');
+    svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t - 14}" width="${bw}" height="${alto + 14}" data-tip="${esc(t)}"/>`;
+  });
+  el.innerHTML = svg + '</svg>';
+}
+
+const T = new URLSearchParams(location.search).get('t');
+fetch('/api/meta' + (T ? '?t=' + T : '')).then((r) => r.json()).then((d) => {
+  $('gen').textContent = 'Actualizado ' + new Date(d.generado).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) + '.';
+  if (d.errores.length) $('err').textContent = 'No cargó: ' + d.errores.join(' · ');
+  $('sin-token').hidden = d.conToken;
+  const dias = Array.from({ length: 28 }, (_, i) => new Date(Date.parse(d.desde28) + i * 864e5).toISOString().slice(0, 10));
+  const ped = d.pedidos.filter((o) => o.canal === 'Meta' && o.f >= d.desde28).map((o) => ({ ...o, m: MARGEN.web(o) }));
+  const gasto = d.meta ? d.meta.dias.filter((x) => x.f >= d.desde28).reduce((t, x) => t + x.gasto, 0) : null;
+  const venta = ped.reduce((t, o) => t + o.venta, 0), antesPauta = ped.reduce((t, o) => t + o.m.queda, 0);
+  $('k-gasto').textContent = gasto == null ? '—' : S(gasto); $('d-gasto').textContent = gasto == null ? 'falta conectar Meta' : 'en 28 días';
+  $('k-venta').textContent = S(venta); $('d-venta').textContent = ped.length + (ped.length === 1 ? ' pedido' : ' pedidos');
+  $('k-cpv').textContent = gasto == null || !ped.length ? '—' : S(gasto / ped.length);
+  $('d-cpv').textContent = gasto == null ? 'falta el gasto' : !ped.length ? 'sin ventas todavía' : `meta: hasta ${S(R.subir)}`;
+  $('k-roas').textContent = gasto ? (venta / gasto).toFixed(1) + 'x' : '—';
+  $('d-roas').textContent = d.meta ? 'Meta dice ' + (gasto ? (d.meta.dias.filter((x) => x.f >= d.desde28).reduce((t, x) => t + x.valorMeta, 0) / gasto).toFixed(1) + 'x' : '—') : '';
+  const mx = antesPauta - (gasto || 0);
+  $('k-mx').textContent = S(mx); $('d-mx').textContent = `ventas dejan ${S(antesPauta)}` + (gasto != null ? ` − gasto ${S(gasto)}` : '');
+  if (mx < 0) $('kk-mx').className = 'kpi neg';
+  grafico(d, dias); addEventListener('resize', () => grafico(d, dias));
+
+  // Semáforo por anuncio: ventas de Shopify cruzadas por UTM (nombre o id de campaña y anuncio)
+  $('reglas').innerHTML = [['subir', `costo por venta hasta ${S(R.subir)}`], ['mantener', `${S(R.subir)} a ${S(R.cambiar)}`], ['apagar', `más de ${S(R.cambiar)}, o ${S(R.sinVenta)} gastados sin venta`], ['aprende', `menos de ${S(R.sinVenta)} gastados y sin venta`]]
+    .map(([k, t]) => `<span>${pill(k)} ${t}</span>`).join('');
+  const usados = new Set();
+  const ads = (d.meta?.anuncios || []).map((a) => {
+    const suyos = ped.filter((o) => (norm(o.anuncio) === norm(a.anuncio) || o.anuncio === a.anuncioId) && (!o.campana || norm(o.campana) === norm(a.campana) || o.campana === a.campanaId));
+    suyos.forEach((o) => usados.add(o.n));
+    const v = suyos.reduce((t, o) => t + o.venta, 0), q = suyos.reduce((t, o) => t + o.m.queda, 0);
+    return { ...a, pedidos: suyos.length, venta: v, queda: q - a.gasto };
+  });
+  // Ventas por Meta que no calzan con un anuncio: se cruzan por campaña
+  ped.filter((o) => !usados.has(o.n)).forEach((o) => {
+    const c = ads.find((a) => norm(a.campana) === norm(o.campana) || a.campanaId === o.campana);
+    if (c) { c.pedidos++; c.venta += o.venta; c.queda += o.m.queda; usados.add(o.n); }
+  });
+  const sueltas = ped.filter((o) => !usados.has(o.n));
+  const filas = ads.filter((a) => a.gasto > 0 || a.pedidos).sort((a, b) => b.gasto - a.gasto).map((a) => ({
+    nombre: `<b>${esc(a.anuncio)}</b><div class="sub">${esc(a.campana)} · ${esc(a.conjunto)}</div>`,
+    gasto: a.gasto, clics: a.clics, cpc: a.clics ? a.gasto / a.clics : 0, pedidos: a.pedidos, venta: a.venta,
+    cpv: a.pedidos ? S(a.gasto / a.pedidos) : '—', roas: a.gasto ? (a.venta / a.gasto).toFixed(1) + 'x' : '—', queda: a.queda,
+    que: pill(semaforo(a.gasto, a.pedidos, a.estado)),
+  }));
+  if (sueltas.length) filas.push({ nombre: '<b>Sin anuncio identificado</b><div class="sub">llegaron por Facebook/Instagram sin UTM de anuncio</div>', gasto: 0, clics: 0, cpc: 0,
+    pedidos: sueltas.length, venta: sueltas.reduce((t, o) => t + o.venta, 0), cpv: '—', roas: '—', queda: sueltas.reduce((t, o) => t + o.m.queda, 0), que: '' });
+  tabla('t-ads', [['nombre', 'Anuncio', null, 1], ['gasto', 'Gasto', S], ['clics', 'Clics', N], ['cpc', 'CPC', (v) => S(v, 2)], ['pedidos', 'Ventas', N], ['venta', 'Venta', S], ['cpv', 'Costo por venta', (v) => v], ['roas', 'ROAS real', (v) => v], ['queda', 'Queda MXD', S], ['que', 'Qué hacer', null, 1]],
+    filas, d.conToken ? 'Ningún anuncio con gasto en 28 días' : 'Aparece cuando Meta esté conectado');
+
+  tabla('t-ped', [['n', 'Pedido'], ['f', 'Fecha'], ['campana', 'Campaña'], ['anuncio', 'Anuncio'], ['productos', 'Productos'], ['venta', 'Venta', S], ['queda', 'Queda (antes de pauta)', S]],
+    ped.map((o) => ({ ...o, f: fecha(o.f), campana: o.campana || '—', anuncio: o.anuncio || '—', productos: o.lineas.map((l) => `${l.q}× ${l.t}`).join(' · '), queda: o.m.queda })),
+    'Todavía no hay ventas que lleguen por Meta');
+  tabla('t-ga', [['campana', 'Campaña'], ['sesiones', 'Visitas', N], ['compras', 'Compras', N]], d.visitas?.campanas || [], 'Sin visitas desde Meta en el periodo');
+}).catch((e) => { $('err').textContent = 'No se pudieron cargar los datos: ' + e.message; });
+</script>
 </body></html>

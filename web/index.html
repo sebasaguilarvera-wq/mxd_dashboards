@@ -13,7 +13,7 @@
 .wrap>*{animation:mxdIn .35s ease both}
 </style><style>.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}</style></head>
 <body>
-<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web" aria-current=page>Web y Google</a><a href="/pauta">Pauta en prueba</a><a href="/meta">Meta</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web" aria-current=page>Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
 <div class="wrap">
   <header>
     <div class="eyebrow">Google · Web MXD</div>
@@ -31,6 +31,19 @@
       <div class="kpi"><div class="l" data-tip="Sesiones|Visitas a la tienda según Shopify. Una persona puede hacer varias.">Sesiones</div><div class="v" id="k-sesiones">—</div><div class="d" id="d-sesiones"></div></div>
       <div class="kpi"><div class="l" data-tip="Conversión|De cada 100 visitas, cuántas terminan en pedido.">Conversión</div><div class="v" id="k-conv">—</div><div class="d">pedidos ÷ sesiones</div></div>
     </div>
+  </section>
+
+  <section class="panel">
+    <h2>¿De dónde vienen las ventas?</h2>
+    <p class="muted" style="margin:0 0 8px">Cada pedido de Shopify con el canal por el que llegó la persona (su última visita; si fue directa, la primera). Barras por semana, lunes a domingo.</p>
+    <div class="leg-w" id="leg-canal"></div>
+    <div id="chart-canal"></div>
+    <table id="t-vcanal" style="margin-top:10px"></table>
+  </section>
+
+  <section class="panel">
+    <h2>Últimos pedidos y su origen</h2>
+    <table id="t-pedidos"></table>
   </section>
 
   <section class="panel">
@@ -69,6 +82,29 @@ function tabla(id, cols, rows) {
     const tr = t.insertRow();
     cols.forEach(([k, , f]) => { const c = tr.insertCell(); c.textContent = f ? f(r[k]) : r[k]; if (f) c.className = 'n'; });
   });
+}
+
+const COL = { 'Meta': '#1877f2', 'Google pagado': '#e8a400', 'Google orgánico': '#2f9e57', 'Influencer': '#d6336c', 'Directo y otros': '#9a958c' };
+const pastilla = (c) => `<span style="display:inline-block;padding:2px 8px;border-radius:5px;background:${COL[c] || '#9a958c'};color:#fff;font-size:12px;white-space:nowrap">${c}</span>`;
+
+function graficoCanal(sem) {
+  const el = $('chart-canal'), W = Math.max(el.clientWidth, 300), H = 200, P = { l: 8, r: 52, t: 10, b: 26 };
+  const C = Object.keys(COL), tot = (s) => C.reduce((t, c) => t + (s[c] || 0), 0);
+  const max = Math.max(1, ...sem.map(tot)), bw = (W - P.l - P.r) / sem.length, alto = H - P.t - P.b, base = P.t + alto;
+  const y = (v) => (v / max) * alto;
+  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Venta web por canal y semana">`;
+  [0.5, 1].forEach((k) => { svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base - y(max * k)}" y2="${base - y(max * k)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${base - y(max * k) + 4}">${S(max * k)}</text>`; });
+  sem.forEach((s, i) => {
+    const w = Math.min(46, bw * 0.62), x = P.l + i * bw + (bw - w) / 2; let acc = 0;
+    C.forEach((c) => { const v = s[c] || 0; if (!v) return; svg += `<rect x="${x}" y="${base - y(acc + v)}" width="${w}" height="${y(v)}" fill="${COL[c]}"/>`; acc += v; });
+    if (!acc) svg += `<rect x="${x}" y="${base - 2}" width="${w}" height="2" fill="var(--line)"/>`;
+    const fin = new Date(Date.parse(s.semana) + 6 * 864e5).toISOString().slice(0, 10);
+    svg += `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle">${fecha(s.semana)}</text>`;
+    const tip = 'Semana del ' + fecha(s.semana) + ' al ' + fecha(fin) + '|' + C.map((c) => c + '\t' + S(s[c] || 0)).join('\n') + '\nTotal\t' + S(acc);
+    svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${alto}" data-tip="${tip.replace(/"/g, '&quot;')}"/>`;
+  });
+  svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+  el.innerHTML = svg + '</svg>';
 }
 
 function grafico(dias) {
@@ -115,7 +151,16 @@ fetch('/api/web' + (new URLSearchParams(location.search).get('t') ? '?t=' + new 
   $('k-sesiones').textContent = N(u.sesiones); delta($('d-sesiones'), u.sesiones, a.sesiones);
   $('k-conv').textContent = u.sesiones ? (u.pedidos / u.sesiones * 100).toFixed(1) + '%' : '—';
   grafico(d.dias);
-  addEventListener('resize', () => grafico(d.dias));
+  $('leg-canal').innerHTML = Object.entries(COL).map(([c, k]) => `<span><i style="background:${k}"></i>${c}</span>`).join('');
+  graficoCanal(d.canalSemanas || []);
+  addEventListener('resize', () => { grafico(d.dias); graficoCanal(d.canalSemanas || []); });
+  const tv = (d.ventasCanal || []).reduce((t, c) => t + c.venta, 0);
+  tabla('t-vcanal', [['canal', 'Canal (últimos 28 días)'], ['pedidos', 'Pedidos', N], ['venta', 'Venta', S], ['pct', '% de la venta', (v) => v + '%']],
+    (d.ventasCanal || []).map((c) => ({ ...c, pct: tv ? Math.round(c.venta / tv * 100) : 0 })));
+  [...$('t-vcanal').rows].slice(1).forEach((r) => { const c = r.cells[0]; if (COL[c.textContent]) c.innerHTML = pastilla(c.textContent); });
+  tabla('t-pedidos', [['n', 'Pedido'], ['f', 'Fecha'], ['canal', 'Canal'], ['origen', 'Origen'], ['detalle', 'Campaña o página de entrada'], ['productos', 'Productos'], ['venta', 'Venta', S]],
+    (d.pedidos || []).map((o) => ({ ...o, f: fecha(o.f), detalle: o.campana || o.entrada || '—' })));
+  [...$('t-pedidos').rows].slice(1).forEach((r) => { const c = r.cells[2]; if (c && COL[c.textContent]) c.innerHTML = pastilla(c.textContent); });
   tabla('t-canales', [['canal', 'Canal'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.canales);
   tabla('t-campanas', [['campana', 'Campaña'], ['fuenteMedio', 'Fuente / medio'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.campanas);
   tabla('t-marcas', [['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.marcas);

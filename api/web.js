@@ -2,6 +2,7 @@
 // Variables en Vercel: SHOPIFY_STORE_DOMAIN, SHOPIFY_CLIENT_ID, SHOPIFY_CLIENT_SECRET, GA4_PROPERTY_ID, GA4_SERVICE_ACCOUNT_JSON.
 import { shopifyGql } from './_shopify.js';
 import { ga4Cliente } from './_ga4.js';
+import { pedidosWeb, CANALES } from './_pedidos.js';
 
 const SEMANAS = 8;
 const DIA = 86400000;
@@ -18,16 +19,7 @@ const sumarDias = (iso, n) => new Date(new Date(iso + 'T00:00:00Z').getTime() + 
 async function shopify(desde) {
   const gql = await shopifyGql();
 
-  const orders = [];
-  for (let cur = null; ; ) {
-    const d = (await gql(`query($c:String,$q:String){orders(first:100,after:$c,query:$q){pageInfo{hasNextPage endCursor}
-      nodes{createdAt cancelledAt test currentSubtotalPriceSet{shopMoney{amount}}
-      lineItems(first:50){nodes{title vendor currentQuantity discountedTotalSet{shopMoney{amount}}}}}}}`,
-      { c: cur, q: `created_at:>=${desde}` })).orders;
-    orders.push(...d.nodes);
-    if (!d.pageInfo.hasNextPage) break;
-    cur = d.pageInfo.endCursor;
-  }
+  const pedidos = await pedidosWeb(desde);
 
   const productos = [];
   for (let cur = null; ; ) {
@@ -43,10 +35,7 @@ async function shopify(desde) {
     const q = (await gql(`{ shopifyqlQuery(query: "FROM sessions SHOW sessions TIMESERIES day SINCE -35d UNTIL today") { tableData { rows } parseErrors } }`)).shopifyqlQuery;
     sesionesShop = (q.tableData?.rows || []).map((r) => ({ dia: r.day, sesiones: Number(r.sessions) }));
   } catch (e) { sesionesShop = null; }
-  // Pedidos válidos: sin cancelados, sin pruebas
-  const validos = orders.filter((o) => !o.cancelledAt && !o.test &&
-    !o.lineItems.nodes.some((li) => li.vendor === 'MXD' && /prueba/i.test(li.title)));
-  return { pedidos: validos, productos, sesionesShop };
+  return { pedidos, productos, sesionesShop };
 }
 
 // ---------- GA4 ----------
@@ -69,7 +58,7 @@ export default async function handler(req, res) {
   const desde = semanas[0];
   const hace28 = sumarDias(hoy, -27);
 
-  const out = { generado: new Date().toISOString(), hoy, dias: [], semanas: [], marcas: [], top: [], stockBajo: [], canales: [], campanas: [], errores: [] };
+  const out = { generado: new Date().toISOString(), hoy, dias: [], semanas: [], marcas: [], top: [], stockBajo: [], canales: [], campanas: [], ventasCanal: [], canalSemanas: [], pedidos: [], errores: [] };
   const fila = Object.fromEntries(semanas.map((s) => [s, { semana: s, enCurso: s === lunesActual, venta: 0, pedidos: 0, sesiones: 0, usuarios: 0, comprasGA: 0 }]));
 
   const [shop, ga] = await Promise.allSettled([shopify(desde), ga4(desde, hoy)]);
@@ -78,24 +67,30 @@ export default async function handler(req, res) {
 
   if (shop.status === 'fulfilled') {
     const marcas = {}, top = {};
+    const canal28 = Object.fromEntries(CANALES.map((c) => [c, { canal: c, pedidos: 0, venta: 0 }]));
+    const canalSem = Object.fromEntries(semanas.map((x) => [x, Object.fromEntries(CANALES.map((c) => [c, 0]))]));
     for (const o of shop.value.pedidos) {
-      const f = lima(new Date(o.createdAt));
+      const f = o.f;
       const s = fila[lunesDe(f)];
       if (!s) continue;
-      s.venta += Number(o.currentSubtotalPriceSet.shopMoney.amount);
+      s.venta += o.venta;
       s.pedidos += 1;
-      if (dia[f]) { dia[f].venta += Number(o.currentSubtotalPriceSet.shopMoney.amount); dia[f].pedidos += 1; }
+      canalSem[lunesDe(f)][o.canal] += o.venta;
+      if (dia[f]) { dia[f].venta += o.venta; dia[f].pedidos += 1; }
       if (f < hace28) continue;
-      for (const li of o.lineItems.nodes) {
-        const q = li.currentQuantity || 0;
-        if (!q) continue;
-        const v = Number(li.discountedTotalSet.shopMoney.amount);
-        const m = (marcas[li.vendor || 'Sin marca'] ||= { marca: li.vendor || 'Sin marca', unidades: 0, venta: 0 });
+      canal28[o.canal].pedidos += 1; canal28[o.canal].venta += o.venta;
+      for (const li of o.lineas) {
+        const q = li.q, v = li.v, li_vendor = li.marca;
+        const m = (marcas[li_vendor || 'Sin marca'] ||= { marca: li_vendor || 'Sin marca', unidades: 0, venta: 0 });
         m.unidades += q; m.venta += v;
-        const p = (top[li.title] ||= { producto: li.title, marca: li.vendor, unidades: 0, venta: 0 });
+        const p = (top[li.t] ||= { producto: li.t, marca: li_vendor, unidades: 0, venta: 0 });
         p.unidades += q; p.venta += v;
       }
     }
+    out.ventasCanal = Object.values(canal28).map((c) => ({ ...c, venta: Math.round(c.venta * 100) / 100 }));
+    out.canalSemanas = semanas.map((x) => ({ semana: x, ...Object.fromEntries(CANALES.map((c) => [c, Math.round(canalSem[x][c] * 100) / 100])) }));
+    out.pedidos = shop.value.pedidos.slice(0, 25).map((o) => ({ n: o.n, f: o.f, venta: o.venta, canal: o.canal, origen: o.origen, campana: o.campana, entrada: o.entrada,
+      productos: o.lineas.map((l) => `${l.q}× ${l.t}`).join(' · ') }));
     out.marcas = Object.values(marcas).sort((a, b) => b.venta - a.venta);
     out.top = Object.values(top).sort((a, b) => b.unidades - a.unidades).slice(0, 10);
     out.stockBajo = shop.value.productos

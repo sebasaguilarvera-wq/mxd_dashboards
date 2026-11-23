@@ -13,7 +13,7 @@
 .wrap>*{animation:mxdIn .35s ease both}
 </style></head>
 <body>
-<nav class="mxd-nav"><div class="nav-tabs"><a href="/" aria-current=page>Inicio</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/pauta">Pauta en prueba</a><a href="/meta">Meta</a></div><span class="nav-st"></span></nav>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/" aria-current=page>Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span></nav>
 <div class="wrap">
   <header>
     <div class="eyebrow">MXD · Tukuy</div>
@@ -21,6 +21,9 @@
     <p class="lede">Ventas y canales digitales de MXD en un solo lugar.</p>
   </header>
   <div class="grid">
+    <a class="card" href="/resumen" style="--c:#1d1b17"><span class="tag">Todos los canales</span><h3>Resumen</h3>
+      <div class="big" data-tip="Resumen|Lo que le queda a MXD de cada canal por semana, después de costos, comisiones, delivery y publicidad.">5 canales</div><div class="sub">ganancia de cada uno, semana a semana</div>
+      <p>Saga, web por Meta, web por Google y el resto, en un solo cuadro.</p><span class="go">Abrir →</span></a>
     <a class="card" href="/saga-cw" style="--c:#eb6834"><span class="tag">Saga Falabella</span><h3>Classic World</h3>
       <div class="big" id="n-cw" data-tip="Este mes|Ventas netas de comisión de Classic World en Falabella en lo que va del mes.">…</div><div class="sub" id="s-cw">netos este mes</div>
       <p>Ventas, costos y qué hacer con cada ficha.</p><span class="go">Abrir →</span></a>
@@ -33,9 +36,9 @@
     <a class="card" href="/pauta" style="--c:#c4523f"><span class="tag">Saga · Web · Meta</span><h3>Pauta en prueba</h3>
       <div class="big" id="n-pauta" data-tip="Pauta en prueba|Semáforo de las campañas: Angeltex en Falabella Media y Classic World en la web con Meta.">2</div><div class="sub" id="s-pauta">campañas con semáforo</div>
       <p>Gasto, ventas y qué hacer hoy con cada campaña.</p><span class="go">Abrir →</span></a>
-    <a class="card soon" href="/meta" style="--c:#8a5cd6"><span class="tag">Meta Ads</span><h3>Meta</h3>
-      <div class="big"><span class="pill">Próximamente</span></div><div class="sub">&nbsp;</div>
-      <p>Gasto, alcance y retorno de las campañas.</p><span class="go">Ver →</span></a>
+    <a class="card" href="/meta" style="--c:#1877f2"><span class="tag">Meta Ads · Web</span><h3>Meta</h3>
+      <div class="big" id="n-meta" data-tip="Ventas por Meta|Ventas de la web en los últimos 28 días que llegaron desde Facebook o Instagram, según Shopify.">…</div><div class="sub" id="s-meta">ventas web por Meta, 28 días</div>
+      <p>Gasto, costo por venta y semáforo por anuncio.</p><span class="go">Abrir →</span></a>
   </div>
 </div>
 <script>
@@ -45,6 +48,7 @@ const neto = (j, com) => j.data.ventas.filter((r) => r.f.startsWith(mes) && ['En
 const pon = (id, v, sub) => { document.getElementById('n-' + id).textContent = v; if (sub) document.getElementById('s-' + id).textContent = sub; };
 fetch('/api/saga?m=cw').then((r) => r.json()).then((j) => pon('cw', S(neto(j, 0.15)))).catch(() => pon('cw', '—', 'no cargó'));
 fetch('/api/saga?m=angeltex').then((r) => r.json()).then((j) => pon('ang', S(neto(j, 0.25)))).catch(() => pon('ang', '—', 'no cargó'));
+fetch('/api/meta').then((r) => r.json()).then((j) => pon('meta', S(j.pedidos.filter((o) => o.canal === 'Meta' && o.f >= j.desde28).reduce((t, o) => t + o.venta, 0)), j.conToken ? null : 'ventas por Meta, 28 días · falta conectar el gasto')).catch(() => pon('meta', '—', 'no cargó'));
 fetch('/api/web').then((r) => r.json()).then((j) => pon('web', j.semanas.at(-1).sesiones.toLocaleString('es-PE'))).catch(() => pon('web', '—', 'no cargó'));
 </script>
 </body></html>

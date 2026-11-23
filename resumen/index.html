@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resumen · MXD</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><script src="/assets/costos_cw.js"></script><script src="/assets/costos_angeltex.js"></script><script src="/assets/saga_cargos.js"></script><script src="/assets/margen.js"></script><style>
+.mxd-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.mxd-nav .nav-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+.mxd-nav .nav-tabs a{color:#cfcac0;text-decoration:none;padding:5px 11px;border-radius:7px;white-space:nowrap;transition:background .15s,color .15s}
+.mxd-nav .nav-tabs a:hover{background:rgba(255,255,255,.1);color:#fff}
+.mxd-nav .nav-tabs a[aria-current]{background:#fff;color:#1d1b17;font-weight:600}
+.mxd-nav .nav-st{margin-left:auto;opacity:.7;font-size:12px}
+.mxd-nav .nav-btn{font:inherit;font-weight:600;background:#eb6834;color:#fff;border:0;border-radius:7px;padding:5px 12px;cursor:pointer;transition:filter .15s}
+.mxd-nav .nav-btn:hover{filter:brightness(1.1)}
+@keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.wrap>*{animation:mxdIn .35s ease both}
+</style><style>
+.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin:4px 0 6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.kpi.mx .v{color:var(--acc)} .kpi.neg .v{color:var(--bad)}
+.can{display:inline-flex;align-items:center;gap:7px;font-weight:600;white-space:nowrap}.can i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.cas{display:flex;height:14px;border-radius:4px;overflow:hidden;min-width:180px;background:var(--line)}
+.cas div{height:100%}
+td.pos{color:var(--acc);font-weight:600} td.neg{color:var(--bad);font-weight:600}
+.heat td.n{font-variant-numeric:tabular-nums}
+.sub{font-size:12px;color:var(--muted)}
+.notas{font-size:13px;color:var(--muted);margin:8px 0 0;padding-left:18px}
+.tot td{font-weight:700;border-top:2px solid var(--line)}
+</style></head>
+<body>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen" aria-current=page>Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web">Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Ganancia por canal</div>
+    <h1>Resumen</h1>
+    <p class="lede">Cuánto le queda a MXD de cada canal, semana a semana, después del costo del producto, las comisiones, el delivery y la publicidad. <span id="gen" class="muted"></span></p>
+    <p id="err" class="err"></p>
+  </header>
+
+  <section>
+    <h2 id="t-sem">Última semana cerrada</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="l" data-tip="Venta|Todo lo vendido en Saga y en la web, con IGV y sin envío.">Venta</div><div class="v" id="k-venta">—</div><div class="d" id="d-venta"></div></div>
+      <div class="kpi"><div class="l" data-tip="Publicidad|Meta Ads + Falabella Media.">Publicidad</div><div class="v" id="k-pauta">—</div><div class="d" id="d-pauta"></div></div>
+      <div class="kpi mx" id="kk-mx"><div class="l" data-tip="Queda para MXD|Venta − costo del producto − comisión o pasarela − delivery o envío − IGV (donde aplica) − publicidad.">Queda para MXD</div><div class="v" id="k-mx">—</div><div class="d" id="d-mx"></div></div>
+      <div class="kpi"><div class="l" data-tip="Margen|Queda para MXD dividido entre la venta.">Margen</div><div class="v" id="k-mg">—</div><div class="d" id="d-mg"></div></div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Lo que queda para MXD, por semana</h2>
+    <div class="leg-w" id="leg"></div>
+    <div id="chart"></div>
+    <p class="sub" style="margin:6px 0 0">Barras apiladas por canal. Lo que queda bajo la línea es pérdida (la publicidad costó más de lo que dejaron sus ventas). Pasa el mouse por una semana para ver el detalle.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Cada canal en los últimos 28 días</h2>
+    <div class="leg-w"><span><i style="background:#8a5cd6"></i>Costo del producto</span><span><i style="background:#d9a43b"></i>Comisión o pasarela</span><span><i style="background:#9a958c"></i>Delivery o envío</span><span><i style="background:#c7c2b8"></i>IGV</span><span><i style="background:#1877f2"></i>Publicidad</span><span><i style="background:var(--acc)"></i>Queda MXD</span></div>
+    <table id="t-can"></table>
+  </section>
+
+  <section class="panel heat">
+    <h2>Queda para MXD por canal y semana</h2>
+    <table id="t-heat"></table>
+    <ul class="notas">
+      <li>Saga cuenta los ítems no cancelados ni devueltos (incluye los que están por enviarse). Delivery = cofinanciamiento real por SKU del reporte de Seller Center; si un SKU no salió en el reporte: S/ 3.90 en Angeltex y 7.1% en Classic World.</li>
+      <li>Mismo cálculo que cada tablero: Classic World y la web descuentan IGV; Angeltex se mide como en su pestaña (sin descontar IGV).</li>
+      <li>Web: costo por SKU (Classic World FOB + importación; Cocoon y Samsara precio mayorista). Si un producto no tiene costo cargado se estima en 50% de la venta sin IGV. Mercado Pago 2%; envío gratis desde S/ 150 cuesta ~S/ 10.</li>
+      <li>Publicidad: Meta en vivo cuando esté conectado; Falabella Media desde el reporte de campaña de cada lunes (<span id="media-n"></span>).</li>
+    </ul>
+  </section>
+</div>
+<script>
+const S = (n, d = 0) => (n < 0 ? '−S/ ' : 'S/ ') + Math.abs(n).toLocaleString('es-PE', { minimumFractionDigits: d, maximumFractionDigits: d });
+const $ = (id) => document.getElementById(id);
+const DIA = 864e5;
+const suma = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * DIA).toISOString().slice(0, 10);
+const lunesDe = (iso) => suma(iso, -((new Date(iso + 'T00:00:00Z').getUTCDay() + 6) % 7));
+const fecha = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
+const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const CAN = [
+  ['sagaCW', 'Saga · Classic World', '#eb6834'], ['sagaAng', 'Saga · Samsara y Cocoon', '#d6336c'],
+  ['webMeta', 'Web · Meta', '#1877f2'], ['webGoogle', 'Web · Google', '#2f9e57'], ['webOtros', 'Web · directo y otros', '#9a958c'],
+];
+const T = new URLSearchParams(location.search).get('t'), Q = T ? 't=' + T : '';
+const get = (u) => fetch(u).then((r) => r.json());
+
+Promise.allSettled([get('/api/meta?' + Q), get('/api/saga?m=cw&' + Q), get('/api/saga?m=angeltex&' + Q)]).then(([m, cw, an]) => {
+  const err = [];
+  const meta = m.status === 'fulfilled' ? m.value : (err.push('Web y Meta'), null);
+  const sCW = cw.status === 'fulfilled' && !cw.value.error ? cw.value : (err.push('Saga Classic World'), null);
+  const sAn = an.status === 'fulfilled' && !an.value.error ? an.value : (err.push('Saga Angeltex'), null);
+  if (meta?.errores?.length) err.push(...meta.errores);
+  if (err.length) $('err').textContent = 'No cargó: ' + err.join(' · ');
+  const hoy = meta?.hoy || sCW?.hoy || new Date(Date.now() - 5 * 36e5).toISOString().slice(0, 10);
+  $('gen').textContent = 'Actualizado ' + new Date().toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) + '.';
+
+  const lunesHoy = lunesDe(hoy), semanas = Array.from({ length: 9 }, (_, i) => suma(lunesHoy, -7 * (8 - i)));
+  const desde = semanas[0], hace28 = suma(hoy, -27);
+  const vacio = () => ({ venta: 0, costo: 0, cobro: 0, envio: 0, igv: 0, pauta: 0, queda: 0, n: 0, est: 0 });
+  const sem = Object.fromEntries(semanas.map((s) => [s, Object.fromEntries(CAN.map(([k]) => [k, vacio()]))]));
+  const u28 = Object.fromEntries(CAN.map(([k]) => [k, vacio()]));
+  const add = (k, f, x) => {
+    for (const b of [sem[lunesDe(f)]?.[k], f >= hace28 && f <= hoy ? u28[k] : null]) {
+      if (!b) continue;
+      b.venta += x.venta || 0; b.costo += x.costo || 0; b.cobro += x.cobro || 0; b.envio += x.envio || 0; b.igv += x.igv || 0;
+      b.pauta += x.pauta || 0; b.queda += x.queda; b.n += x.venta ? 1 : 0; b.est += x.estimado ? 1 : 0;
+    }
+  };
+  const VALIDO = (e) => !['Cancelado', 'Devuelto', 'failed', 'Fallido'].includes(e);
+  sCW?.data.ventas.filter((v) => v.f >= desde && VALIDO(v.e)).forEach((v) => add('sagaCW', v.f, MARGEN.sagaCW(v)));
+  sAn?.data.ventas.filter((v) => v.f >= desde && VALIDO(v.e)).forEach((v) => add('sagaAng', v.f, MARGEN.sagaAng(v)));
+  const canalWeb = (c) => (c === 'Meta' ? 'webMeta' : /Google/.test(c) ? 'webGoogle' : 'webOtros');
+  meta?.pedidos.filter((o) => o.f >= desde).forEach((o) => add(canalWeb(o.canal), o.f, MARGEN.web(o)));
+  // Publicidad: Meta por día (en vivo) y Falabella Media repartida en los días de cada campaña
+  meta?.meta?.dias.forEach((d) => d.gasto && add('webMeta', d.f, { pauta: d.gasto, queda: -d.gasto }));
+  const media = window.SAGA_CARGOS?.media || [];
+  media.forEach((c) => {
+    const n = Math.round((Date.parse(c.hasta) - Date.parse(c.desde)) / DIA) + 1, g = c.gasto / n;
+    for (let i = 0; i < n; i++) add(c.m === 'cw' ? 'sagaCW' : 'sagaAng', suma(c.desde, i), { pauta: g, queda: -g });
+  });
+  $('media-n').textContent = media.length ? media.map((c) => `${c.c}: ${S(c.gasto)} del ${fecha(c.desde)} al ${fecha(c.hasta)}`).join('; ') : 'sin campañas cargadas';
+
+  // KPIs de la última semana cerrada vs la anterior
+  const tot = (s) => CAN.reduce((t, [k]) => { const b = sem[s][k]; t.venta += b.venta; t.pauta += b.pauta; t.queda += b.queda; return t; }, { venta: 0, pauta: 0, queda: 0 });
+  const u = semanas[7], a = semanas[6], tu = tot(u), ta = tot(a);
+  $('t-sem').textContent = `Última semana cerrada · ${fecha(u)} al ${fecha(suma(u, 6))}`;
+  const dl = (x, y) => (y ? (x >= y ? '+' : '−') + S(Math.abs(x - y)) + ' vs semana anterior' : 'semana anterior sin datos');
+  $('k-venta').textContent = S(tu.venta); $('d-venta').textContent = dl(tu.venta, ta.venta);
+  $('k-pauta').textContent = S(tu.pauta); $('d-pauta').textContent = meta?.conToken ? dl(tu.pauta, ta.pauta) : 'Meta aún sin conectar';
+  $('k-mx').textContent = S(tu.queda); $('d-mx').textContent = dl(tu.queda, ta.queda);
+  if (tu.queda < 0) $('kk-mx').className = 'kpi neg';
+  $('k-mg').textContent = tu.venta ? Math.round(tu.queda / tu.venta * 100) + '%' : '—'; $('d-mg').textContent = 'de cada S/ 100 vendidos';
+
+  // Gráfico apilado (positivos arriba, negativos abajo)
+  $('leg').innerHTML = CAN.map(([, n, c]) => `<span><i style="background:${c}"></i>${n}</span>`).join('');
+  function grafico() {
+    const el = $('chart'), W = Math.max(el.clientWidth, 300), H = 260, P = { l: 8, r: 60, t: 10, b: 26 };
+    const pos = semanas.map((s) => CAN.reduce((t, [k]) => t + Math.max(0, sem[s][k].queda), 0));
+    const neg = semanas.map((s) => CAN.reduce((t, [k]) => t + Math.min(0, sem[s][k].queda), 0));
+    const max = Math.max(1, ...pos), min = Math.min(0, ...neg), alto = H - P.t - P.b;
+    const y = (v) => P.t + (max - v) / (max - min) * alto, bw = (W - P.l - P.r) / semanas.length;
+    let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Lo que queda para MXD por canal y semana">`;
+    [max, max / 2, min].filter((v, i, x) => v && x.indexOf(v) === i).forEach((v) => { svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${y(v) + 4}">${S(v)}</text>`; });
+    semanas.forEach((s, i) => {
+      const w = Math.min(54, bw * 0.62), x = P.l + i * bw + (bw - w) / 2; let up = 0, dn = 0;
+      CAN.forEach(([k, , c]) => {
+        const v = sem[s][k].queda; if (Math.abs(v) < 0.5) return;
+        if (v > 0) { svg += `<rect x="${x}" y="${y(up + v)}" width="${w}" height="${y(up) - y(up + v)}" fill="${c}"/>`; up += v; }
+        else { svg += `<rect x="${x}" y="${y(dn)}" width="${w}" height="${y(dn + v) - y(dn)}" fill="${c}" opacity=".55"/>`; dn += v; }
+      });
+      svg += `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle">${fecha(s)}${i === 8 ? '*' : ''}</text>`;
+      const lin = CAN.map(([k, n]) => n + '\t' + S(sem[s][k].queda)).concat(['Total\t' + S(tot(s).queda), 'Venta\t' + S(tot(s).venta), 'Publicidad\t' + S(tot(s).pauta)]);
+      svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${alto}" data-tip="${esc('Semana del ' + fecha(s) + ' al ' + fecha(suma(s, 6)) + (i === 8 ? ' (en curso)' : '') + '|' + lin.join('\n'))}"/>`;
+    });
+    svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(0)}" y2="${y(0)}" stroke="var(--fg)" stroke-opacity=".4"/>`;
+    el.innerHTML = svg + '</svg>';
+  }
+  grafico(); addEventListener('resize', grafico);
+
+  // Tabla de canales (28 días) con barra de en qué se va cada sol
+  const t = $('t-can'); t.innerHTML = '<tr><th>Canal</th><th class="n">Ventas</th><th class="n">Venta</th><th>En qué se va cada sol</th><th class="n">Publicidad</th><th class="n">Queda MXD</th><th class="n">Margen</th></tr>';
+  const T28 = vacio();
+  CAN.forEach(([k, n, c]) => {
+    const b = u28[k]; Object.keys(T28).forEach((x) => (T28[x] += b[x]));
+    const seg = [[b.costo, '#8a5cd6', 'Costo'], [b.cobro, '#d9a43b', 'Comisión o pasarela'], [b.envio, '#9a958c', 'Delivery o envío'], [b.igv, '#c7c2b8', 'IGV'], [b.pauta, '#1877f2', 'Publicidad'], [Math.max(0, b.queda), 'var(--acc)', 'Queda MXD']];
+    const den = seg.reduce((s, [v]) => s + v, 0) || 1;
+    const bar = `<div class="cas">${seg.filter(([v]) => v > 0).map(([v, col, nom]) => `<div style="width:${v / den * 100}%;background:${col}" title="${nom}: ${S(v)}"></div>`).join('')}</div>`;
+    const tr = t.insertRow();
+    tr.innerHTML = `<td><span class="can"><i style="background:${c}"></i>${n}</span>${b.est ? `<div class="sub">${b.est} con costo estimado</div>` : ''}</td><td class="n">${b.n}</td><td class="n">${S(b.venta)}</td><td>${b.venta || b.pauta ? bar : '<span class="sub">sin ventas</span>'}</td><td class="n">${S(b.pauta)}</td><td class="n ${b.queda < 0 ? 'neg' : 'pos'}">${S(b.queda)}</td><td class="n">${b.venta ? Math.round(b.queda / b.venta * 100) + '%' : '—'}</td>`;
+  });
+  const tr = t.insertRow(); tr.className = 'tot';
+  tr.innerHTML = `<td>Total</td><td class="n">${T28.n}</td><td class="n">${S(T28.venta)}</td><td></td><td class="n">${S(T28.pauta)}</td><td class="n ${T28.queda < 0 ? 'neg' : 'pos'}">${S(T28.queda)}</td><td class="n">${T28.venta ? Math.round(T28.queda / T28.venta * 100) + '%' : '—'}</td>`;
+
+  // Mapa de calor: canal × semana
+  const h = $('t-heat'), mx = Math.max(1, ...semanas.flatMap((s) => CAN.map(([k]) => Math.abs(sem[s][k].queda))));
+  h.innerHTML = '<tr><th>Canal</th>' + semanas.map((s, i) => `<th class="n">${fecha(s)}${i === 8 ? '*' : ''}</th>`).join('') + '</tr>';
+  const celda = (v) => `<td class="n" style="background:${v >= 0 ? `rgba(47,158,87,${(Math.abs(v) / mx * 0.45).toFixed(2)})` : `rgba(196,82,63,${(Math.abs(v) / mx * 0.45 + 0.08).toFixed(2)})`}">${Math.abs(v) < 0.5 ? '·' : S(v)}</td>`;
+  CAN.forEach(([k, n, c]) => { h.insertRow().innerHTML = `<td><span class="can"><i style="background:${c}"></i>${n}</span></td>` + semanas.map((s) => celda(sem[s][k].queda)).join(''); });
+  const r = h.insertRow(); r.className = 'tot'; r.innerHTML = '<td>Total</td>' + semanas.map((s) => celda(tot(s).queda)).join('');
+  h.insertRow().innerHTML = `<td colspan="10" class="sub">* semana en curso, incompleta.</td>`;
+});
+</script>
+</body></html>

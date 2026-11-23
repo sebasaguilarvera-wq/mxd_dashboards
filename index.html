@@ -31,7 +31,7 @@
       <div class="big" id="n-ang" data-tip="Este mes|Ventas netas de comisión de Samsara y Cocoon en Falabella en lo que va del mes.">…</div><div class="sub" id="s-ang">netos este mes</div>
       <p>Samsara y Cocoon: ventas, campaña y reposición.</p><span class="go">Abrir →</span></a>
     <a class="card" href="/web" style="--c:#0f6b55"><span class="tag">Google · Web MXD</span><h3>Web y Google</h3>
-      <div class="big" id="n-web" data-tip="Esta semana|Visitas a la web desde el lunes, según Google Analytics.">…</div><div class="sub" id="s-web">sesiones esta semana</div>
+      <div class="big" id="n-web" data-tip="Este mes|Visitas a la web en lo que va del mes, según Shopify.">…</div><div class="sub" id="s-web">sesiones este mes</div>
       <p>Ventas Shopify y tráfico de Google Analytics.</p><span class="go">Abrir →</span></a>
     <a class="card" href="/pauta" style="--c:#c4523f"><span class="tag">Saga · Web · Meta</span><h3>Pauta en prueba</h3>
       <div class="big" id="n-pauta" data-tip="Pauta en prueba|Semáforo de las campañas: Angeltex en Falabella Media y Classic World en la web con Meta.">2</div><div class="sub" id="s-pauta">campañas con semáforo</div>
@@ -49,6 +49,6 @@ const pon = (id, v, sub) => { document.getElementById('n-' + id).textContent = v
 fetch('/api/saga?m=cw').then((r) => r.json()).then((j) => pon('cw', S(neto(j, 0.15)))).catch(() => pon('cw', '—', 'no cargó'));
 fetch('/api/saga?m=angeltex').then((r) => r.json()).then((j) => pon('ang', S(neto(j, 0.25)))).catch(() => pon('ang', '—', 'no cargó'));
 fetch('/api/meta').then((r) => r.json()).then((j) => pon('meta', S(j.pedidos.filter((o) => o.canal === 'Meta' && o.f >= j.desde28).reduce((t, o) => t + o.venta, 0)), j.conToken ? null : 'ventas por Meta, 28 días · falta conectar el gasto')).catch(() => pon('meta', '—', 'no cargó'));
-fetch('/api/web').then((r) => r.json()).then((j) => pon('web', j.semanas.at(-1).sesiones.toLocaleString('es-PE'))).catch(() => pon('web', '—', 'no cargó'));
+fetch('/api/web').then((r) => r.json()).then((j) => pon('web', j.dias.filter((x) => x.dia >= j.desde).reduce((t, x) => t + (x.sesionesShop ?? x.sesionesGA), 0).toLocaleString('es-PE'), 'sesiones este mes')).catch(() => pon('web', '—', 'no cargó'));
 </script>
 </body></html>

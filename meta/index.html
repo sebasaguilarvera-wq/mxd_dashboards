@@ -173,11 +173,13 @@ const hoyLima = new Date(Date.now() - 5 * 36e5).toISOString().slice(0, 10);
 $('f-hasta').value = hoyLima; $('f-desde').value = new Date(Date.parse(hoyLima) - 27 * 864e5).toISOString().slice(0, 10);
 let D = null;
 
+let pide = 0;
 function cargar(fresco) {
+  const yo = ++pide;
   const q = new URLSearchParams({ desde: $('f-desde').value, hasta: $('f-hasta').value });
   if (fresco) q.set('t', Date.now());
   $('err').textContent = ''; $('gen').textContent = 'Cargando…';
-  fetch('/api/meta_panel?' + q).then((r) => r.json()).then((d) => { D = d; pintar(); }).catch((e) => { $('err').textContent = 'No se pudieron cargar los datos: ' + e.message; });
+  fetch('/api/meta_panel?' + q).then((r) => r.json()).then((d) => { if (yo !== pide) return; D = d; pintar(); }).catch((e) => { $('err').textContent = 'No se pudieron cargar los datos: ' + e.message; });
 }
 $('f-obj').onchange = () => D && pintar();
 

@@ -19,7 +19,7 @@ function classicWorld(P, I) {
     fichas[p.SellerSku] = { cs: p.ContentScore ? Number(p.ContentScore) : null, img: fotos(p), act: bu.Status === 'active' };
   }
   const ventas = I.filter((i) => (marcaDe[i.Sku] ? sku.has(i.Sku) : /classic/i.test(i.Name)))
-    .map((i) => ({ f: i.CreatedAt.slice(0, 10), k: i.Sku, n: i.Name, e: ESTADO[i.Status] || i.Status, p: Number(i.PaidPrice) }))
+    .map((i) => ({ f: i.CreatedAt.slice(0, 10), o: i.OrderId, k: i.Sku, n: i.Name, e: ESTADO[i.Status] || i.Status, p: Number(i.PaidPrice) }))
     .sort((a, b) => (a.f < b.f ? -1 : a.f > b.f ? 1 : 0));
   return { data: { ventas, stock }, fichas };
 }
@@ -52,7 +52,7 @@ function angeltex(P, I) {
     const b = marca(i.Sku);
     if (!['SAMSARA', 'COCOON'].includes(b)) continue;
     ventas.push({
-      f: i.CreatedAt.slice(0, 10), k: i.Sku,
+      f: i.CreatedAt.slice(0, 10), o: i.OrderId, k: i.Sku,
       m: modeloDe[i.Sku] || (i.Sku.startsWith('SAM.05NYL') ? nylon : i.Sku),
       b: b[0] + b.slice(1).toLowerCase(), e: ESTADO[i.Status] || i.Status, p: Number(i.PaidPrice),
     });

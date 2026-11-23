@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Web y Google · MXD</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><style>
+<title>Web y Google · MXD</title><link rel="stylesheet" href="/assets/mxd.css"><script src="/assets/tip.js"></script><script src="/assets/costos_cw.js"></script><script src="/assets/costos_angeltex.js"></script><script src="/assets/margen.js"></script><style>
 .mxd-nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:8px 16px;background:#1d1b17;color:#fff;font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.15)}
 .mxd-nav .nav-tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
 .mxd-nav .nav-tabs a{color:#cfcac0;text-decoration:none;padding:5px 11px;border-radius:7px;white-space:nowrap;transition:background .15s,color .15s}
@@ -11,159 +11,71 @@
 .mxd-nav .nav-btn:hover{filter:brightness(1.1)}
 @keyframes mxdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 .wrap>*{animation:mxdIn .35s ease both}
-</style><style>.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}</style></head>
+</style><style>
+.leg-w{display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--muted);margin-bottom:6px}.leg-w span{display:inline-flex;align-items:center;gap:6px}.leg-w i{display:inline-block;width:12px;height:12px;border-radius:3px}
+.bar-f{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:end;font-size:13px}
+.bar-f label{display:grid;gap:3px;color:var(--muted)}
+.bar-f input{font:inherit;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:5px 8px}
+.bar-f .rap{display:flex;gap:6px;flex-wrap:wrap}
+.bar-f .rap button,.bar-f .ir{font:inherit;font-size:12px;border:1px solid var(--line);background:var(--panel);color:var(--fg);border-radius:99px;padding:4px 10px;cursor:pointer}
+.bar-f .ir{background:#0f6b55;color:#fff;border-color:#0f6b55;font-weight:600;border-radius:5px;padding:6px 14px;font-size:13px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kp .kpi{border-top:4px solid var(--c,var(--line))}
+.kpi .u{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line);font-size:13px}
+.kpi .u b{color:var(--acc)} .kpi .u b.neg{color:var(--bad)}
+.sub{font-size:12px;color:var(--muted)}
+</style></head>
 <body>
-<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web" aria-current=page>Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="location.search='?t='+Date.now()" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
+<nav class="mxd-nav"><div class="nav-tabs"><a href="/">Inicio</a><a href="/resumen">Resumen</a><a href="/saga-cw">Saga CW</a><a href="/saga-angeltex">Saga Angeltex</a><a href="/web" aria-current=page>Web y Google</a><a href="/meta">Meta</a><a href="/pauta">Pauta en prueba</a></div><span class="nav-st"></span><button type="button" class="nav-btn" onclick="cargar(true)" data-tip="Actualizar|Trae los datos al momento, sin esperar la caché de 15 minutos.">↻ Actualizar</button></nav>
 <div class="wrap">
   <header>
-    <div class="eyebrow">Google · Web MXD</div>
+    <div class="eyebrow">Google · Web Pasillo</div>
     <h1>Web y Google</h1>
-    <p class="lede">Ventas de Shopify y tráfico de Google Analytics, en vivo. Semanas de lunes a domingo, hora de Lima. <span id="gen" class="muted"></span></p>
+    <p class="lede">Ventas de Shopify y tráfico de Google Analytics, en vivo, en las fechas que elijas. <span id="gen" class="muted"></span></p>
     <p id="err" class="err"></p>
   </header>
 
-  <section>
-    <h2>Última semana cerrada</h2>
-    <div class="kpis">
-      <div class="kpi"><div class="l" data-tip="Venta|Pedidos de la tienda Shopify en la semana, sin envío ni cancelados.">Venta (sin envío)</div><div class="v" id="k-venta">—</div><div class="d" id="d-venta"></div></div>
-      <div class="kpi"><div class="l" data-tip="Pedidos|Compras completadas en la web en la semana.">Pedidos</div><div class="v" id="k-pedidos">—</div><div class="d" id="d-pedidos"></div></div>
-      <div class="kpi"><div class="l" data-tip="Ticket promedio|Venta dividida entre pedidos.">Ticket promedio</div><div class="v" id="k-ticket">—</div><div class="d" id="d-ticket"></div></div>
-      <div class="kpi"><div class="l" data-tip="Sesiones|Visitas a la tienda según Shopify. Una persona puede hacer varias.">Sesiones</div><div class="v" id="k-sesiones">—</div><div class="d" id="d-sesiones"></div></div>
-      <div class="kpi"><div class="l" data-tip="Conversión|De cada 100 visitas, cuántas terminan en pedido.">Conversión</div><div class="v" id="k-conv">—</div><div class="d">pedidos ÷ sesiones</div></div>
-    </div>
+  <section class="panel bar-f">
+    <label>Desde<input type="date" id="f-desde"></label>
+    <label>Hasta<input type="date" id="f-hasta"></label>
+    <button type="button" class="ir" onclick="cargar()">Consultar</button>
+    <div class="rap"><button type="button" data-r="mes">Este mes</button><button type="button" data-r="pasado">Mes pasado</button><button type="button" data-r="7">Últimos 7 días</button><button type="button" data-r="30">Últimos 30 días</button></div>
   </section>
+
+  <section><div class="kp" id="kp"></div></section>
 
   <section class="panel">
     <h2>¿De dónde vienen las ventas?</h2>
-    <p class="muted" style="margin:0 0 8px">Cada pedido de Shopify con el canal por el que llegó la persona (su última visita; si fue directa, la primera). Barras por semana, lunes a domingo.</p>
+    <p class="muted" style="margin:0 0 8px;font-size:13px">Cada pedido de Shopify con el canal por el que llegó la persona (su última visita; si fue directa, la primera). <span id="agr"></span></p>
     <div class="leg-w" id="leg-canal"></div>
     <div id="chart-canal"></div>
     <table id="t-vcanal" style="margin-top:10px"></table>
   </section>
 
-  <section class="panel">
-    <h2>Últimos pedidos y su origen</h2>
-    <table id="t-pedidos"></table>
-  </section>
+  <section class="panel"><h2>Últimos pedidos y su origen</h2><table id="t-pedidos"></table></section>
 
   <section class="panel">
     <h2>Visitas y ventas por día</h2>
-    <p class="muted" id="g-res" style="margin:0 0 8px"></p>
     <div class="leg-w"><span><i style="background:var(--acc)"></i>Sesiones (Shopify)</span><span><i style="background:var(--now);height:3px"></i>Sesiones (Google Analytics)</span><span><i style="background:#8a5cd6;border-radius:50%"></i>Día con pedido</span></div>
     <div id="chart"></div>
-    <p class="muted" style="font-size:12px;margin:6px 0 0">Últimos 35 días. Shopify cuenta todas las visitas a la tienda; Google Analytics recién mide desde el 26 de octubre. Pasa el mouse por un día para ver el detalle.</p>
+    <p class="muted" style="font-size:12px;margin:6px 0 0">Pasa el mouse por un día para ver el detalle.</p>
   </section>
 
-  <section class="panel"><h2>Canales (últimos 28 días)</h2><table id="t-canales"></table></section>
-  <section class="panel"><h2>Campañas y fuentes (últimos 28 días)</h2><p class="muted" style="margin:0 0 8px;font-size:13px">Las mismas visitas del cuadro de canales, con más detalle. <b>Campaña</b> = el nombre que pusimos en el enlace (utm_campaign); si no hay, Google pone entre paréntesis el tipo de visita. <b>Fuente / medio</b> = el sitio exacto de donde vinieron (google, ig, chatgpt.com…) y el tipo de llegada (orgánico, enlace, pagado).</p><table id="t-campanas"></table></section>
-  <section class="panel"><h2>Ventas por marca (últimos 28 días)</h2><table id="t-marcas"></table></section>
-  <section class="panel"><h2>Productos más vendidos (últimos 28 días)</h2><table id="t-top"></table></section>
-  <section class="panel"><h2>Stock bajo (1 a 5 unidades)</h2><table id="t-stock"></table></section>
+  <section class="panel"><h2>Canales</h2><p class="muted" style="margin:0 0 8px;font-size:13px">Visitas según Google Analytics, con lo que significa cada canal.</p><table id="t-canales"></table></section>
+  <section class="panel"><h2>Campañas y fuentes</h2><p class="muted" style="margin:0 0 8px;font-size:13px">Las mismas visitas del cuadro de canales, con más detalle. <b>Campaña</b> = el nombre que pusimos en el enlace (utm_campaign); si no hay, Google pone entre paréntesis el tipo de visita. <b>Fuente / medio</b> = el sitio exacto de donde vinieron (google, ig, chatgpt.com…) y el tipo de llegada (orgánico, enlace, pagado).</p><table id="t-campanas"></table></section>
+  <section class="panel"><h2>Productos más vendidos</h2><table id="t-top"></table></section>
+  <section class="panel"><h2>Productos con bajo stock (menos de 5)</h2><table id="t-stock"></table></section>
 </div>
 <script>
-const S = (n) => 'S/ ' + n.toLocaleString('es-PE', { maximumFractionDigits: 0 });
-const N = (n) => n.toLocaleString('es-PE', { maximumFractionDigits: 0 });
+const S = (n) => (n < 0 ? '−S/ ' : 'S/ ') + Math.abs(n).toLocaleString('es-PE', { maximumFractionDigits: 0 });
+const N = (n) => (n || 0).toLocaleString('es-PE', { maximumFractionDigits: 0 });
 const $ = (id) => document.getElementById(id);
-const fecha = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('es-PE', { day: 'numeric', month: 'short' });
-
-function delta(el, a, b) {
-  if (!b) { el.textContent = 'sin semana previa con datos'; return; }
-  const p = Math.round((a / b - 1) * 100);
-  el.textContent = (p >= 0 ? '+' : '') + p + '% vs semana anterior';
-}
-
-function tabla(id, cols, rows) {
-  const t = $(id);
-  t.textContent = '';
-  const hr = t.insertRow();
-  cols.forEach(([k, label, f]) => { const th = document.createElement('th'); th.textContent = label; if (f) th.className = 'n'; hr.appendChild(th); });
-  if (!rows.length) { const c = t.insertRow().insertCell(); c.colSpan = cols.length; c.className = 'muted'; c.textContent = 'Sin datos todavía'; return; }
-  rows.forEach((r) => {
-    const tr = t.insertRow();
-    cols.forEach(([k, , f]) => { const c = tr.insertCell(); c.textContent = f ? f(r[k]) : r[k]; if (f) c.className = 'n'; });
-  });
-}
-
+const DIA = 864e5, suma = (iso, n) => new Date(Date.parse(iso + 'T00:00:00Z') + n * DIA).toISOString().slice(0, 10);
+const fecha = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
+const esc = (t) => String(t ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
 const COL = { 'Meta': '#1877f2', 'Google pagado': '#e8a400', 'Google orgánico': '#2f9e57', 'Influencer': '#d6336c', 'Directo y otros': '#9a958c' };
 const pastilla = (c) => `<span style="display:inline-block;padding:2px 8px;border-radius:5px;background:${COL[c] || '#9a958c'};color:#fff;font-size:12px;white-space:nowrap">${c}</span>`;
-
-function graficoCanal(sem) {
-  const el = $('chart-canal'), W = Math.max(el.clientWidth, 300), H = 200, P = { l: 8, r: 52, t: 10, b: 26 };
-  const C = Object.keys(COL), tot = (s) => C.reduce((t, c) => t + (s[c] || 0), 0);
-  const max = Math.max(1, ...sem.map(tot)), bw = (W - P.l - P.r) / sem.length, alto = H - P.t - P.b, base = P.t + alto;
-  const y = (v) => (v / max) * alto;
-  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Venta web por canal y semana">`;
-  [0.5, 1].forEach((k) => { svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base - y(max * k)}" y2="${base - y(max * k)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${base - y(max * k) + 4}">${S(max * k)}</text>`; });
-  sem.forEach((s, i) => {
-    const w = Math.min(46, bw * 0.62), x = P.l + i * bw + (bw - w) / 2; let acc = 0;
-    C.forEach((c) => { const v = s[c] || 0; if (!v) return; svg += `<rect x="${x}" y="${base - y(acc + v)}" width="${w}" height="${y(v)}" fill="${COL[c]}"/>`; acc += v; });
-    if (!acc) svg += `<rect x="${x}" y="${base - 2}" width="${w}" height="2" fill="var(--line)"/>`;
-    const fin = new Date(Date.parse(s.semana) + 6 * 864e5).toISOString().slice(0, 10);
-    svg += `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle">${fecha(s.semana)}</text>`;
-    const tip = 'Semana del ' + fecha(s.semana) + ' al ' + fecha(fin) + '|' + C.map((c) => c + '\t' + S(s[c] || 0)).join('\n') + '\nTotal\t' + S(acc);
-    svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${alto}" data-tip="${tip.replace(/"/g, '&quot;')}"/>`;
-  });
-  svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
-  el.innerHTML = svg + '</svg>';
-}
-
-function grafico(dias) {
-  const el = $('chart'), W = Math.max(el.clientWidth, 300), H = 240, P = { l: 8, r: 44, t: 18, b: 26 };
-  const ses = (d) => d.sesionesShop ?? d.sesionesGA;
-  const max = Math.max(1, ...dias.map((d) => Math.max(ses(d), d.sesionesGA)));
-  const bw = (W - P.l - P.r) / dias.length, alto = H - P.t - P.b, base = P.t + alto;
-  const y = (v) => base - (v / max) * alto, cx = (i) => P.l + i * bw + bw / 2;
-  const corta = (f) => new Date(f + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', day: 'numeric', month: 'short' });
-  let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Visitas y ventas por día">`;
-  [0.5, 1].forEach((k) => { svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(max * k)}" y2="${y(max * k)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${y(max * k) + 4}">${N(max * k)}</text>`; });
-  const paso = Math.ceil(dias.length / Math.max(1, Math.floor((W - P.l - P.r) / 48)));
-  dias.forEach((d, i) => {
-    const w = Math.max(2, Math.min(18, bw * 0.7)), v = ses(d);
-    if (v) svg += `<rect x="${cx(i) - w / 2}" y="${y(v)}" width="${w}" height="${base - y(v)}" rx="2" fill="var(--acc)" opacity=".85"/>`;
-    if (d.pedidos) svg += `<circle cx="${cx(i)}" cy="${P.t - 8}" r="5" fill="#8a5cd6"/>`;
-    const ult = i === dias.length - 1;
-    if ((i % paso === 0 && dias.length - 1 - i >= paso) || ult) svg += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${ult ? 'end' : 'middle'}">${corta(d.dia)}</text>`;
-  });
-  const ga = dias.map((d, i) => [i, d]).filter(([, d]) => d.dia >= '2026-10-26');
-  if (ga.length) svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2.2" points="${ga.map(([i, d]) => cx(i) + ',' + y(d.sesionesGA)).join(' ')}"/>`;
-  svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
-  dias.forEach((d, i) => {
-    const lin = ['## Visitas', 'Sesiones (Shopify)\t' + (d.sesionesShop ?? '—'), 'Sesiones (Google Analytics)\t' + (d.dia >= '2026-10-26' ? d.sesionesGA : 'sin medir'), '## Ventas web', 'Pedidos\t' + d.pedidos, 'Venta\t' + S(d.venta)];
-    const t = new Date(d.dia + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }) + '|' + lin.join('\n');
-    svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t - 14}" width="${bw}" height="${alto + 14}" data-tip="${t.replace(/"/g, '&quot;')}"/>`;
-  });
-  el.innerHTML = svg + '</svg>';
-  const u28 = dias.slice(-28), tot = u28.reduce((t, d) => t + (d.sesionesShop || 0), 0), ped = u28.reduce((t, d) => t + d.pedidos, 0);
-  $('g-res').textContent = 'Últimos 28 días: ' + N(tot) + ' sesiones según Shopify (' + (tot / 28).toFixed(1) + ' por día) y ' + ped + ' pedidos.';
-}
-
-fetch('/api/web' + (new URLSearchParams(location.search).get('t') ? '?t=' + new URLSearchParams(location.search).get('t') : '')).then((r) => r.json()).then((d) => {
-  $('gen').textContent = 'Actualizado ' + new Date(d.generado).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' }) + '.';
-  if (d.errores.length) $('err').textContent = 'No cargó: ' + d.errores.join(' · ');
-  const cerradas = d.semanas.filter((s) => !s.enCurso), u = cerradas.at(-1), a = cerradas.at(-2);
-  // Sesiones de Shopify por semana (mide desde antes que Google Analytics)
-  const sesSem = (lunes) => d.dias.filter((x) => x.dia >= lunes && x.dia < new Date(Date.parse(lunes) + 7 * 864e5).toISOString().slice(0, 10)).reduce((t, x) => t + (x.sesionesShop ?? x.sesionesGA), 0);
-  u.sesiones = sesSem(u.semana); a.sesiones = sesSem(a.semana);
-  const tk = (s) => (s.pedidos ? s.venta / s.pedidos : 0);
-  $('k-venta').textContent = S(u.venta); delta($('d-venta'), u.venta, a.venta);
-  $('k-pedidos').textContent = N(u.pedidos); delta($('d-pedidos'), u.pedidos, a.pedidos);
-  $('k-ticket').textContent = S(tk(u)); delta($('d-ticket'), tk(u), tk(a));
-  $('k-sesiones').textContent = N(u.sesiones); delta($('d-sesiones'), u.sesiones, a.sesiones);
-  $('k-conv').textContent = u.sesiones ? (u.pedidos / u.sesiones * 100).toFixed(1) + '%' : '—';
-  grafico(d.dias);
-  $('leg-canal').innerHTML = Object.entries(COL).map(([c, k]) => `<span><i style="background:${k}"></i>${c}</span>`).join('');
-  graficoCanal(d.canalSemanas || []);
-  addEventListener('resize', () => { grafico(d.dias); graficoCanal(d.canalSemanas || []); });
-  const tv = (d.ventasCanal || []).reduce((t, c) => t + c.venta, 0);
-  tabla('t-vcanal', [['canal', 'Canal (últimos 28 días)'], ['pedidos', 'Pedidos', N], ['venta', 'Venta', S], ['pct', '% de la venta', (v) => v + '%']],
-    (d.ventasCanal || []).map((c) => ({ ...c, pct: tv ? Math.round(c.venta / tv * 100) : 0 })));
-  [...$('t-vcanal').rows].slice(1).forEach((r) => { const c = r.cells[0]; if (COL[c.textContent]) c.innerHTML = pastilla(c.textContent); });
-  tabla('t-pedidos', [['n', 'Pedido'], ['f', 'Fecha'], ['canal', 'Canal'], ['origen', 'Origen'], ['detalle', 'Campaña o página de entrada'], ['productos', 'Productos'], ['venta', 'Venta', S]],
-    (d.pedidos || []).map((o) => ({ ...o, f: fecha(o.f), detalle: o.campana || o.entrada || '—' })));
-  [...$('t-pedidos').rows].slice(1).forEach((r) => { const c = r.cells[2]; if (c && COL[c.textContent]) c.innerHTML = pastilla(c.textContent); });
-  tabla('t-canales', [['canal', 'Canal'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.canales);
-  // Nombre en español y qué significa cada canal de Google Analytics
-  const DEF = {
+const DEF = {
     'Direct': ['Directo', 'Escribieron la dirección o entraron sin rastro (WhatsApp, favoritos, nuestro equipo probando).'],
     'Organic Search': ['Búsqueda en Google (gratis)', 'Llegaron buscando en Google o Bing, sin anuncio.'],
     'Paid Search': ['Búsqueda en Google (pagada)', 'Llegaron por un anuncio de Google Ads.'],
@@ -177,16 +89,118 @@ fetch('/api/web' + (new URLSearchParams(location.search).get('t') ? '?t=' + new 
     'Email': ['Correo', 'Enlaces desde un correo.'],
     'Organic Video': ['Video (gratis)', 'YouTube u otro sitio de video.'],
   };
-  [...$('t-canales').rows].slice(1).forEach((r) => {
-    const c = r.cells[0], x = DEF[c.textContent];
-    if (x) c.innerHTML = `<b>${x[0]}</b> <span class="muted" style="font-size:12px">(${c.textContent})</span><div class="muted" style="font-size:12px">${x[1]}</div>`;
-  });
+const CAMP = { '(direct)': 'Sin campaña · directo', '(organic)': 'Sin campaña · búsqueda gratis', '(referral)': 'Sin campaña · enlace de otra web o red', '(ai-assistant)': 'Sin campaña · asistente de IA', '(not set)': 'Sin dato', 'MXD_PRUEBA_COMPRA': 'MXD_PRUEBA_COMPRA · nuestras pruebas (no es venta real)' };
+let HOY = new Date(Date.now() - 5 * 36e5).toISOString().slice(0, 10), D = null;
+
+function rango(r) {
+  const [y, m] = HOY.split('-').map(Number);
+  if (r === 'mes') return [HOY.slice(0, 8) + '01', HOY];
+  if (r === 'pasado') { const a = m === 1 ? `${y - 1}-12` : `${y}-${String(m - 1).padStart(2, '0')}`; return [a + '-01', suma(HOY.slice(0, 8) + '01', -1)]; }
+  return [suma(HOY, -(Number(r) - 1)), HOY];
+}
+document.querySelectorAll('.rap button').forEach((b) => b.onclick = () => { const [a, c] = rango(b.dataset.r); $('f-desde').value = a; $('f-hasta').value = c; cargar(); });
+[$('f-desde').value, $('f-hasta').value] = rango('mes');
+
+function tabla(id, cols, rows) {
+  const t = $(id); t.textContent = '';
+  const hr = t.insertRow();
+  cols.forEach(([, label, f]) => { const th = document.createElement('th'); th.textContent = label; if (f) th.className = 'n'; hr.appendChild(th); });
+  if (!rows.length) { const c = t.insertRow().insertCell(); c.colSpan = cols.length; c.className = 'muted'; c.textContent = 'Sin datos en estas fechas'; return; }
+  rows.forEach((r) => { const tr = t.insertRow(); cols.forEach(([k, , f]) => { const c = tr.insertCell(); c.textContent = f ? f(r[k]) : r[k]; if (f) c.className = 'n'; }); });
+}
+
+let pide = 0;
+function cargar(fresco) {
+  const yo = ++pide;
+  const q = new URLSearchParams({ desde: $('f-desde').value, hasta: $('f-hasta').value }); if (fresco) q.set('t', Date.now());
+  $('gen').textContent = 'Cargando…'; $('err').textContent = '';
+  fetch('/api/web?' + q).then((r) => r.json()).then((d) => { if (yo !== pide) return; D = d; HOY = d.hoy; pintar(); }).catch((e) => { $('err').textContent = 'No se pudieron cargar los datos: ' + e.message; });
+}
+
+function pintar() {
+  const d = D, a = d.desde, b = d.hasta;
+  $('gen').textContent = `Del ${fecha(a)} al ${fecha(b)} · actualizado ${new Date(d.generado).toLocaleString('es-PE', { dateStyle: 'short', timeStyle: 'short' })}.`;
+  if (d.errores.length) $('err').textContent = 'No cargó: ' + d.errores.join(' · ');
+  const ped = d.pedidos.filter((o) => o.f >= a).map((o) => ({ ...o, m: MARGEN.web(o) })), prev = d.pedidos.filter((o) => o.f < a).map((o) => ({ ...o, m: MARGEN.web(o) }));
+  const dias = d.dias.filter((x) => x.dia >= a), diasP = d.dias.filter((x) => x.dia < a);
+  const ses = (x) => x.reduce((t, y) => t + (y.sesionesShop ?? y.sesionesGA), 0);
+  const K = (p, s) => { const v = p.reduce((t, o) => t + o.venta, 0); return { v, u: p.reduce((t, o) => t + o.m.queda, 0), n: p.length, tk: p.length ? v / p.length : 0, s, cv: s ? p.length / s : 0 }; };
+  const k = K(ped, ses(dias)), kp = K(prev, ses(diasP));
+  const dl = (x, y) => (!y ? 'sin datos el periodo anterior' : `${x >= y ? '▲' : '▼'} ${Math.abs(Math.round((x / y - 1) * 100))}% vs periodo anterior`);
+  const kpi = (c, l, v, sub, tip, extra = '') => `<div class="kpi" style="--c:${c}"><div class="l" data-tip="${esc(l + '|' + tip)}">${l}</div><div class="v">${v}</div><div class="d">${sub}</div>${extra}</div>`;
+  $('kp').innerHTML = [
+    kpi('#0f6b55', 'Venta', S(k.v), dl(k.v, kp.v), 'Pedidos de Shopify sin envío ni cancelados.', `<div class="u">Utilidad real: <b class="${k.u < 0 ? 'neg' : ''}">${S(k.u)}</b> <span class="sub">${k.v ? Math.round(k.u / k.v * 100) + '%' : ''}</span></div>`),
+    kpi('#0f6b55', 'Pedidos', N(k.n), dl(k.n, kp.n), 'Compras completadas en la web.'),
+    kpi('#0f6b55', 'Ticket promedio', S(k.tk), dl(k.tk, kp.tk), 'Venta ÷ pedidos.'),
+    kpi('#eb6834', 'Sesiones', N(k.s), dl(k.s, kp.s), 'Visitas a la tienda según Shopify. Una persona puede hacer varias.'),
+    kpi('#8a5cd6', 'Conversión', k.s ? (k.cv * 100).toFixed(2) + '%' : '—', kp.s ? `antes ${(kp.cv * 100).toFixed(2)}%` : 'pedidos ÷ sesiones', 'De cada 100 visitas, cuántas terminan en pedido.'),
+  ].join('');
+
+  // ¿De dónde vienen las ventas? Por día si el rango es corto, por semana si es largo
+  const sem = dias.length > 31, clave = (f) => sem ? suma(f, -((new Date(f + 'T00:00:00Z').getUTCDay() + 6) % 7)) : f;
+  $('agr').textContent = sem ? 'Barras por semana.' : 'Barras por día.';
+  const ejes = []; for (let f = clave(a); f <= b; f = suma(f, sem ? 7 : 1)) ejes.push(f);
+  const C = Object.keys(COL), gr = Object.fromEntries(ejes.map((f) => [f, Object.fromEntries(C.map((c) => [c, 0]))]));
+  ped.forEach((o) => { const x = gr[clave(o.f)]; if (x) x[o.canal] += o.venta; });
+  $('leg-canal').innerHTML = Object.entries(COL).map(([c, kk]) => `<span><i style="background:${kk}"></i>${c}</span>`).join('');
+  (function () {
+    const el = $('chart-canal'), W = Math.max(el.clientWidth, 300), H = 200, P = { l: 8, r: 56, t: 10, b: 26 };
+    const tot = (x) => C.reduce((t, c) => t + x[c], 0), max = Math.max(1, ...ejes.map((f) => tot(gr[f]))), bw = (W - P.l - P.r) / ejes.length, alto = H - P.t - P.b, base = P.t + alto, y = (v) => v / max * alto;
+    let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Venta por canal">`;
+    [0.5, 1].forEach((q) => { svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base - y(max * q)}" y2="${base - y(max * q)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${base - y(max * q) + 4}">${S(max * q)}</text>`; });
+    const paso = Math.ceil(ejes.length / Math.max(1, Math.floor((W - P.l - P.r) / 48)));
+    ejes.forEach((f, i) => {
+      const w = Math.min(46, bw * 0.62), x = P.l + i * bw + (bw - w) / 2; let acc = 0;
+      C.forEach((c) => { const v = gr[f][c]; if (!v) return; svg += `<rect x="${x}" y="${base - y(acc + v)}" width="${w}" height="${y(v)}" fill="${COL[c]}"/>`; acc += v; });
+      if ((i % paso === 0 && ejes.length - 1 - i >= paso) || i === ejes.length - 1) svg += `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle">${fecha(f)}</text>`;
+      svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t}" width="${bw}" height="${alto}" data-tip="${esc((sem ? 'Semana del ' + fecha(f) : fecha(f)) + '|' + C.map((c) => c + '\t' + S(gr[f][c])).join('\n') + '\nTotal\t' + S(acc))}"/>`;
+    });
+    svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+    el.innerHTML = svg + '</svg>';
+  })();
+  const vc = C.map((c) => { const x = ped.filter((o) => o.canal === c); return { canal: c, pedidos: x.length, venta: x.reduce((t, o) => t + o.venta, 0), util: x.reduce((t, o) => t + o.m.queda, 0) }; });
+  tabla('t-vcanal', [['canal', 'Canal'], ['pedidos', 'Pedidos', N], ['venta', 'Venta', S], ['pct', '% de la venta', (v) => v + '%'], ['util', 'Utilidad real', S]], vc.map((c) => ({ ...c, pct: k.v ? Math.round(c.venta / k.v * 100) : 0 })));
+  [...$('t-vcanal').rows].slice(1).forEach((r) => { const c = r.cells[0]; if (COL[c.textContent]) c.innerHTML = pastilla(c.textContent); });
+
+  tabla('t-pedidos', [['n', 'Pedido'], ['fe', 'Fecha'], ['canal', 'Canal'], ['origen', 'Origen'], ['detalle', 'Campaña o página de entrada'], ['productos', 'Productos'], ['venta', 'Venta', S], ['util', 'Utilidad real', S]],
+    ped.slice(0, 25).map((o) => ({ ...o, fe: fecha(o.f), detalle: o.campana || o.entrada || '—', productos: o.lineas.map((l) => `${l.q}× ${l.t}`).join(' · '), util: o.m.queda })));
+  [...$('t-pedidos').rows].slice(1).forEach((r) => { const c = r.cells[2]; if (c && COL[c.textContent]) c.innerHTML = pastilla(c.textContent); });
+
+  // Visitas y ventas por día
+  const vd = {}; ped.forEach((o) => { const x = (vd[o.f] ||= { n: 0, v: 0 }); x.n++; x.v += o.venta; });
+  (function () {
+    const el = $('chart'), W = Math.max(el.clientWidth, 300), H = 240, P = { l: 8, r: 44, t: 18, b: 26 };
+    const sv = (x) => x.sesionesShop ?? x.sesionesGA, max = Math.max(1, ...dias.map((x) => Math.max(sv(x), x.sesionesGA)));
+    const bw = (W - P.l - P.r) / dias.length, alto = H - P.t - P.b, base = P.t + alto, y = (v) => base - (v / max) * alto, cx = (i) => P.l + i * bw + bw / 2;
+    let svg = `<svg width="100%" viewBox="0 0 ${W} ${H}" role="img" aria-label="Visitas y ventas por día">`;
+    [0.5, 1].forEach((q) => { svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(max * q)}" y2="${y(max * q)}" stroke="var(--line)" stroke-dasharray="2 4"/><text x="${W - P.r + 6}" y="${y(max * q) + 4}">${N(max * q)}</text>`; });
+    const paso = Math.ceil(dias.length / Math.max(1, Math.floor((W - P.l - P.r) / 48)));
+    dias.forEach((x, i) => {
+      const w = Math.max(2, Math.min(18, bw * 0.7)), v = sv(x);
+      if (v) svg += `<rect x="${cx(i) - w / 2}" y="${y(v)}" width="${w}" height="${base - y(v)}" rx="2" fill="var(--acc)" opacity=".85"/>`;
+      if (vd[x.dia]) svg += `<circle cx="${cx(i)}" cy="${P.t - 8}" r="5" fill="#8a5cd6"/>`;
+      if ((i % paso === 0 && dias.length - 1 - i >= paso) || i === dias.length - 1) svg += `<text x="${cx(i)}" y="${H - 8}" text-anchor="${i === dias.length - 1 ? 'end' : 'middle'}">${fecha(x.dia)}</text>`;
+    });
+    svg += `<polyline fill="none" stroke="var(--now)" stroke-width="2.2" points="${dias.map((x, i) => cx(i) + ',' + y(x.sesionesGA)).join(' ')}"/>`;
+    svg += `<line x1="${P.l}" x2="${W - P.r}" y1="${base}" y2="${base}" stroke="var(--line)"/>`;
+    dias.forEach((x, i) => { const t = new Date(x.dia + 'T12:00:00Z').toLocaleDateString('es-PE', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long' }) + '|' + ['Sesiones (Shopify)\t' + (x.sesionesShop ?? '—'), 'Sesiones (Google Analytics)\t' + x.sesionesGA, 'Pedidos\t' + (vd[x.dia]?.n || 0), 'Venta\t' + S(vd[x.dia]?.v || 0)].join('\n');
+      svg += `<rect class="mxd-hit" x="${P.l + i * bw}" y="${P.t - 14}" width="${bw}" height="${alto + 14}" data-tip="${esc(t)}"/>`; });
+    el.innerHTML = svg + '</svg>';
+  })();
+
+  // Canales y campañas (Google Analytics) con definiciones
+  tabla('t-canales', [['canal', 'Canal'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.canales);
+  [...$('t-canales').rows].slice(1).forEach((r) => { const c = r.cells[0], x = DEF[c.textContent];
+    if (x) c.innerHTML = `<b>${x[0]}</b> <span class="muted" style="font-size:12px">(${c.textContent})</span><div class="muted" style="font-size:12px">${x[1]}</div>`; });
   tabla('t-campanas', [['campana', 'Campaña'], ['fuenteMedio', 'Fuente / medio'], ['sesiones', 'Sesiones', N], ['compras', 'Compras', N], ['ingresos', 'Ingresos', S]], d.campanas);
-  const CAMP = { '(direct)': 'Sin campaña · directo', '(organic)': 'Sin campaña · búsqueda gratis', '(referral)': 'Sin campaña · enlace de otra web o red', '(ai-assistant)': 'Sin campaña · asistente de IA', '(not set)': 'Sin dato', 'MXD_PRUEBA_COMPRA': 'MXD_PRUEBA_COMPRA · nuestras pruebas (no es venta real)' };
   [...$('t-campanas').rows].slice(1).forEach((r) => { const c = r.cells[0]; if (CAMP[c.textContent]) c.textContent = CAMP[c.textContent]; });
-  tabla('t-marcas', [['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.marcas);
-  tabla('t-top', [['producto', 'Producto'], ['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], d.top);
+
+  // Productos más vendidos y stock bajo
+  const top = {}; ped.forEach((o) => o.lineas.forEach((l) => { const x = (top[l.t] ||= { producto: l.t, marca: l.marca, unidades: 0, venta: 0 }); x.unidades += l.q; x.venta += l.v; }));
+  tabla('t-top', [['producto', 'Producto'], ['marca', 'Marca'], ['unidades', 'Unidades', N], ['venta', 'Venta', S]], Object.values(top).sort((x, y) => y.unidades - x.unidades).slice(0, 10));
   tabla('t-stock', [['producto', 'Producto'], ['marca', 'Marca'], ['stock', 'Stock', N]], d.stockBajo);
-}).catch((e) => { $('err').textContent = 'No se pudieron cargar los datos: ' + e.message; });
+}
+addEventListener('resize', () => D && pintar());
+cargar(new URLSearchParams(location.search).has('t'));
 </script>
 </body></html>

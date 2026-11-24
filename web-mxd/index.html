@@ -12,7 +12,7 @@
 /* Layout: cabecera fija, portada partida texto/foto del puerto, franja de datos, secciones a ancho completo alternando blanco y verde muy claro */
 :root{
   --carbon:#3B3B3A; --ink:#1E211F; --mut:#5B625D; --line:#E2E7E2;
-  --verde:#4CA552; --verde-osc:#2E7D34; --verde-claro:#EEF6EE;
+  --verde:#4CA552; --verde-osc:#2E7D34; --verde-hover:#245F29; --ease-out:cubic-bezier(0.23,1,0.32,1); --verde-claro:#EEF6EE;
   --bg:#FFFFFF; --blanco:#FFFFFF;
   --c-verde:#2E9D47; --c-naranja:#E58A1F; --c-rojo:#D33A2F;
   --display:"Poppins",system-ui,sans-serif; --body:"DM Sans",system-ui,sans-serif;
@@ -24,22 +24,26 @@ html{scroll-behavior:smooth;scroll-padding-top:76px}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;margin:0}
 img{max-width:100%;height:auto;display:block}
-a{color:inherit}
+a{color:inherit;text-underline-offset:3px}
+::selection{background:#CFE6D1;color:var(--ink)}
+input,select,textarea{accent-color:var(--verde-osc);caret-color:var(--verde-osc)}
+p{text-wrap:pretty}
 h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance;color:var(--carbon)}
-h1{font-size:clamp(34px,5vw,56px);font-weight:700;letter-spacing:-.01em}
-h2{font-size:clamp(28px,3.4vw,40px);font-weight:700}
+h1{font-size:clamp(34px,5vw,56px);font-weight:700;letter-spacing:-.02em}
+h2{font-size:clamp(28px,3.4vw,40px);font-weight:700;letter-spacing:-.015em}
 h3{font-size:20px;font-weight:600}
 p{margin:0}
 .wrap{max-width:var(--max);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
 .sec{padding-block:88px}
 .sec.alt{background:var(--verde-claro)}
-.kick{font-weight:700;color:var(--verde-osc);font-size:15px;margin-bottom:10px}
 .lead{font-size:19px;color:var(--mut);max-width:62ch}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:var(--r);font-weight:700;text-decoration:none;font-size:16px;border:2px solid transparent;cursor:pointer;font-family:var(--body)}
-.btn.pri{background:var(--verde);color:#fff}
-.btn.pri:hover{background:var(--verde-osc)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:var(--r);font-weight:700;text-decoration:none;font-size:16px;border:2px solid transparent;cursor:pointer;font-family:var(--body);transition:background-color 160ms ease,color 160ms ease,transform 160ms var(--ease-out)}
+.btn:active{transform:scale(0.97)}
+@media (hover:hover) and (pointer:fine){.btn.pri:hover{background:var(--verde-hover)}.btn.sec2:hover{background:var(--carbon);color:#fff}.dos a:hover{border-color:var(--verde-osc)}.nav ul a:hover{color:var(--verde-osc)}.ft a:hover{color:#fff}}
+.btn.pri{background:var(--verde-osc);color:#fff}
+
 .btn.sec2{border-color:var(--carbon);color:var(--carbon);background:transparent}
-.btn.sec2:hover{background:var(--carbon);color:#fff}
+
 :focus-visible{outline:3px solid var(--verde-osc);outline-offset:3px}
 
 /* cabecera */
@@ -49,31 +53,24 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rg
 .nav img{height:30px;width:auto}
 .nav ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-weight:500}
 .nav ul a{text-decoration:none;color:var(--carbon)}
-.nav ul a:hover{color:var(--verde-osc)}
 .nav .btn{padding:9px 16px;font-size:15px}
-@media (max-width:860px){.nav ul{display:none}}
+.subnav{display:none}
+@media (max-width:860px){.nav ul{display:none}.subnav{display:flex;gap:22px;overflow-x:auto;padding-block:0 12px;font-weight:500;font-size:15px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.subnav a{text-decoration:none;color:var(--carbon);white-space:nowrap;padding-block:6px}}
 
 /* portada */
-.hero{padding-block:64px 0}
+.hero{padding-block:64px 24px}
 .hero-g{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
-.hero h1 em{font-style:normal;color:var(--verde)}
+.hero h1 em{font-style:normal;color:var(--verde-osc)}
 .hero .lead{margin-top:20px}
 .hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
 .hero figure{margin:0;position:relative}
 .hero figure img{border-radius:var(--r);aspect-ratio:4/3.1;object-fit:cover;width:100%}
 .hero figcaption{font-size:13px;color:var(--mut);margin-top:8px}
-.datos{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:64px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.datos div{padding:22px 20px 22px 0;display:grid;gap:2px}
-.datos div+div{padding-left:20px;border-left:1px solid var(--line)}
-.datos b{font-family:var(--display);font-size:26px;color:var(--carbon);font-variant-numeric:tabular-nums}
-.datos span{color:var(--mut);font-size:14px}
-@media (max-width:860px){.hero-g{grid-template-columns:1fr;gap:32px}.datos{grid-template-columns:1fr 1fr}.datos div:nth-child(3){padding-left:0;border-left:0}.datos div:nth-child(n+3){border-top:1px solid var(--line)}}
-
+@media (max-width:860px){.hero-g{grid-template-columns:1fr;gap:32px}}
 /* dos negocios */
 .dos{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
-.dos a{display:grid;gap:10px;text-decoration:none;padding:30px;border-radius:var(--r);background:var(--blanco);border:1px solid var(--line);transition:border-color .2s}
-.dos a:hover{border-color:var(--verde)}
-.dos .n{font-family:var(--display);font-weight:700;color:var(--verde);font-size:15px}
+.dos a{display:grid;gap:10px;text-decoration:none;padding:30px;border-radius:var(--r);background:var(--blanco);border:1px solid var(--line);transition:border-color 160ms ease}
+.dos .n{font-family:var(--display);font-weight:600;color:var(--verde-osc);font-size:15px}
 .dos p{color:var(--mut)}
 .dos .ir{font-weight:700;color:var(--verde-osc);margin-top:6px}
 @media (max-width:760px){.dos{grid-template-columns:1fr}}
@@ -86,19 +83,19 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rg
 .pasos li{counter-increment:p;padding:22px 22px 0 0;border-top:3px solid var(--verde);display:grid;gap:6px;align-content:start}
 .pasos li+li{padding-left:22px}
 .pasos li::before{content:counter(p);font-family:var(--display);font-weight:700;color:var(--verde);font-size:30px;line-height:1}
-.pasos h3{font-size:17px}
+.pasos h3{font-size:19px}
 .pasos p{color:var(--mut);font-size:15px}
 @media (max-width:860px){.ad-g{grid-template-columns:1fr}.pasos{grid-template-columns:1fr 1fr;row-gap:28px}.pasos li:nth-child(3){padding-left:0}}
 @media (max-width:480px){.pasos{grid-template-columns:1fr}.pasos li+li{padding-left:0}}
 
-.mod{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
-.mod article{background:var(--blanco);border-radius:var(--r);padding:26px;display:grid;gap:14px;align-content:start;border:1px solid var(--line)}
-.mod .tag{font-size:14px;color:var(--mut)}
-.mod dl{margin:0;display:grid;gap:8px}
-.mod dl div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line);padding-bottom:8px;font-size:15px}
-.mod dt{color:var(--mut)}
-.mod dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
-@media (max-width:860px){.mod{grid-template-columns:1fr}}
+.tw{overflow-x:auto;margin-top:48px;background:var(--blanco);border:1px solid var(--line);border-radius:var(--r)}
+.tarifa{border-collapse:collapse;width:100%;min-width:560px;font-size:15px;font-variant-numeric:tabular-nums}
+.tarifa caption{text-align:left;padding:18px 20px 6px;font-family:var(--display);font-weight:600;color:var(--carbon);font-size:17px}
+.tarifa th,.tarifa td{padding:12px 20px;border-bottom:1px solid var(--line);text-align:right}
+.tarifa thead th{color:var(--mut);font-weight:500;font-size:14px}
+.tarifa th[scope=row],.tarifa thead th:first-child{text-align:left;font-weight:500;color:var(--ink)}
+.tarifa tbody tr:last-child>*{border-bottom:0}
+.tarifa td{font-weight:700}
 
 .canal{display:grid;grid-template-columns:auto 1fr;gap:28px 40px;margin-top:48px;align-items:center;background:var(--carbon);color:#fff;border-radius:var(--r);padding:34px}
 .canal h3{color:#fff}
@@ -126,7 +123,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rg
 .marca{display:grid;gap:12px;align-content:start}
 .marca img{aspect-ratio:1/1;object-fit:cover;border-radius:var(--r);width:100%;background:#F4F4F2}
 .marca.ancha img{aspect-ratio:4/3}
-.marca h4{font-family:var(--display);font-size:20px;margin:0;color:var(--carbon)}
+.marca h4{font-family:var(--display);font-size:24px;margin:0;color:var(--carbon)}
 .marca .rol{font-size:13px;font-weight:700;color:var(--verde-osc)}
 .marca p{color:var(--mut);font-size:15px}
 .sello{display:flex;gap:8px;flex-wrap:wrap}
@@ -145,7 +142,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rg
 .pm{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start}
 .pm ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:26px 32px}
 .pm li{display:grid;gap:4px}
-.pm li h3{font-size:17px;display:flex;gap:10px;align-items:center}
+.pm li h3{font-size:19px;display:flex;gap:10px;align-items:center}
 .pm li h3::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--verde);flex:none}
 .pm li p{color:var(--mut);font-size:15px}
 .pm .cta{margin-top:28px}
@@ -163,8 +160,8 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rg
 
 /* contacto */
 .ct{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
-.lugares{display:grid;gap:22px;margin-top:28px}
-.lugar{display:grid;gap:4px;padding-left:16px;border-left:3px solid var(--verde)}
+.lugares{display:grid;gap:18px;margin-top:28px}
+.lugar{display:grid;gap:4px;padding-top:18px;border-top:1px solid var(--line)}
 .lugar b{font-family:var(--display);color:var(--carbon)}
 .lugar span{color:var(--mut);font-size:15px}
 .lugar a{color:var(--verde-osc);font-weight:700;text-decoration:none}
@@ -174,6 +171,8 @@ label{display:grid;gap:6px;font-weight:500;font-size:14px;color:var(--carbon)}
 input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px solid #C9D0CA;border-radius:8px;background:#fff;color:var(--ink);width:100%}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--verde);border-color:var(--verde)}
 textarea{min-height:110px;resize:vertical}
+.err{color:#B3261E;font-size:13px;font-weight:500}
+input[aria-invalid=true]{border-color:#B3261E}
 .form-nota{font-size:13px;color:var(--mut)}
 @media (max-width:860px){.ct{grid-template-columns:1fr}}
 @media (max-width:520px){.f2{grid-template-columns:1fr}}
@@ -183,7 +182,6 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
 .ft img{height:28px;width:auto}
 .ft nav{display:flex;gap:20px;flex-wrap:wrap}
 .ft a{text-decoration:none}
-.ft a:hover{color:#fff}
 .wa{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;width:56px;height:56px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
 .wa svg{width:30px;height:30px;fill:#fff}
 </style>
@@ -194,7 +192,7 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
 <header>
   <div class="wrap nav">
     <a href="#inicio" aria-label="MXD, inicio"><img src="img/logo-mxd.png" alt="MXD" width="600" height="185"></a>
-    <ul>
+    <ul aria-label="Secciones">
       <li><a href="#aduanas">Aduanas</a></li>
       <li><a href="#rastreo">Rastrea tu envío</a></li>
       <li><a href="#marcas">Marcas</a></li>
@@ -203,6 +201,7 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
     </ul>
     <a class="btn pri" href="#contacto">Cotizar</a>
   </div>
+  <nav class="wrap subnav" aria-label="Secciones"><a href="#aduanas">Aduanas</a><a href="#rastreo">Rastrea tu envío</a><a href="#marcas">Marcas</a><a href="#para-marcas">Trae tu marca</a><a href="#nosotros">Nosotros</a><a href="#contacto">Contacto</a></nav>
 </header>
 
 <main id="inicio">
@@ -210,31 +209,23 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
   <div class="wrap">
     <div class="hero-g">
       <div>
-        <div class="kick">MXD SAC · Lima, Perú</div>
         <h1>Despachamos tu carga y llevamos <em>tu marca</em> al anaquel peruano</h1>
-        <p class="lead">Somos agencia de aduanas y plataforma de representación de marcas. Un solo equipo se encarga del trámite, el almacén y la venta, con la logística de Tukuy detrás.</p>
+        <p class="lead">MXD SAC es agencia de aduanas y plataforma de representación de marcas en Lima. Despachamos por vía marítima, aérea y postal desde 0.5% del valor CIF, y llevamos siete marcas a cadenas, mayoristas e instituciones de todo el Perú.</p>
         <div class="cta">
           <a class="btn pri" href="#aduanas">Servicio de aduanas</a>
           <a class="btn sec2" href="#marcas">Marcas que representamos</a>
         </div>
       </div>
       <figure>
-        <img src="img/puerto.jpg" alt="Terminal de contenedores del puerto del Callao al atardecer" width="1200" height="668">
+        <img fetchpriority="high" src="img/puerto.jpg" alt="Terminal de contenedores del puerto del Callao al atardecer" width="1200" height="668">
         <figcaption>Terminal de contenedores del Callao</figcaption>
       </figure>
-    </div>
-    <div class="datos">
-      <div><b>0.5%</b><span>del valor CIF por trámite de aduana</span></div>
-      <div><b>24–48 h</b><span>de despacho en canal verde</span></div>
-      <div><b>7 marcas</b><span>internacionales y peruanas representadas</span></div>
-      <div><b>3 vías</b><span>marítima, aérea y postal</span></div>
     </div>
   </div>
 </section>
 
 <section class="sec">
   <div class="wrap">
-    <div class="kick">Lo que hacemos</div>
     <h2>Dos negocios, un mismo equipo</h2>
     <div class="dos">
       <a href="#aduanas">
@@ -255,7 +246,6 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
 
 <section class="sec alt" id="aduanas">
   <div class="wrap">
-    <div class="kick">Agenciamiento de aduanas</div>
     <h2>Tu mercancía liberada rápido y al mejor costo</h2>
     <div class="ad-g">
       <div class="txt">
@@ -272,35 +262,17 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
       <li><h3>Despacho y entrega</h3><p>Seguimos la carga hasta el almacén o tu puerta.</p></li>
     </ol>
 
-    <div class="mod">
-      <article>
-        <h3>Marítima</h3><span class="tag">Importación y exportación · todas las jurisdicciones</span>
-        <dl>
-          <div><dt>Comisión de agencia</dt><dd>0.5% CIF</dd></div>
-          <div><dt>Comisión mínima</dt><dd>USD 150</dd></div>
-          <div><dt>Gastos operativos (import.)</dt><dd>USD 120</dd></div>
-          <div><dt>Asesoría</dt><dd>Incluida</dd></div>
-        </dl>
-      </article>
-      <article>
-        <h3>Aérea</h3><span class="tag">Importación y exportación · todas las jurisdicciones</span>
-        <dl>
-          <div><dt>Comisión de agencia</dt><dd>0.5% CIF</dd></div>
-          <div><dt>Mínima importación</dt><dd>USD 100</dd></div>
-          <div><dt>Gastos operativos (import.)</dt><dd>USD 80</dd></div>
-          <div><dt>Asesoría</dt><dd>Incluida</dd></div>
-        </dl>
-      </article>
-      <article>
-        <h3>Postal Lima</h3><span class="tag">Importación</span>
-        <dl>
-          <div><dt>Comisión de agencia</dt><dd>0.5% CIF</dd></div>
-          <div><dt>Comisión mínima</dt><dd>USD 150</dd></div>
-          <div><dt>Gastos operativos</dt><dd>USD 60</dd></div>
-          <div><dt>Asesoría</dt><dd>Incluida</dd></div>
-        </dl>
-      </article>
-    </div>
+    <div class="tw"><table class="tarifa">
+      <caption>Tarifas base de agenciamiento (USD, sin IGV)</caption>
+      <thead><tr><th scope="col">Concepto</th><th scope="col">Marítima</th><th scope="col">Aérea</th><th scope="col">Postal Lima</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Comisión de agencia</th><td>0.5% CIF</td><td>0.5% CIF</td><td>0.5% CIF</td></tr>
+        <tr><th scope="row">Comisión mínima (importación)</th><td>150</td><td>100</td><td>150</td></tr>
+        <tr><th scope="row">Comisión mínima (exportación)</th><td>150</td><td>150</td><td>No aplica</td></tr>
+        <tr><th scope="row">Gastos operativos (importación)</th><td>120</td><td>80</td><td>60</td></tr>
+        <tr><th scope="row">Asesoría de importación y exportación</th><td>Incluida</td><td>Incluida</td><td>Incluida</td></tr>
+      </tbody>
+    </table></div>
 
     <div class="canal">
       <div>
@@ -325,7 +297,6 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
 <section class="sec" id="rastreo">
   <div class="wrap track">
     <div class="txt">
-      <div class="kick" style="margin:0">Rastrea tu envío</div>
       <h2>¿Dónde está tu carga?</h2>
       <p>Ingresa tu número de guía o de pedido y mira en qué etapa está, desde el despacho hasta la entrega. El seguimiento lo da Tukuy Logística, nuestro operador.</p>
       <a class="btn sec2" href="https://tracking-app-169389254838.us-central1.run.app/" target="_blank" rel="noopener" style="justify-self:start">Abrir el rastreo en otra pestaña</a>
@@ -336,7 +307,6 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
 
 <section class="sec" id="marcas">
   <div class="wrap">
-    <div class="kick">Representación de marcas</div>
     <h2>Una sola puerta para siete marcas</h2>
     <p class="lead" style="margin-top:14px">Elegimos contigo los productos, importamos con registro sanitario, abastecemos desde Lima y te ayudamos a vender con contenido y pauta digital.</p>
 
@@ -376,7 +346,6 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
 <section class="sec alt" id="para-marcas">
   <div class="wrap pm">
     <div>
-      <div class="kick">Para dueños de marca</div>
       <h2>Trae tu marca al Perú sin montar una operación</h2>
       <p class="lead" style="margin-top:14px">Tú despachas desde tu planta. Nosotros hacemos el resto y te reportamos cada mes qué se vendió y a qué precio.</p>
       <div class="cta"><a class="btn pri" href="#contacto">Quiero representar mi marca</a></div>
@@ -396,7 +365,6 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
   <div class="wrap">
     <div class="nos">
       <div class="txt">
-        <div class="kick" style="margin:0">Nosotros</div>
         <h2>Calidad y sostenibilidad desde el origen</h2>
         <p>MXD nació como distribuidora de marcas exclusivas y sostenibles, con alianzas con marcas líderes de varios países. Elegimos proveedores que cumplen los más altos estándares locales e internacionales, y contamos con los certificados y autorizaciones de las autoridades peruanas.</p>
         <div class="valores"><span>Trabajo en equipo</span><span>Calidad e innovación</span><span>Orientación al cliente</span><span>Excelencia</span><span>Sostenibilidad</span></div>
@@ -416,7 +384,6 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
 <section class="sec alt" id="contacto">
   <div class="wrap ct">
     <div>
-      <div class="kick">Contacto</div>
       <h2>Conversemos</h2>
       <p class="lead" style="margin-top:14px">Cuéntanos qué necesitas y te contactamos.</p>
       <div class="lugares">
@@ -428,7 +395,7 @@ footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
     <form id="f" novalidate>
       <h3>Escríbenos</h3>
       <div class="f2">
-        <label for="nombre">Nombre<input id="nombre" name="nombre" required autocomplete="name"></label>
+        <label for="nombre">Nombre <span aria-hidden="true" style="color:var(--c-rojo)">*</span><input id="nombre" name="nombre" required aria-required="true" aria-describedby="err-nombre" autocomplete="name"><span id="err-nombre" class="err" hidden>Escribe tu nombre para poder responderte.</span></label>
         <label for="empresa">Empresa<input id="empresa" name="empresa" autocomplete="organization"></label>
       </div>
       <label for="tema">¿Qué necesitas?
@@ -462,7 +429,8 @@ window.addEventListener('message',function(e){if(e.origin!=='https://tracking-ap
 document.getElementById('f').addEventListener('submit',function(e){
   e.preventDefault();
   var n=document.getElementById('nombre');
-  if(!n.value.trim()){n.focus();n.setAttribute('aria-invalid','true');return}
+  if(!n.value.trim()){n.focus();n.setAttribute('aria-invalid','true');document.getElementById('err-nombre').hidden=false;return}
+  n.removeAttribute('aria-invalid');document.getElementById('err-nombre').hidden=true;
   var t=document.getElementById('tema');
   var num=t.value==='aduanas'?'51965771596':'51966382026';
   var txt='Hola MXD, soy '+n.value.trim()+(document.getElementById('empresa').value.trim()?' de '+document.getElementById('empresa').value.trim():'')+'. Tema: '+t.options[t.selectedIndex].text+'. '+document.getElementById('msg').value.trim();

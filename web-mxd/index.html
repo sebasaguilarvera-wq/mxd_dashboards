@@ -1,0 +1,456 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MXD Aduanas y Marcas</title>
+<meta name="description" content="MXD SAC: agencia de aduanas y representación de marcas en el Perú. Despacho marítimo, aéreo y postal, y distribución de marcas internacionales.">
+<link rel="icon" href="img/logo-mxd.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* Layout: cabecera fija, portada partida texto/foto del puerto, franja de datos, secciones a ancho completo alternando blanco y verde muy claro */
+:root{
+  --carbon:#3B3B3A; --ink:#1E211F; --mut:#5B625D; --line:#E2E7E2;
+  --verde:#4CA552; --verde-osc:#2E7D34; --verde-claro:#EEF6EE;
+  --bg:#FFFFFF; --blanco:#FFFFFF;
+  --c-verde:#2E9D47; --c-naranja:#E58A1F; --c-rojo:#D33A2F;
+  --display:"Poppins",system-ui,sans-serif; --body:"DM Sans",system-ui,sans-serif;
+  --r:10px; --max:1180px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.6;margin:0}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0;text-wrap:balance;color:var(--carbon)}
+h1{font-size:clamp(34px,5vw,56px);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(28px,3.4vw,40px);font-weight:700}
+h3{font-size:20px;font-weight:600}
+p{margin:0}
+.wrap{max-width:var(--max);margin:0 auto;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.sec{padding-block:88px}
+.sec.alt{background:var(--verde-claro)}
+.kick{font-weight:700;color:var(--verde-osc);font-size:15px;margin-bottom:10px}
+.lead{font-size:19px;color:var(--mut);max-width:62ch}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:var(--r);font-weight:700;text-decoration:none;font-size:16px;border:2px solid transparent;cursor:pointer;font-family:var(--body)}
+.btn.pri{background:var(--verde);color:#fff}
+.btn.pri:hover{background:var(--verde-osc)}
+.btn.sec2{border-color:var(--carbon);color:var(--carbon);background:transparent}
+.btn.sec2:hover{background:var(--carbon);color:#fff}
+:focus-visible{outline:3px solid var(--verde-osc);outline-offset:3px}
+
+/* cabecera */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--blanco)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px}
+.nav img{height:30px;width:auto}
+.nav ul{display:flex;gap:28px;list-style:none;margin:0;padding:0;font-weight:500}
+.nav ul a{text-decoration:none;color:var(--carbon)}
+.nav ul a:hover{color:var(--verde-osc)}
+.nav .btn{padding:9px 16px;font-size:15px}
+@media (max-width:860px){.nav ul{display:none}}
+
+/* portada */
+.hero{padding-block:64px 0}
+.hero-g{display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center}
+.hero h1 em{font-style:normal;color:var(--verde)}
+.hero .lead{margin-top:20px}
+.hero .cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.hero figure{margin:0;position:relative}
+.hero figure img{border-radius:var(--r);aspect-ratio:4/3.1;object-fit:cover;width:100%}
+.hero figcaption{font-size:13px;color:var(--mut);margin-top:8px}
+.datos{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:64px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.datos div{padding:22px 20px 22px 0;display:grid;gap:2px}
+.datos div+div{padding-left:20px;border-left:1px solid var(--line)}
+.datos b{font-family:var(--display);font-size:26px;color:var(--carbon);font-variant-numeric:tabular-nums}
+.datos span{color:var(--mut);font-size:14px}
+@media (max-width:860px){.hero-g{grid-template-columns:1fr;gap:32px}.datos{grid-template-columns:1fr 1fr}.datos div:nth-child(3){padding-left:0;border-left:0}.datos div:nth-child(n+3){border-top:1px solid var(--line)}}
+
+/* dos negocios */
+.dos{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px}
+.dos a{display:grid;gap:10px;text-decoration:none;padding:30px;border-radius:var(--r);background:var(--blanco);border:1px solid var(--line);transition:border-color .2s}
+.dos a:hover{border-color:var(--verde)}
+.dos .n{font-family:var(--display);font-weight:700;color:var(--verde);font-size:15px}
+.dos p{color:var(--mut)}
+.dos .ir{font-weight:700;color:var(--verde-osc);margin-top:6px}
+@media (max-width:760px){.dos{grid-template-columns:1fr}}
+
+/* aduanas */
+.ad-g{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:start;margin-top:36px}
+.ad-g .txt{display:grid;gap:16px;color:var(--mut);font-size:17px}
+.ad-g img{border-radius:var(--r);aspect-ratio:3/2;object-fit:cover;width:100%}
+.pasos{list-style:none;margin:48px 0 0;padding:0;display:grid;grid-template-columns:repeat(4,1fr);gap:0;counter-reset:p}
+.pasos li{counter-increment:p;padding:22px 22px 0 0;border-top:3px solid var(--verde);display:grid;gap:6px;align-content:start}
+.pasos li+li{padding-left:22px}
+.pasos li::before{content:counter(p);font-family:var(--display);font-weight:700;color:var(--verde);font-size:30px;line-height:1}
+.pasos h3{font-size:17px}
+.pasos p{color:var(--mut);font-size:15px}
+@media (max-width:860px){.ad-g{grid-template-columns:1fr}.pasos{grid-template-columns:1fr 1fr;row-gap:28px}.pasos li:nth-child(3){padding-left:0}}
+@media (max-width:480px){.pasos{grid-template-columns:1fr}.pasos li+li{padding-left:0}}
+
+.mod{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:48px}
+.mod article{background:var(--blanco);border-radius:var(--r);padding:26px;display:grid;gap:14px;align-content:start;border:1px solid var(--line)}
+.mod .tag{font-size:14px;color:var(--mut)}
+.mod dl{margin:0;display:grid;gap:8px}
+.mod dl div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px dashed var(--line);padding-bottom:8px;font-size:15px}
+.mod dt{color:var(--mut)}
+.mod dd{margin:0;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+@media (max-width:860px){.mod{grid-template-columns:1fr}}
+
+.canal{display:grid;grid-template-columns:auto 1fr;gap:28px 40px;margin-top:48px;align-items:center;background:var(--carbon);color:#fff;border-radius:var(--r);padding:34px}
+.canal h3{color:#fff}
+.canal p{color:#D7DBD8}
+.semaforo{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.semaforo div{border-radius:var(--r);padding:16px 18px;background:#4A4A48;display:grid;gap:4px}
+.semaforo i{width:14px;height:14px;border-radius:50%;display:inline-block;margin-right:8px;vertical-align:-1px}
+.semaforo b{font-family:var(--display);font-size:22px;font-variant-numeric:tabular-nums}
+.semaforo span{font-size:14px;color:#D7DBD8}
+@media (max-width:860px){.canal{grid-template-columns:1fr}.semaforo{grid-template-columns:1fr}}
+.nota{font-size:14px;color:var(--mut);margin-top:18px}
+.tar{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px;align-items:center}
+
+/* marcas */
+.grupo{margin-top:52px}
+.grupo-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;border-bottom:2px solid var(--carbon);padding-bottom:10px;margin-bottom:22px}
+.grupo-h h3{font-size:24px}
+.grupo-h span{color:var(--mut)}
+.marcas{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.marcas.dos-c{grid-template-columns:repeat(2,1fr)}
+.marca{display:grid;gap:12px;align-content:start}
+.marca img{aspect-ratio:1/1;object-fit:cover;border-radius:var(--r);width:100%;background:#F4F4F2}
+.marca.ancha img{aspect-ratio:4/3}
+.marca h4{font-family:var(--display);font-size:20px;margin:0;color:var(--carbon)}
+.marca .rol{font-size:13px;font-weight:700;color:var(--verde-osc)}
+.marca p{color:var(--mut);font-size:15px}
+.sello{display:flex;gap:8px;flex-wrap:wrap}
+.sello span{font-size:13px;padding:4px 10px;border-radius:99px;background:var(--verde-claro);color:var(--verde-osc);font-weight:700}
+.sec.alt .sello span{background:var(--blanco)}
+@media (max-width:860px){.marcas,.marcas.dos-c{grid-template-columns:1fr 1fr}}
+@media (max-width:520px){.marcas,.marcas.dos-c{grid-template-columns:1fr}}
+
+.canales{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:56px;border-top:1px solid var(--line)}
+.canales div{padding:24px 24px 0 0;display:grid;gap:6px}
+.canales div+div{padding-left:24px;border-left:1px solid var(--line)}
+.canales p{color:var(--mut);font-size:15px}
+@media (max-width:760px){.canales{grid-template-columns:1fr}.canales div+div{padding-left:0;border-left:0;border-top:1px solid var(--line);margin-top:20px}}
+
+/* para marcas */
+.pm{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:start}
+.pm ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:26px 32px}
+.pm li{display:grid;gap:4px}
+.pm li h3{font-size:17px;display:flex;gap:10px;align-items:center}
+.pm li h3::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--verde);flex:none}
+.pm li p{color:var(--mut);font-size:15px}
+.pm .cta{margin-top:28px}
+@media (max-width:860px){.pm{grid-template-columns:1fr}.pm ul{grid-template-columns:1fr}}
+
+/* nosotros */
+.nos{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
+.nos .txt{display:grid;gap:16px;color:var(--mut);font-size:17px}
+.nos img{border-radius:var(--r);aspect-ratio:3/2;object-fit:cover;width:100%}
+.valores{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px}
+.valores span{border:1px solid var(--carbon);border-radius:99px;padding:6px 14px;font-size:14px;font-weight:500;color:var(--carbon)}
+.tukuy{margin-top:56px;background:var(--blanco);border-radius:var(--r);padding:30px;display:grid;grid-template-columns:1fr auto;gap:20px;align-items:center;border:1px solid var(--line)}
+.tukuy p{color:var(--mut)}
+@media (max-width:860px){.nos{grid-template-columns:1fr}.tukuy{grid-template-columns:1fr}}
+
+/* contacto */
+.ct{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
+.lugares{display:grid;gap:22px;margin-top:28px}
+.lugar{display:grid;gap:4px;padding-left:16px;border-left:3px solid var(--verde)}
+.lugar b{font-family:var(--display);color:var(--carbon)}
+.lugar span{color:var(--mut);font-size:15px}
+.lugar a{color:var(--verde-osc);font-weight:700;text-decoration:none}
+form{background:var(--blanco);border:1px solid var(--line);border-radius:var(--r);padding:28px;display:grid;gap:16px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+label{display:grid;gap:6px;font-weight:500;font-size:14px;color:var(--carbon)}
+input,select,textarea{font:inherit;font-size:16px;padding:11px 12px;border:1px solid #C9D0CA;border-radius:8px;background:#fff;color:var(--ink);width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--verde);border-color:var(--verde)}
+textarea{min-height:110px;resize:vertical}
+.form-nota{font-size:13px;color:var(--mut)}
+@media (max-width:860px){.ct{grid-template-columns:1fr}}
+@media (max-width:520px){.f2{grid-template-columns:1fr}}
+
+footer{background:var(--carbon);color:#D7DBD8;padding-block:44px}
+.ft{display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:center;font-size:14px}
+.ft img{height:28px;width:auto}
+.ft nav{display:flex;gap:20px;flex-wrap:wrap}
+.ft a{text-decoration:none}
+.ft a:hover{color:#fff}
+.wa{position:fixed;right:calc(18px + env(safe-area-inset-right,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:40;width:56px;height:56px;border-radius:50%;background:#25D366;display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.wa svg{width:30px;height:30px;fill:#fff}
+</style>
+</head>
+<body>
+
+
+<header>
+  <div class="wrap nav">
+    <a href="#inicio" aria-label="MXD, inicio"><img src="img/logo-mxd.png" alt="MXD" width="600" height="185"></a>
+    <ul>
+      <li><a href="#aduanas">Aduanas</a></li>
+      <li><a href="#marcas">Marcas</a></li>
+      <li><a href="#para-marcas">Trae tu marca</a></li>
+      <li><a href="#nosotros">Nosotros</a></li>
+    </ul>
+    <a class="btn pri" href="#contacto">Cotizar</a>
+  </div>
+</header>
+
+<main id="inicio">
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-g">
+      <div>
+        <div class="kick">MXD SAC · Lima, Perú</div>
+        <h1>Despachamos tu carga y llevamos <em>tu marca</em> al anaquel peruano</h1>
+        <p class="lead">Somos agencia de aduanas y plataforma de representación de marcas. Un solo equipo se encarga del trámite, el almacén y la venta, con la logística de Tukuy detrás.</p>
+        <div class="cta">
+          <a class="btn pri" href="#aduanas">Servicio de aduanas</a>
+          <a class="btn sec2" href="#marcas">Marcas que representamos</a>
+        </div>
+      </div>
+      <figure>
+        <img src="img/puerto.jpg" alt="Terminal de contenedores del puerto del Callao al atardecer" width="1200" height="668">
+        <figcaption>Terminal de contenedores del Callao</figcaption>
+      </figure>
+    </div>
+    <div class="datos">
+      <div><b>0.5%</b><span>del valor CIF por trámite de aduana</span></div>
+      <div><b>24–48 h</b><span>de despacho en canal verde</span></div>
+      <div><b>7 marcas</b><span>internacionales y peruanas representadas</span></div>
+      <div><b>3 vías</b><span>marítima, aérea y postal</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="kick">Lo que hacemos</div>
+    <h2>Dos negocios, un mismo equipo</h2>
+    <div class="dos">
+      <a href="#aduanas">
+        <span class="n">Agencia de aduanas</span>
+        <h3>Importa y exporta sin cargar con el trámite</h3>
+        <p>Asesoría aduanera para todos los regímenes, despacho marítimo, aéreo y postal, y un profesional asignado a tu operación desde el primer día.</p>
+        <span class="ir">Ver el servicio →</span>
+      </a>
+      <a href="#marcas">
+        <span class="n">Representación de marcas</span>
+        <h3>Marcas listas para tu anaquel</h3>
+        <p>Importamos con registro sanitario, abastecemos desde Lima y vendemos a cadenas, mayoristas e instituciones en todo el Perú.</p>
+        <span class="ir">Ver las marcas →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="aduanas">
+  <div class="wrap">
+    <div class="kick">Agenciamiento de aduanas</div>
+    <h2>Tu mercancía liberada rápido y al mejor costo</h2>
+    <div class="ad-g">
+      <div class="txt">
+        <p>En MXD damos asesoría aduanera integral, alineada con la normativa vigente, para todos los regímenes de importación y exportación. Te orientamos sobre el régimen que aplica a tu mercancía, el arancel, las preferencias arancelarias disponibles y las operaciones temporales.</p>
+        <p>Apenas nos contactas asignamos un profesional dedicado a tu operación. Nuestro equipo recibe y revisa los documentos, coordina con tu sectorista y te informa plazos, fechas ante aduanas y cualquier documento adicional que haga falta.</p>
+      </div>
+      <img src="img/aduana-1.jpg" alt="Operario revisando pallets en un almacén" width="600" height="400" loading="lazy">
+    </div>
+
+    <ol class="pasos">
+      <li><h3>Nos cuentas tu carga</h3><p>Asignamos un profesional a tu operación.</p></li>
+      <li><h3>Cotización detallada</h3><p>Ningún trámite empieza sin tu aprobación.</p></li>
+      <li><h3>Revisión documentaria</h3><p>Revisamos todo y coordinamos con tu sectorista.</p></li>
+      <li><h3>Despacho y entrega</h3><p>Seguimos la carga hasta el almacén o tu puerta.</p></li>
+    </ol>
+
+    <div class="mod">
+      <article>
+        <h3>Marítima</h3><span class="tag">Importación y exportación · todas las jurisdicciones</span>
+        <dl>
+          <div><dt>Comisión de agencia</dt><dd>0.5% CIF</dd></div>
+          <div><dt>Comisión mínima</dt><dd>USD 150</dd></div>
+          <div><dt>Gastos operativos (import.)</dt><dd>USD 120</dd></div>
+          <div><dt>Asesoría</dt><dd>Incluida</dd></div>
+        </dl>
+      </article>
+      <article>
+        <h3>Aérea</h3><span class="tag">Importación y exportación · todas las jurisdicciones</span>
+        <dl>
+          <div><dt>Comisión de agencia</dt><dd>0.5% CIF</dd></div>
+          <div><dt>Mínima importación</dt><dd>USD 100</dd></div>
+          <div><dt>Gastos operativos (import.)</dt><dd>USD 80</dd></div>
+          <div><dt>Asesoría</dt><dd>Incluida</dd></div>
+        </dl>
+      </article>
+      <article>
+        <h3>Postal Lima</h3><span class="tag">Importación</span>
+        <dl>
+          <div><dt>Comisión de agencia</dt><dd>0.5% CIF</dd></div>
+          <div><dt>Comisión mínima</dt><dd>USD 150</dd></div>
+          <div><dt>Gastos operativos</dt><dd>USD 60</dd></div>
+          <div><dt>Asesoría</dt><dd>Incluida</dd></div>
+        </dl>
+      </article>
+    </div>
+
+    <div class="canal">
+      <div>
+        <h3>¿Cuánto demora el despacho?</h3>
+        <p>Depende del canal que asigne la aduana a tu declaración.</p>
+      </div>
+      <div class="semaforo">
+        <div><span><i style="background:var(--c-verde)"></i>Canal verde</span><b>24 a 48 h</b><span>Revisión documental rápida</span></div>
+        <div><span><i style="background:var(--c-naranja)"></i>Canal naranja</span><b>48 a 72 h</b><span>Revisión documental exhaustiva</span></div>
+        <div><span><i style="background:var(--c-rojo)"></i>Canal rojo</span><b>48 a 96 h</b><span>Inspección física completa</span></div>
+      </div>
+    </div>
+
+    <div class="tar">
+      <a class="btn pri" href="tarifario-mxd.pdf" target="_blank" rel="noopener">Ver tarifario completo (PDF)</a>
+      <a class="btn sec2" href="#contacto">Pedir cotización</a>
+    </div>
+    <p class="nota">Precios en dólares, sin IGV. Aforos, cuadrilla, precinto, resguardo y transporte se cotizan aparte según tu carga.</p>
+  </div>
+</section>
+
+<section class="sec" id="marcas">
+  <div class="wrap">
+    <div class="kick">Representación de marcas</div>
+    <h2>Una sola puerta para siete marcas</h2>
+    <p class="lead" style="margin-top:14px">Elegimos contigo los productos, importamos con registro sanitario, abastecemos desde Lima y te ayudamos a vender con contenido y pauta digital.</p>
+
+    <div class="grupo">
+      <div class="grupo-h"><h3>Bivien</h3><span>Cuidado personal y bienestar · Colombia</span></div>
+      <div class="marcas">
+        <div class="marca"><img src="img/arrurru.jpg" alt="Línea de baño Arrurrú: shampoo, colonia y crema" width="900" height="943" loading="lazy"><span class="rol">Representante en Perú</span><h4>Arrurrú</h4><p>La colonia de bebé número uno de Colombia, con toda su línea de baño.</p><div class="sello"><span>#1 en colonias</span><span>Pediatras la recomiendan</span></div></div>
+        <div class="marca"><img src="img/intibon.jpg" alt="Jabón íntimo Intibon en la ducha" width="719" height="760" loading="lazy"><span class="rol">Representante en Perú</span><h4>Intibon</h4><p>El jabón íntimo número uno de Colombia, con aval ginecológico.</p><div class="sello"><span>#1 en Colombia</span><span>Aval ginecológico</span></div></div>
+        <div class="marca"><img src="img/sunpro.jpg" alt="Protector solar Sun Pro Babies junto a una piscina" width="673" height="760" loading="lazy"><span class="rol">Representante en Perú</span><h4>Sun Pro</h4><p>Protección solar alta para toda la familia, justo para el verano peruano.</p><div class="sello"><span>SPF 50 a 105</span><span>Resistente al agua</span></div></div>
+      </div>
+    </div>
+
+    <div class="grupo">
+      <div class="grupo-h"><h3>Angeltex</h3><span>Ropa interior, moldeadores y medias · Colombia</span></div>
+      <div class="marcas dos-c">
+        <div class="marca ancha"><img src="img/samsara.jpg" alt="Medias de seda Samsara a la rodilla" width="760" height="760" loading="lazy"><span class="rol">Distribuidor exclusivo en Perú</span><h4>Samsara</h4><p>Pantimedias y básicos que la mujer usa todos los días y vuelve a comprar.</p><div class="sello"><span>Compresión</span><span>Compra que se repite</span></div></div>
+        <div class="marca ancha"><img src="img/cocoon.jpg" alt="Camiseta moldeadora Cocoon" width="760" height="760" loading="lazy"><span class="rol">Distribuidor exclusivo en Perú</span><h4>Cocoon</h4><p>Moldeadores térmicos y bodys sin costuras que estilizan la figura bajo cualquier prenda.</p><div class="sello"><span>Seamless</span><span>Tacto frío</span></div></div>
+      </div>
+    </div>
+
+    <div class="grupo">
+      <div class="grupo-h"><h3>Juguetes y café</h3><span>China · Perú</span></div>
+      <div class="marcas dos-c">
+        <div class="marca ancha"><img src="img/classic-world.jpg" alt="Niño armando los bloques de madera León de Classic World" width="760" height="760" loading="lazy"><span class="rol">Importador y distribuidor oficial en Perú</span><h4>Classic World</h4><p>Juguetes educativos de madera para cada etapa del desarrollo, con calidad de exportación.</p><div class="sello"><span>+50 países</span><span>ISO 9001 · EN · ASTM</span><span>1 año de garantía</span></div></div>
+        <div class="marca ancha"><img src="img/la-dona.jpg" alt="Bolsa abierta de café La Doña con granos tostados" width="900" height="1125" loading="lazy"><span class="rol">Café peruano · Villa Rica, Pasco</span><h4>La Doña</h4><p>Café de especialidad cultivado a 1,200 msnm en Alto Entaz. Tueste medio con notas frutales y de cacao.</p><div class="sello"><span>Orgánico</span><span>250 g y 1 kg en grano</span></div></div>
+      </div>
+    </div>
+
+    <div class="canales">
+      <div><h3>Cadenas y mayoristas</h3><p>Abastecemos a clientes mayoristas con alcance nacional y los más altos estándares de entrega.</p></div>
+      <div><h3>Institucional</h3><p>Colegios, empresas, ONG, universidades y organismos del Estado.</p></div>
+      <div><h3>Marketplaces</h3><p>Fichas, precios y pauta en los marketplaces más grandes del Perú.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="para-marcas">
+  <div class="wrap pm">
+    <div>
+      <div class="kick">Para dueños de marca</div>
+      <h2>Trae tu marca al Perú sin montar una operación</h2>
+      <p class="lead" style="margin-top:14px">Tú despachas desde tu planta. Nosotros hacemos el resto y te reportamos cada mes qué se vendió y a qué precio.</p>
+      <div class="cta"><a class="btn pri" href="#contacto">Quiero representar mi marca</a></div>
+    </div>
+    <ul>
+      <li><h3>Importación y aduanas</h3><p>El trámite lo hace nuestro propio equipo de aduanas, no un tercero.</p></li>
+      <li><h3>Almacén y entrega</h3><p>Stock en Lima y entrega a todo el Perú, con seguimiento y posventa a nuestro cargo.</p></li>
+      <li><h3>Catálogo y fichas</h3><p>Fotos, descripciones y precios escritos para que la gente entienda qué compra.</p></li>
+      <li><h3>Venta en canales</h3><p>Cadenas, mayoristas, instituciones y marketplaces, con una sola relación comercial.</p></li>
+      <li><h3>Publicidad con medición</h3><p>Pauta en Meta con píxel propio: sabemos qué aviso trajo qué venta.</p></li>
+      <li><h3>Reporte de venta</h3><p>Cada mes sabes qué se vendió. La reposición se decide con datos.</p></li>
+    </ul>
+  </div>
+</section>
+
+<section class="sec" id="nosotros">
+  <div class="wrap">
+    <div class="nos">
+      <div class="txt">
+        <div class="kick" style="margin:0">Nosotros</div>
+        <h2>Calidad y sostenibilidad desde el origen</h2>
+        <p>MXD nació como distribuidora de marcas exclusivas y sostenibles, con alianzas con marcas líderes de varios países. Elegimos proveedores que cumplen los más altos estándares locales e internacionales, y contamos con los certificados y autorizaciones de las autoridades peruanas.</p>
+        <div class="valores"><span>Trabajo en equipo</span><span>Calidad e innovación</span><span>Orientación al cliente</span><span>Excelencia</span><span>Sostenibilidad</span></div>
+      </div>
+      <img src="img/aduana-2.jpg" alt="Supervisor revisando inventario en un pasillo de almacén" width="600" height="400" loading="lazy">
+    </div>
+    <div class="tukuy">
+      <div>
+        <h3>Respaldados por Tukuy Logística</h3>
+        <p style="margin-top:6px">Nuestra empresa matriz y socio estratégico se encarga del almacenamiento, la seguridad, el transporte y la entrega de última milla.</p>
+      </div>
+      <a class="btn sec2" href="https://www.tukuy.pe" target="_blank" rel="noopener">Conocer Tukuy</a>
+    </div>
+  </div>
+</section>
+
+<section class="sec alt" id="contacto">
+  <div class="wrap ct">
+    <div>
+      <div class="kick">Contacto</div>
+      <h2>Conversemos</h2>
+      <p class="lead" style="margin-top:14px">Cuéntanos qué necesitas y te contactamos.</p>
+      <div class="lugares">
+        <div class="lugar"><b>Oficina de aduanas</b><span>C.C. Mallplaza Bellavista, oficina 3112, piso 3, Callao</span><a href="https://wa.me/51965771596" target="_blank" rel="noopener">+51 965 771 596</a></div>
+        <div class="lugar"><b>Oficina y almacén</b><span>Av. La Molina 2830, local C-3, La Molina, Lima</span><a href="https://wa.me/51966382026" target="_blank" rel="noopener">+51 966 382 026</a></div>
+        <div class="lugar"><b>Correo</b><span>contacto@mxd.pe</span></div>
+      </div>
+    </div>
+    <form id="f" novalidate>
+      <h3>Escríbenos</h3>
+      <div class="f2">
+        <label for="nombre">Nombre<input id="nombre" name="nombre" required autocomplete="name"></label>
+        <label for="empresa">Empresa<input id="empresa" name="empresa" autocomplete="organization"></label>
+      </div>
+      <label for="tema">¿Qué necesitas?
+        <select id="tema" name="tema">
+          <option value="aduanas">Despacho de aduanas</option>
+          <option value="marca">Representar mi marca en Perú</option>
+          <option value="compra">Comprar al por mayor</option>
+          <option value="otro">Otro</option>
+        </select>
+      </label>
+      <label for="msg">Mensaje<textarea id="msg" name="msg" placeholder="Ej.: importo 1 contenedor de 20 pies desde China, vía marítima"></textarea></label>
+      <button class="btn pri" type="submit">Enviar por WhatsApp</button>
+      <p class="form-nota">Se abre WhatsApp con tu mensaje listo para enviar.</p>
+    </form>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap ft">
+    <img src="img/logo-mxd-white.png" alt="MXD" width="600" height="185">
+    <nav><a href="#aduanas">Aduanas</a><a href="#marcas">Marcas</a><a href="#para-marcas">Trae tu marca</a><a href="#contacto">Contacto</a></nav>
+    <span>MXD SAC · Lima, Perú · contacto@mxd.pe</span>
+  </div>
+</footer>
+
+<a class="wa" href="https://wa.me/51965771596" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.3-.4.3-.4.7-1.4.1-.2 0-.3 0-.5l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 2.9 2.9 0 0 0-.9 2.2 5.1 5.1 0 0 0 1.1 2.7 11.6 11.6 0 0 0 4.4 3.9c1.6.7 2.3.8 3.1.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.1-1.2l-.5-.3Z"/></svg></a>
+
+<script>
+document.getElementById('f').addEventListener('submit',function(e){
+  e.preventDefault();
+  var n=document.getElementById('nombre');
+  if(!n.value.trim()){n.focus();n.setAttribute('aria-invalid','true');return}
+  var t=document.getElementById('tema');
+  var num=t.value==='aduanas'?'51965771596':'51966382026';
+  var txt='Hola MXD, soy '+n.value.trim()+(document.getElementById('empresa').value.trim()?' de '+document.getElementById('empresa').value.trim():'')+'. Tema: '+t.options[t.selectedIndex].text+'. '+document.getElementById('msg').value.trim();
+  var a=document.createElement('a');a.href='https://wa.me/'+num+'?text='+encodeURIComponent(txt);a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove();
+});
+</script>
+
+</body>
+</html>

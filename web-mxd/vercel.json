@@ -1,0 +1,14 @@
+{
+  "cleanUrls": true,
+  "redirects": [
+    { "source": "/products/:path*", "destination": "https://pasillo.pe/products/:path*", "permanent": true },
+    { "source": "/collections/:path*", "destination": "https://pasillo.pe/collections/:path*", "permanent": true },
+    { "source": "/cart", "destination": "https://pasillo.pe/cart", "permanent": true },
+    { "source": "/pages/aduanas", "destination": "/#aduanas", "permanent": true },
+    { "source": "/pages/tarifas", "destination": "/#aduanas", "permanent": true },
+    { "source": "/pages/para-marcas", "destination": "/#para-marcas", "permanent": true },
+    { "source": "/pages/contacto", "destination": "/#contacto", "permanent": true },
+    { "source": "/pages/tracking", "destination": "/#rastreo", "permanent": true },
+    { "source": "/pages/:path*", "destination": "https://pasillo.pe/pages/:path*", "permanent": true }
+  ]
+}

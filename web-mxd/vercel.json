@@ -8,6 +8,7 @@
     { "source": "/pages/tarifas", "destination": "/#aduanas", "permanent": true },
     { "source": "/pages/para-marcas", "destination": "/#para-marcas", "permanent": true },
     { "source": "/pages/contacto", "destination": "/#contacto", "permanent": true },
+    { "source": "/pages/tracking", "destination": "/#rastreo", "permanent": true },
     { "source": "/pages/:path*", "destination": "https://pasillo.pe/pages/:path*", "permanent": true }
   ]
 }
